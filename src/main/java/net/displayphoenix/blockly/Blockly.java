@@ -262,9 +262,9 @@ public class Blockly {
             if (field.getKey().equalsIgnoreCase("OP")) {
                 if (field.getValue().equalsIgnoreCase("EQ")) return "===";
                 if (field.getValue().equalsIgnoreCase("NEQ")) return "!==";
-                if (field.getValue().equalsIgnoreCase("LT")) return "<=";
+                if (field.getValue().equalsIgnoreCase("LT")) return "<";
                 if (field.getValue().equalsIgnoreCase("LTE")) return "<=";
-                if (field.getValue().equalsIgnoreCase("GT")) return ">=";
+                if (field.getValue().equalsIgnoreCase("GT")) return ">";
                 if (field.getValue().equalsIgnoreCase("GTE")) return ">=";
             }
             return field.getValue();
@@ -352,11 +352,8 @@ public class Blockly {
         JAVA.registerBlockCode(printBlock, "System.out.println($[value%TEXT])");
         JAVASCRIPT.registerBlockCode(printBlock, "console.log($[value%TEXT])");
 
-        Block textLengthBlock = new Block("text_length");
-        Blockly.registerBlock(textLengthBlock, TEXT);
-        JAVA.registerBlockCode(textLengthBlock, "$[value%TEXT].length()");
-        JAVASCRIPT.registerBlockCode(textLengthBlock, "$[value%TEXT].length");
-
+        Blockly.registerBlock(new File("src/main/resources/blockly/string_length.json"), TEXT);
         Blockly.registerBlock(new File("src/main/resources/blockly/text_arithmetic.json"), TEXT);
+        Blockly.registerBlock(new File("src/main/resources/blockly/text_substring.json"), TEXT);
     }
 }

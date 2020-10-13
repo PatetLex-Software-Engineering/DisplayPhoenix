@@ -1,5 +1,5 @@
 {
-  "message0": "Delete message %1",
+  "message0": "Get channel from message %1",
   "args0": [
     {
       "type": "input_value",
@@ -8,13 +8,12 @@
     }
   ],
   "inputsInline": false,
-  "previousStatement": null,
-  "nextStatement": null,
-  "colour": 165,
+  "output": "Channel",
+  "colour": 60,
+  "category": "Channel",
   "code": {
-    "javascript": "$[value%MESSAGE].delete()"
+    "javascript": "$[value%MESSAGE].channel"
   },
-  "category": "Message",
   "tooltip": "",
   "helpUrl": ""
 }

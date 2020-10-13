@@ -9,7 +9,7 @@
   ],
   "output": "User",
   "code": {
-    "javascript": "$[value%MESSAGE].author"
+    "javascript": "$[value%MESSAGE].member"
   },
   "category": "User",
   "colour": 0,

@@ -1,5 +1,5 @@
 {
-  "message0": "Get author of message %1",
+  "message0": "Get mentioned user from message %1",
   "args0": [
     {
       "type": "input_value",
@@ -8,10 +8,10 @@
     }
   ],
   "output": "User",
-  "code": {
-    "javascript": "$[value%MESSAGE].author"
-  },
   "category": "User",
+  "code": {
+    "javascript": "$[value%MESSAGE].mentions.members.first()"
+  },
   "colour": 0,
   "tooltip": "",
   "helpUrl": ""

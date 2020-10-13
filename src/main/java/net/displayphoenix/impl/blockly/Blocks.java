@@ -32,10 +32,46 @@ public class Blocks {
             return "0";
         }
     };
+    public static Category ROLE = new Category() {
+        @Override
+        public String getName() {
+            return "Role";
+        }
+
+        @Override
+        public String getColor() {
+            return "270";
+        }
+    };
+    public static Category CHANNEL = new Category() {
+        @Override
+        public String getName() {
+            return "Channel";
+        }
+
+        @Override
+        public String getColor() {
+            return "60";
+        }
+    };
+    public static Category GUILD = new Category() {
+        @Override
+        public String getName() {
+            return "Guild";
+        }
+
+        @Override
+        public String getColor() {
+            return "315";
+        }
+    };
 
     public static void register() {
         Blockly.registerCategory(USER);
         Blockly.registerCategory(MESSAGE);
+        Blockly.registerCategory(ROLE);
+        Blockly.registerCategory(CHANNEL);
+        Blockly.registerCategory(GUILD);
         File pluginDir = new File("src/main/resources/blockly/impl/");
         pluginDir.mkdir();
         BlocklyPluginLoader.loadBlocksFromDirectory(pluginDir);

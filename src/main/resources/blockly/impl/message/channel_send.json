@@ -1,14 +1,14 @@
 {
-  "message0": "Message user %1 with content %2",
+  "message0": "Send message in channel  %1 with content %2",
   "args0": [
     {
       "type": "input_value",
-      "name": "USER",
-      "check": "User"
+      "name": "CHANNEL",
+      "check": "Channel"
     },
     {
       "type": "input_value",
-      "name": "MESSAGE",
+      "name": "TEXT",
       "check": "String"
     }
   ],
@@ -16,10 +16,10 @@
   "previousStatement": null,
   "nextStatement": null,
   "colour": 165,
-  "code": {
-    "javascript": "$[value%USER].send($[value%MESSAGE])"
-  },
   "category": "Message",
+  "code": {
+    "javascript": "$[value%CHANNEL].send($[value%TEXT])"
+  },
   "tooltip": "",
   "helpUrl": ""
 }
