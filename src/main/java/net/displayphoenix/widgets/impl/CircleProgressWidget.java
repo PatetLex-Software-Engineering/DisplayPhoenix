@@ -5,6 +5,9 @@ import net.displayphoenix.widgets.ProgressWidget;
 
 import java.awt.*;
 
+/**
+ * @author TBroski
+ */
 public class CircleProgressWidget extends ProgressWidget {
 
     private Color loadingColor;

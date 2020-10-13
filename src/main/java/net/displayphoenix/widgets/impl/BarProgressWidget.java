@@ -4,6 +4,9 @@ import net.displayphoenix.widgets.ProgressWidget;
 
 import java.awt.*;
 
+/**
+ * @author TBroski
+ */
 public class BarProgressWidget extends ProgressWidget {
 
     private Color loadingColor;

@@ -8,6 +8,9 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
 
+/**
+ * @author TBroski
+ */
 public class FileHelper {
     public static void deleteFolder(File directory) {
         for (File subFile : directory.listFiles()) {

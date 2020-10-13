@@ -4,6 +4,9 @@ import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+/**
+ * @author TBroski
+ */
 public class Clipper implements ActionListener {
 
     private float crement;

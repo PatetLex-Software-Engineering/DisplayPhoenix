@@ -2,6 +2,9 @@ package net.displayphoenix.file;
 
 import java.io.File;
 
+/**
+ * @author TBroski
+ */
 public class DetailedFile {
 
     private String fileName;

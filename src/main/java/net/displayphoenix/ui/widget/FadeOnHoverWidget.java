@@ -8,6 +8,9 @@ import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
+/**
+ * @author TBroski
+ */
 public class FadeOnHoverWidget extends JButton implements MouseListener {
 
     private Clipper clipper; //0.005F

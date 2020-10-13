@@ -5,6 +5,9 @@ import net.displayphoenix.blockly.elements.Block;
 import net.displayphoenix.blockly.event.BlocklyEvent;
 import net.displayphoenix.blockly.ui.BlocklyPanel;
 
+/**
+ * @author TBroski
+ */
 public class BlocklyMoveEvent extends BlocklyEvent {
 
     private final Vec2d oldPoint;

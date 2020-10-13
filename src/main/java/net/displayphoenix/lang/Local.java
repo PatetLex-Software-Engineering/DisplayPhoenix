@@ -1,5 +1,8 @@
 package net.displayphoenix.lang;
 
+/**
+ * @author TBroski
+ */
 public enum Local {
     EN_US("en_us"), FR_FR("fr_fr");
 

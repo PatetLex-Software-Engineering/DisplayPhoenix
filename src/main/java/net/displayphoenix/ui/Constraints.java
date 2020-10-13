@@ -1,5 +1,8 @@
 package net.displayphoenix.ui;
 
+/**
+ * @author TBroski
+ */
 public class Constraints {
 
     public static final int TOP = 0;

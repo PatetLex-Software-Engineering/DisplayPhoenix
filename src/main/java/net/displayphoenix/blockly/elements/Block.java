@@ -6,6 +6,9 @@ import net.displayphoenix.blockly.Blockly;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * @author TBroski
+ */
 public class Block {
 
     private JsonObject blocklyJson;

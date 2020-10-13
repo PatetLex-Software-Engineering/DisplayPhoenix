@@ -1,5 +1,8 @@
 package net.displayphoenix.blockly;
 
+/**
+ * @author TBroski
+ */
 public interface BlocklyHtmlGenerator {
     static void appendTopWrapper(StringBuilder builder) {
         builder.append("<!DOCTYPE html>\n" +

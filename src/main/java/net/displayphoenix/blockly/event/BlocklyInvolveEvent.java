@@ -4,6 +4,9 @@ import net.displayphoenix.blockly.elements.Block;
 import net.displayphoenix.blockly.elements.workspace.ImplementedBlock;
 import net.displayphoenix.blockly.ui.BlocklyPanel;
 
+/**
+ * @author TBroski
+ */
 public class BlocklyInvolveEvent extends BlocklyEvent {
 
     private final ImplementedBlock[] blocks;

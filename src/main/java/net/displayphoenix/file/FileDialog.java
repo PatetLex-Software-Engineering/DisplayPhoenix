@@ -12,6 +12,9 @@ import java.awt.*;
 import java.io.File;
 import java.util.Locale;
 
+/**
+ * @author TBroski
+ */
 public class FileDialog {
 
     private static File previousDirectory = new File(System.getProperty("user.home"));

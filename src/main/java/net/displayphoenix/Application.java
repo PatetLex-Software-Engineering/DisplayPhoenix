@@ -16,6 +16,9 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
+/**
+ * @author TBroski
+ */
 public class Application {
 
     private static final int BUTTON_WIDTH = 100;

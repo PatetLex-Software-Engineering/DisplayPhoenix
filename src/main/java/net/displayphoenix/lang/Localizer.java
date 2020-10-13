@@ -9,6 +9,9 @@ import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * @author TBroski
+ */
 public class Localizer {
 
     private static Gson gson = new GsonBuilder().setPrettyPrinting().create();

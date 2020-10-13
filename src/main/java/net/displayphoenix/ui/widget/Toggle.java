@@ -9,6 +9,9 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+/**
+ * @author TBroski
+ */
 public class Toggle extends JButton {
 
     private Clipper slideClipper = new Clipper(this, 0.005F, 1F, 0F).smooth(); //0.005F

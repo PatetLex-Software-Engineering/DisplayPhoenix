@@ -2,6 +2,9 @@ package net.displayphoenix.util;
 
 import java.awt.*;
 
+/**
+ * @author TBroski
+ */
 public class ColorHelper {
     public static String convertColorToHexadeimal(Color color)
     {

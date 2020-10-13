@@ -5,6 +5,9 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+/**
+ * @author TBroski
+ */
 public class Website {
 
     private String url;

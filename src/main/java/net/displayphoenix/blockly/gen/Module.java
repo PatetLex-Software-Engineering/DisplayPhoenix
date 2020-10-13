@@ -13,6 +13,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * @author TBroski
+ */
 public class Module {
 
     private final Map<Block, String> blockCode = new HashMap<>();

@@ -6,6 +6,9 @@ import net.displayphoenix.widgets.ProgressWidget;
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ * @author TBroski
+ */
 public class SplashScreen extends JWindow {
 
     protected ProgressWidget progressWidget;

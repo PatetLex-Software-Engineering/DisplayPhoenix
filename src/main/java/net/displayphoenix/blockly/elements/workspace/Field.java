@@ -1,5 +1,8 @@
 package net.displayphoenix.blockly.elements.workspace;
 
+/**
+ * @author TBroski
+ */
 public class Field {
 
     private String key;

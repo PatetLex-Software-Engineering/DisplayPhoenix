@@ -5,6 +5,9 @@ import net.displayphoenix.util.ImageHelper;
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ * @author TBroski
+ */
 public class ImagePanel extends JPanel {
 
     private Image img;

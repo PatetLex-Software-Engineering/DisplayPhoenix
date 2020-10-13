@@ -3,6 +3,9 @@ package net.displayphoenix.util;
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ * @author TBroski
+ */
 public class PanelHelper {
 
     public static JPanel northAndCenterElements(Component top, Component bottom) {

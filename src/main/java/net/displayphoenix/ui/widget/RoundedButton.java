@@ -11,6 +11,9 @@ import java.awt.event.MouseEvent;
 import java.awt.font.FontRenderContext;
 import java.awt.geom.Rectangle2D;
 
+/**
+ * @author TBroski
+ */
 public class RoundedButton extends JButton {
 
     private Clipper clipper = new Clipper(this, 0.005F, 1F, 0F).smooth(); //0.005F

@@ -2,6 +2,9 @@ package net.displayphoenix.widgets;
 
 import javax.swing.*;
 
+/**
+ * @author TBroski
+ */
 public class ProgressWidget extends JPanel {
 
     private float loadProgress;

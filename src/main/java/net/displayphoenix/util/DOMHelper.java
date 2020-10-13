@@ -6,6 +6,9 @@ import org.w3c.dom.NodeList;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * @author TBroski
+ */
 public class DOMHelper {
 
     public static List<Node> getNodesBetween(Node startNode, Node endNode) {

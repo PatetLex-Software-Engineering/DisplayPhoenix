@@ -31,6 +31,9 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
 
+/**
+ * @author TBroski
+ */
 public class BlocklyPanel extends JFXPanel {
 
     private List<Runnable> runOnLoad = new ArrayList<>();

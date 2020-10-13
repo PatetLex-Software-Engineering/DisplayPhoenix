@@ -16,6 +16,9 @@ import java.awt.*;
 import java.util.*;
 import java.util.List;
 
+/**
+ * @author TBroski
+ */
 public class BlocklyDependencyPanel extends JPanel {
 
     private static Random rand = new Random();

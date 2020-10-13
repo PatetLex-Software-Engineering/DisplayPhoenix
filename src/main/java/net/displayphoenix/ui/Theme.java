@@ -4,6 +4,9 @@ import net.displayphoenix.enums.WidgetStyle;
 
 import java.awt.*;
 
+/**
+ * @author TBroski
+ */
 public class Theme {
 
     private final ColorTheme colorTheme;

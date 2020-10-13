@@ -4,6 +4,9 @@ import net.displayphoenix.Application;
 
 import java.awt.*;
 
+/**
+ * @author TBroski
+ */
 public class ComponentHelper {
 
     public static void themeComponent(Component component) {

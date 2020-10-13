@@ -1,5 +1,8 @@
 package net.displayphoenix.enums;
 
+/**
+ * @author TBroski
+ */
 public enum WidgetStyle {
 
     POPPING("popping"), BLUNT("blunt");

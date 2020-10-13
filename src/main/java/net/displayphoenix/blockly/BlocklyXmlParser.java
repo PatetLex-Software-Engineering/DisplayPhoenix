@@ -15,6 +15,9 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.util.*;
 
+/**
+ * @author TBroski
+ */
 public interface BlocklyXmlParser {
     static ImplementedBlock[] fromWorkspaceXml(String xml) {
         try {

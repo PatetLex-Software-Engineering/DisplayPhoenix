@@ -5,6 +5,9 @@ import net.displayphoenix.Application;
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ * @author TBroski
+ */
 public class TextField extends JTextField {
 
     public TextField() {

@@ -6,6 +6,9 @@ import java.awt.image.BufferedImage;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * @author TBroski
+ */
 public class ImageHelper {
 
     private static final Map<String, ImageIcon> CACHE = new ConcurrentHashMap<>();

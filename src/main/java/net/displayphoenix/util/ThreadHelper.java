@@ -2,6 +2,9 @@ package net.displayphoenix.util;
 
 import javafx.application.Platform;
 
+/**
+ * @author TBroski
+ */
 public class ThreadHelper {
 
     private static boolean fxRunning = false;

@@ -2,6 +2,9 @@ package net.displayphoenix.ui;
 
 import java.awt.*;
 
+/**
+ * @author TBroski
+ */
 public class ColorTheme {
 
     private Color primaryColor;

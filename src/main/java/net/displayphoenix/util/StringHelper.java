@@ -3,6 +3,9 @@ package net.displayphoenix.util;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * @author TBroski
+ */
 public class StringHelper {
 
     public static String abbreviateString(String input, int maxLength) {
