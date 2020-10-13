@@ -1,0 +1,41 @@
+{
+  "message0": "%1 %2 %3 %4",
+  "args0": [
+    {
+      "type": "input_value",
+      "name": "A",
+      "check": "String"
+    },
+    {
+      "type": "field_dropdown",
+      "name": "OP",
+      "options": [
+        [
+          "=",
+          "EQ"
+        ],
+        [
+          "\u2260",
+          "NEQ"
+        ]
+      ]
+    },
+    {
+      "type": "input_dummy"
+    },
+    {
+      "type": "input_value",
+      "name": "B",
+      "check": "String"
+    }
+  ],
+  "inputsInline": true,
+  "output": "Boolean",
+  "colour": 165,
+  "code": {
+    "javascript": "($[value%A] $[field%OP] $[value%B])",
+    "java": "($[value%A] $[field%OP] $[value%B])"
+  },
+  "tooltip": "",
+  "helpUrl": ""
+}

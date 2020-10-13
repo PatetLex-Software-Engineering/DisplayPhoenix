@@ -1,0 +1,11 @@
+{
+  "message0": "Bot user",
+  "output": "User",
+  "colour": 0,
+  "code": {
+    "javascript": "bot.user"
+  },
+  "category": "User",
+  "tooltip": "",
+  "helpUrl": ""
+}
