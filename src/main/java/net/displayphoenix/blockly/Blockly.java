@@ -10,10 +10,7 @@ import net.displayphoenix.blockly.gen.impl.JavaScriptModule;
 import net.displayphoenix.file.DetailedFile;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author TBroski
@@ -286,25 +283,6 @@ public class Blockly {
         JAVASCRIPT.registerBlockCode(booleanBlock, "$[field%BOOL]");
         JAVASCRIPT.manipulateField(booleanBlock, field -> field.getValue().toLowerCase());
         JAVASCRIPT.escapeSyntax(booleanBlock);
-
-        Blockly.registerBlock(new File("src/main/resources/blockly/text_compare.json"), Blockly.LOGIC);
-        Block textCompareBlock = Blockly.getBlockFromType("text_compare");
-        JAVASCRIPT.manipulateField(textCompareBlock, field -> {
-            if (field.getKey().equalsIgnoreCase("OP")) {
-                if (field.getValue().equalsIgnoreCase("EQ")) return "===";
-                if (field.getValue().equalsIgnoreCase("NEQ")) return "!==";
-            }
-            return field.getValue();
-        });
-        JAVASCRIPT.escapeSyntax(textCompareBlock);
-        JAVA.manipulateField(textCompareBlock, field -> {
-            if (field.getKey().equalsIgnoreCase("OP")) {
-                if (field.getValue().equalsIgnoreCase("EQ")) return "==";
-                if (field.getValue().equalsIgnoreCase("NEQ")) return "!=";
-            }
-            return field.getValue();
-        });
-        JAVA.escapeSyntax(textCompareBlock);
     }
     public static void queueMath() {
         Block numberBlock = new Block("math_number");

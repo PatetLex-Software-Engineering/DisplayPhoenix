@@ -1,6 +1,8 @@
 package net.displayphoenix.util;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.charset.Charset;
@@ -24,15 +26,17 @@ public class FileHelper {
         directory.delete();
     }
 
-    public static String readAllLines(URI filePath) {
+    public static String readAllLines(File file) {
         try {
-            List<String> lines = Files.readAllLines(Paths.get(filePath), Charset.defaultCharset());
 
-            String out = "";
-            for (String line : lines) {
-                out += line;
+            BufferedReader reader = new BufferedReader(new FileReader(file));
+
+            StringBuilder output = new StringBuilder();
+            String out;
+            while ((out = reader.readLine()) != null) {
+                output.append(out + "\n");
             }
-            return out;
+            return output.toString();
         } catch (IOException e) {
             e.printStackTrace();
         }

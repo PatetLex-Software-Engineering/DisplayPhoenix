@@ -7,6 +7,7 @@ import net.displayphoenix.blockly.Blockly;
 import net.displayphoenix.blockly.BlocklyXmlParser;
 import net.displayphoenix.blockly.elements.workspace.ImplementedBlock;
 import net.displayphoenix.blockly.ui.BlocklyDependencyPanel;
+import net.displayphoenix.file.FileDialog;
 import net.displayphoenix.impl.DiscordBot;
 import net.displayphoenix.blockly.ui.BlocklyPanel;
 import net.displayphoenix.ui.widget.RoundedButton;
@@ -14,8 +15,12 @@ import net.displayphoenix.util.ImageHelper;
 import net.displayphoenix.util.PanelHelper;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 
 public class EventElement extends Element {
 
@@ -81,7 +86,29 @@ public class EventElement extends Element {
                     parentFrame.dispose();
                 }
             });
-            JPanel buttonPanel = PanelHelper.join(saveButton);
+            RoundedButton importButton = new RoundedButton("Import");
+            importButton.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    blockly.getBlocklyPanel().importXmlFileToWorkspace(parentFrame);
+                }
+            });
+            RoundedButton exportButton = new RoundedButton("Export");
+            exportButton.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    File savedFile = FileDialog.saveFile(parentFrame, ".atmap").getFile();
+                    try {
+                        FileWriter fileWriter = new FileWriter(savedFile);
+                        fileWriter.write(blockly.getBlocklyPanel().getRawWorkspace());
+                        fileWriter.flush();
+                        fileWriter.close();
+                    } catch (IOException ioException) {
+                        ioException.printStackTrace();
+                    }
+                }
+            });
+            JPanel buttonPanel = PanelHelper.join(saveButton, importButton, exportButton);
             parentFrame.add(PanelHelper.northAndCenterElements(buttonPanel, blockly));
         });
     }

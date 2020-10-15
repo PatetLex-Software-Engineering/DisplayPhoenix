@@ -18,8 +18,10 @@ import net.displayphoenix.blockly.event.BlocklyEvent;
 import net.displayphoenix.blockly.event.IBlocklyListener;
 import net.displayphoenix.blockly.event.events.*;
 import net.displayphoenix.exception.AppNotCreatedException;
+import net.displayphoenix.file.FileDialog;
 import net.displayphoenix.ui.ColorTheme;
 import net.displayphoenix.util.ColorHelper;
+import net.displayphoenix.util.FileHelper;
 import net.displayphoenix.util.ThreadHelper;
 import netscape.javascript.JSObject;
 import org.w3c.dom.Element;
@@ -78,6 +80,10 @@ public class BlocklyPanel extends JFXPanel {
     }
     public void clear() {
         executeJavaScriptSynchronously("workspace.clear()");
+    }
+
+    public void importXmlFileToWorkspace(Window window) {
+        setWorkspace(FileHelper.readAllLines(FileDialog.openFile(window).getFile()));
     }
 
     public void queueOnLoad(Runnable runnable) {

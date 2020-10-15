@@ -109,28 +109,43 @@ public class FileDialog {
     }
 
     private static FileFilter[] getFileFiltersForStringArray(String[] filters) {
-        FileFilter[] fileFilters = new FileFilter[filters.length];
-        int idx = 0;
-        for (String extension : filters) {
-            extension = extension.toLowerCase(Locale.ENGLISH);
+        if (filters != null) {
+            FileFilter[] fileFilters = new FileFilter[filters.length];
+            int idx = 0;
+            for (String extension : filters) {
+                extension = extension.toLowerCase(Locale.ENGLISH);
 
-            if (extension.startsWith("."))
-                extension = extension.replaceFirst("\\.", "");
+                if (extension.startsWith("."))
+                    extension = extension.replaceFirst("\\.", "");
 
-            String finalExtension = extension;
-            fileFilters[idx] = new FileFilter() {
-                @Override public boolean accept(File f) {
-                    return f.getName().toLowerCase(Locale.ENGLISH).endsWith("." + finalExtension) || f.isDirectory();
-                }
+                String finalExtension = extension;
+                fileFilters[idx] = new FileFilter() {
+                    @Override
+                    public boolean accept(File f) {
+                        return f.getName().toLowerCase(Locale.ENGLISH).endsWith("." + finalExtension) || f.isDirectory();
+                    }
 
-                @Override public String getDescription() {
-                    return finalExtension.toUpperCase(Locale.ENGLISH) + " files (*." + finalExtension
-                            .toLowerCase(Locale.ENGLISH) + ")";
-                }
-            };
-            idx++;
+                    @Override
+                    public String getDescription() {
+                        return finalExtension.toUpperCase(Locale.ENGLISH) + " files (*." + finalExtension
+                                .toLowerCase(Locale.ENGLISH) + ")";
+                    }
+                };
+                idx++;
+            }
+            return fileFilters;
         }
-        return fileFilters;
+        return new FileFilter[] {new FileFilter() {
+            @Override
+            public boolean accept(File f) {
+                return true;
+            }
+
+            @Override
+            public String getDescription() {
+                return "Any file";
+            }
+        }};
     }
 
     private static DetailedFile[] convert(File[] files) {
