@@ -1,29 +1,32 @@
 package net.displayphoenix.blockly.event.events;
 
-import com.sun.javafx.geom.Vec2d;
 import net.displayphoenix.blockly.elements.Block;
 import net.displayphoenix.blockly.event.BlocklyEvent;
 import net.displayphoenix.blockly.ui.BlocklyPanel;
+
+import java.awt.*;
+import java.awt.geom.Point2D;
+import java.util.Vector;
 
 /**
  * @author TBroski
  */
 public class BlocklyMoveEvent extends BlocklyEvent {
 
-    private final Vec2d oldPoint;
-    private final Vec2d newPoint;
+    private final Point oldPoint;
+    private final Point newPoint;
 
     public BlocklyMoveEvent(String type, BlocklyPanel workspace, Block block, int oldX, int oldY, int newX, int newY) {
         super(type, workspace, block);
-        this.oldPoint = new Vec2d(oldX, oldY);
-        this.newPoint = new Vec2d(newX, newY);
+        this.oldPoint = new Point(oldX, oldY);
+        this.newPoint = new Point(newX, newY);
     }
 
-    public Vec2d getOldCoords() {
+    public Point getOldCoords() {
         return oldPoint;
     }
 
-    public Vec2d getNewCoords() {
+    public Point getNewCoords() {
         return newPoint;
     }
 }

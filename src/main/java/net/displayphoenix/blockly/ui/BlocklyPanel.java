@@ -17,7 +17,6 @@ import net.displayphoenix.blockly.elements.workspace.ImplementedBlock;
 import net.displayphoenix.blockly.event.BlocklyEvent;
 import net.displayphoenix.blockly.event.IBlocklyListener;
 import net.displayphoenix.blockly.event.events.*;
-import net.displayphoenix.exception.AppNotCreatedException;
 import net.displayphoenix.file.FileDialog;
 import net.displayphoenix.ui.ColorTheme;
 import net.displayphoenix.util.ColorHelper;
