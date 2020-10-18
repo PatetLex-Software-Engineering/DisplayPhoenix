@@ -12,6 +12,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * @author TBroski
+ */
 public class CanvasPanel extends JPanel implements MouseWheelListener, MouseMotionListener, MouseListener {
 
     public static final float ZOOM_SENSITIVITY = 1.8F;
@@ -68,9 +71,10 @@ public class CanvasPanel extends JPanel implements MouseWheelListener, MouseMoti
         float ch = getHeight() / 2F;
         for (int layer : this.elements.keySet()) {
             for (Element element : this.elements.get(layer)) {
-                float w = element.getImage().getIconWidth() * r;
-                float h = element.getImage().getIconHeight() * r;
-                g.drawImage(element.getImage().getImage(), Math.round(cw - (w / 2F)) + element.getOffX(), Math.round(ch - (h / 2F)) + element.getOffY(), Math.round(w), Math.round(h), this);
+                float w = element.getImage().getIconWidth();
+                float h = element.getImage().getIconHeight(); //* r
+                ((Graphics2D) g).scale(r, r);
+                g.drawImage(element.getImage().getImage(),Math.round(cw) + element.getOffX(), Math.round(ch) + element.getOffY(), Math.round(w), Math.round(h), this);
                 if (element == this.selectedElement) {
                     g.setColor(Application.getTheme().getColorTheme().getSecondaryColor());
                     g.drawRect(Math.round(cw - (w / 2F)) + element.getOffX(), Math.round(ch - (h / 2F)) + element.getOffY(), Math.round(w), Math.round(h));

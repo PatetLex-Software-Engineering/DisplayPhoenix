@@ -1,0 +1,11 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="DisplayPhoenix:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/DisplayPhoenix_jar</output-path>
+    <root id="archive" name="DisplayPhoenix.jar">
+      <element id="module-output" name="DisplayPhoenix" />
+      <element id="module-output" name="main" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/libs/blockly.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/libs/gson-2.8.6.jar" path-in-jar="/" />
+    </root>
+  </artifact>
+</component>
