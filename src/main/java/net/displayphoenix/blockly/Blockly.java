@@ -74,6 +74,7 @@ public class Blockly {
             BLOCKS.put(category, new ArrayList<>());
         }
     }
+
     public static void registerBlock(Block block, Category category) {
         if (!BLOCKS.containsKey(category)) {
             BLOCKS.put(category, new ArrayList<>());
@@ -85,53 +86,62 @@ public class Blockly {
         if (block.isCustom())
             System.out.println("[BLOCKLY] Registered block: " + block.getType() + ".");
     }
-    public static void registerBlock(File blockJson, Category category) {
-        try {
-            JsonObject blockObject = gson.fromJson(new FileReader(blockJson), JsonObject.class);
-            Block block = new Block(new DetailedFile(blockJson).getFileName(), blockObject.get("init") != null ? blockObject.get("init").getAsString() : null, blockObject);
-            block.depend(blockObject.get("depend") != null ? blockObject.get("depend").getAsString() : null);
-            block.provide(blockObject.get("provide") != null ? blockObject.get("provide").getAsString() : null);
-            if (blockObject.get("fieldProvides") != null) {
-                Map<String, Map<String, String[]>> fieldProvides = gson.fromJson(blockObject.get("fieldProvides").toString(), new TypeToken<Map<String, Map<String, String[]>>>() {}.getType());
-                for (String fieldKey : fieldProvides.keySet()) {
-                    block.fieldProvide(fieldKey, fieldProvides.get(fieldKey));
-                }
+
+    public static void registerBlock(String name, JsonObject blockObject, Category category) {
+        Block block = new Block(name, blockObject.get("init") != null ? blockObject.get("init").getAsString() : null, blockObject);
+        block.depend(blockObject.get("depend") != null ? blockObject.get("depend").getAsString() : null);
+        block.provide(blockObject.get("provide") != null ? blockObject.get("provide").getAsString() : null);
+        if (blockObject.get("fieldProvides") != null) {
+            Map<String, Map<String, String[]>> fieldProvides = gson.fromJson(blockObject.get("fieldProvides").toString(), new TypeToken<Map<String, Map<String, String[]>>>() {
+            }.getType());
+            for (String fieldKey : fieldProvides.keySet()) {
+                block.fieldProvide(fieldKey, fieldProvides.get(fieldKey));
             }
-            if (blockObject.get("code") != null) {
-                Map<String, String> code = gson.fromJson(blockObject.get("code").toString(), new TypeToken<Map<String, String>>() {}.getType());
-                for (String codeKey : code.keySet()) {
-                    getModuleFromName(codeKey).registerBlockCode(block, code.get(codeKey));
-                }
+        }
+        if (blockObject.get("code") != null) {
+            Map<String, String> code = gson.fromJson(blockObject.get("code").toString(), new TypeToken<Map<String, String>>() {
+            }.getType());
+            for (String codeKey : code.keySet()) {
+                getModuleFromName(codeKey).registerBlockCode(block, code.get(codeKey));
             }
-            if (blockObject.get("fieldManipulator") != null) {
-                Map<String, Map<String, Map<String, String>>> fieldManipulator = gson.fromJson(blockObject.get("fieldManipulator").toString(), new TypeToken<Map<String, Map<String, Map<String, String>>>>() {}.getType());
-                for (String moduleKey : fieldManipulator.keySet()) {
-                    getModuleFromName(moduleKey).manipulateField(block, field -> {
-                        for (String fieldKey : fieldManipulator.get(moduleKey).keySet()) {
-                            if (field.getKey().equalsIgnoreCase(fieldKey)) {
-                                for (String fieldValue : fieldManipulator.get(moduleKey).get(fieldKey).keySet()) {
-                                    if (field.getValue().equalsIgnoreCase(fieldValue)) {
-                                        return fieldManipulator.get(moduleKey).get(fieldKey).get(fieldValue);
-                                    }
+        }
+        if (blockObject.get("fieldManipulator") != null) {
+            Map<String, Map<String, Map<String, String>>> fieldManipulator = gson.fromJson(blockObject.get("fieldManipulator").toString(), new TypeToken<Map<String, Map<String, Map<String, String>>>>() {
+            }.getType());
+            for (String moduleKey : fieldManipulator.keySet()) {
+                getModuleFromName(moduleKey).manipulateField(block, field -> {
+                    for (String fieldKey : fieldManipulator.get(moduleKey).keySet()) {
+                        if (field.getKey().equalsIgnoreCase(fieldKey)) {
+                            for (String fieldValue : fieldManipulator.get(moduleKey).get(fieldKey).keySet()) {
+                                if (field.getValue().equalsIgnoreCase(fieldValue)) {
+                                    return fieldManipulator.get(moduleKey).get(fieldKey).get(fieldValue);
                                 }
-                                break;
                             }
+                            break;
                         }
-                        return field.getValue();
-                    });
-                }
+                    }
+                    return field.getValue();
+                });
             }
-            if (blockObject.get("escape") != null) {
-                Map<String, Boolean> escape = gson.fromJson(blockObject.get("escape").toString(), new TypeToken<Map<String, Boolean>>() {}.getType());
-                for (String module : escape.keySet()) {
-                    if (escape.get(module))
-                        getModuleFromName(module).escapeSyntax(block);
-                }
+        }
+        if (blockObject.get("escape") != null) {
+            Map<String, Boolean> escape = gson.fromJson(blockObject.get("escape").toString(), new TypeToken<Map<String, Boolean>>() {
+            }.getType());
+            for (String module : escape.keySet()) {
+                if (escape.get(module))
+                    getModuleFromName(module).escapeSyntax(block);
             }
-            registerBlock(block, category);
+        }
+        registerBlock(block, category);
+    }
+    public static void registerBlock(File blockJson, Category category) {
+        JsonObject blockObject = null;
+        try {
+            blockObject = gson.fromJson(new FileReader(blockJson), JsonObject.class);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
+        registerBlock(new DetailedFile(blockJson).getFileName(), blockObject, category);
     }
 
     public static String parseBlocks() {
@@ -198,8 +208,7 @@ public class Blockly {
     public static Module getModuleFromName(String name) {
         if (name.equalsIgnoreCase("java")) {
             return JAVA;
-        }
-        else if (name.equalsIgnoreCase("javascript")) {
+        } else if (name.equalsIgnoreCase("javascript")) {
             return JAVASCRIPT;
         }
         return null;
@@ -213,8 +222,7 @@ public class Blockly {
         JAVA.attachMutator(ifBlock, (mutation, index) -> {
             if (mutation.equalsIgnoreCase("elseif")) {
                 return "else if ($[value%IF" + index + "]) {\n$[statement%DO" + index + "]\n}";
-            }
-            else if (mutation.equalsIgnoreCase("else")) {
+            } else if (mutation.equalsIgnoreCase("else")) {
                 return "else {\n$[statement%ELSE]\n}";
             }
             return null;
@@ -224,8 +232,7 @@ public class Blockly {
         JAVASCRIPT.attachMutator(ifBlock, (mutation, index) -> {
             if (mutation.equalsIgnoreCase("elseif")) {
                 return "else if ($[value%IF" + index + "]) {\n$[statement%DO" + index + "]\n}";
-            }
-            else if (mutation.equalsIgnoreCase("else")) {
+            } else if (mutation.equalsIgnoreCase("else")) {
                 return "else {\n$[statement%ELSE]\n}";
             }
             return null;
@@ -238,6 +245,7 @@ public class Blockly {
         JAVASCRIPT.registerBlockCode(repeatBlock, "var $[increment%repeat]; for ($[increment%repeat] = 0; $[increment%repeat] < $[value%TIMES]; $[increment%repeat]++) {\n$[statement%DO]\n}");
         JAVASCRIPT.escapeSyntax(repeatBlock);
     }
+
     public static void queueLogic() {
         Block compareBlock = new Block("logic_compare");
         Blockly.registerBlock(compareBlock, LOGIC);
@@ -284,6 +292,7 @@ public class Blockly {
         JAVASCRIPT.manipulateField(booleanBlock, field -> field.getValue().toLowerCase());
         JAVASCRIPT.escapeSyntax(booleanBlock);
     }
+
     public static void queueMath() {
         Block numberBlock = new Block("math_number");
         Blockly.registerBlock(numberBlock, MATH);
@@ -292,7 +301,7 @@ public class Blockly {
         JAVASCRIPT.registerBlockCode(numberBlock, "$[field%NUM]");
         JAVASCRIPT.escapeSyntax(numberBlock);
 
-        Blockly.registerBlock(new File("src/main/resources/blockly/math_arithmetic_custom.json"), MATH);
+        Blockly.registerBlock("math_arithmetic_custom", gson.fromJson(MATH_ARITHMETIC_CUSTOM, JsonObject.class), MATH);
         Block arithmeticBlock = Blockly.getBlockFromType("math_arithmetic_custom");
         JAVA.registerBlockCode(arithmeticBlock, "($[value%A] $[field%OP] $[value%B])");
         JAVA.manipulateField(arithmeticBlock, field -> {
@@ -317,6 +326,7 @@ public class Blockly {
         });
         JAVASCRIPT.escapeSyntax(arithmeticBlock);
     }
+
     public static void queueText() {
         Block textBlock = new Block("text");
         Blockly.registerBlock(textBlock, TEXT);
@@ -330,8 +340,112 @@ public class Blockly {
         JAVA.registerBlockCode(printBlock, "System.out.println($[value%TEXT])");
         JAVASCRIPT.registerBlockCode(printBlock, "console.log($[value%TEXT])");
 
-        Blockly.registerBlock(new File("src/main/resources/blockly/string_length.json"), TEXT);
-        Blockly.registerBlock(new File("src/main/resources/blockly/text_arithmetic.json"), TEXT);
-        Blockly.registerBlock(new File("src/main/resources/blockly/text_substring.json"), TEXT);
+        Blockly.registerBlock("string_length", gson.fromJson(STRING_LENGTH, JsonObject.class), TEXT);
+        Blockly.registerBlock("text_arithmetic", gson.fromJson(TEXT_ARITHMETIC, JsonObject.class), TEXT);
+        Blockly.registerBlock("text_substring", gson.fromJson(TEXT_SUBSTRING, JsonObject.class), TEXT);
     }
+
+
+    private static final String MATH_ARITHMETIC_CUSTOM = "{\n" +
+            "  \"message0\": \"%1 %2 %3\",\n" +
+            "  \"args0\": [{\n" +
+            "    \"type\": \"input_value\",\n" +
+            "    \"name\": \"A\",\n" +
+            "    \"check\": \"Number\"\n" +
+            "  }, {\n" +
+            "    \"type\": \"field_dropdown\",\n" +
+            "    \"name\": \"OP\",\n" +
+            "    \"options\": [\n" +
+            "      [\"%{BKY_MATH_ADDITION_SYMBOL}\", \"ADD\"],\n" +
+            "      [\"%{BKY_MATH_SUBTRACTION_SYMBOL}\", \"MINUS\"],\n" +
+            "      [\"%{BKY_MATH_MULTIPLICATION_SYMBOL}\",\n" +
+            "        \"MULTIPLY\"\n" +
+            "      ],\n" +
+            "      [\"%{BKY_MATH_DIVISION_SYMBOL}\", \"DIVIDE\"]\n" +
+            "    ]\n" +
+            "  }, {\n" +
+            "    \"type\": \"input_value\",\n" +
+            "    \"name\": \"B\",\n" +
+            "    \"check\": \"Number\"\n" +
+            "  }],\n" +
+            "  \"inputsInline\": \"!0\",\n" +
+            "  \"output\": \"Number\",\n" +
+            "  \"style\": \"math_blocks\",\n" +
+            "  \"helpUrl\": \"%{BKY_MATH_ARITHMETIC_HELPURL}\",\n" +
+            "  \"extensions\": [\"math_op_tooltip\"]\n" +
+            "}";
+    private static final String STRING_LENGTH = "{\n" +
+            "  \"message0\": \"Length of %1\",\n" +
+            "  \"args0\": [\n" +
+            "    {\n" +
+            "      \"type\": \"input_value\",\n" +
+            "      \"name\": \"TEXT\",\n" +
+            "      \"check\": \"String\"\n" +
+            "    }\n" +
+            "  ],\n" +
+            "  \"inputsInline\": false,\n" +
+            "  \"output\": \"Number\",\n" +
+            "  \"category\": \"Text\",\n" +
+            "  \"colour\": 165,\n" +
+            "  \"code\": {\n" +
+            "    \"javascript\": \"$[value%TEXT].length\",\n" +
+            "    \"java\": \"$[value%TEXT].length()\"\n" +
+            "  },\n" +
+            "  \"tooltip\": \"\",\n" +
+            "  \"helpUrl\": \"\"\n" +
+            "}";
+    private static final String TEXT_ARITHMETIC = "{\n" +
+            "  \"message0\": \"%1 + %2\",\n" +
+            "  \"args0\": [\n" +
+            "    {\n" +
+            "      \"type\": \"input_value\",\n" +
+            "      \"name\": \"A\",\n" +
+            "      \"check\": \"String\"\n" +
+            "    },\n" +
+            "    {\n" +
+            "      \"type\": \"input_value\",\n" +
+            "      \"name\": \"B\",\n" +
+            "      \"check\": \"String\"\n" +
+            "    }\n" +
+            "  ],\n" +
+            "  \"inputsInline\": true,\n" +
+            "  \"output\": \"String\",\n" +
+            "  \"code\": {\n" +
+            "    \"javascript\": \"($[value%A] + $[value%B])\",\n" +
+            "    \"java\": \"($[value%A] + $[value%B])\"\n" +
+            "  },\n" +
+            "  \"colour\": 165,\n" +
+            "  \"tooltip\": \"\",\n" +
+            "  \"helpUrl\": \"\"\n" +
+            "}";
+    private static final String TEXT_SUBSTRING = "{\n" +
+            "  \"message0\": \"Get substring of %1 from index %2 to index %3\",\n" +
+            "  \"args0\": [\n" +
+            "    {\n" +
+            "      \"type\": \"input_value\",\n" +
+            "      \"name\": \"TEXT\",\n" +
+            "      \"check\": \"String\"\n" +
+            "    },\n" +
+            "    {\n" +
+            "      \"type\": \"input_value\",\n" +
+            "      \"name\": \"SINDEX\",\n" +
+            "      \"check\": \"Number\"\n" +
+            "    },\n" +
+            "    {\n" +
+            "      \"type\": \"input_value\",\n" +
+            "      \"name\": \"EINDEX\",\n" +
+            "      \"check\": \"Number\"\n" +
+            "    }\n" +
+            "  ],\n" +
+            "  \"inputsInline\": true,\n" +
+            "  \"output\": \"String\",\n" +
+            "  \"category\": \"Text\",\n" +
+            "  \"code\": {\n" +
+            "    \"javascript\": \"$[value%TEXT].substr($[value%SINDEX], $[value%EINDEX])\",\n" +
+            "    \"java\": \"$[value%TEXT].substring($[value%SINDEX], $[value%EINDEX])\"\n" +
+            "  },\n" +
+            "  \"colour\": 165,\n" +
+            "  \"tooltip\": \"\",\n" +
+            "  \"helpUrl\": \"\"\n" +
+            "}";
 }

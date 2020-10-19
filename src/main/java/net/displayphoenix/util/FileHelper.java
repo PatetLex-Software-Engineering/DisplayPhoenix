@@ -42,4 +42,20 @@ public class FileHelper {
         }
         return null;
     }
+    public static String readAllLines(URI uri) {
+        try {
+
+            BufferedReader reader = new BufferedReader(new FileReader(uri.getPath()));
+
+            StringBuilder output = new StringBuilder();
+            String out;
+            while ((out = reader.readLine()) != null) {
+                output.append(out + "\n");
+            }
+            return output.toString();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 }

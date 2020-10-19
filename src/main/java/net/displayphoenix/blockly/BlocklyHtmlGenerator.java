@@ -1,5 +1,7 @@
 package net.displayphoenix.blockly;
 
+import net.displayphoenix.blockly.js.BlocklyJS;
+
 /**
  * @author TBroski
  */
@@ -9,10 +11,10 @@ public interface BlocklyHtmlGenerator {
                 "<html>\n" +
                 "<head>\n" +
                 "    <meta charset=\"utf-8\">\n" +
-                "    <title>Blockly</title>\n" +
-                "    <script src=\"jar:file:./libs/blockly.jar!/jsdist/blockly_compressed.js\"></script>\n" + //https://blockly-demo.appspot.com/static/
-                "    <script src=\"jar:file:./libs/blockly.jar!/jsdist/blocks_compressed.js\"></script>\n" + //jar:file:./libs/blockly.jar!/jsdist/
-                "    <script src=\"jar:file:./libs/blockly.jar!/jsdist/msg/en.js\"></script>\n" +
+                "    <title>Blockly</title>\n" + ///libs/blockly.jar!/jsdist/blockly_compressed.
+                "    <script src=\"" + BlocklyJS.getBlocklyCompressed() + "\"></script>\n" +
+                "    <script src=\"" + BlocklyJS.getBlocksCompressed() + "\"></script>\n" +
+                "    <script src=\"" + BlocklyJS.getBlocklyLang("en") + "\"></script>\n" +
                 "    <style>\n" +
                 "    body {\n" +
                 "      background-color: #fff;\n" +
