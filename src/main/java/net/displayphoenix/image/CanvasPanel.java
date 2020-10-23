@@ -1,176 +1,273 @@
 package net.displayphoenix.image;
 
 import net.displayphoenix.Application;
-import net.displayphoenix.image.interfaces.LayerListener;
-import net.displayphoenix.util.ImageHelper;
+import net.displayphoenix.file.DetailedFile;
+import net.displayphoenix.file.FileDialog;
+import net.displayphoenix.image.elements.Element;
+import net.displayphoenix.image.elements.Layer;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.geom.AffineTransform;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * @author TBroski
- */
 public class CanvasPanel extends JPanel implements MouseWheelListener, MouseMotionListener, MouseListener {
 
-    public static final float ZOOM_SENSITIVITY = 1.8F;
-    public static final float MOVE_SENSITIVITY = 1.0F;
+    public static final float ZOOM_SENSITIVITY = 1F;
+    public static final float MOVE_SENSITIVITY = 1F;
 
-    private Map<Integer, List<Element>> elements = new HashMap<>();
-    private List<LayerListener> layerListeners = new ArrayList<>();
-    private Element selectedElement;
-    private Element hoveredElement;
-    protected float mouseRotation;
-    private int currLayer;
+    private Map<Layer, List<Element>> layerToElements = new HashMap<>();
+    private int canvasWidth;
+    private int canvasHeight;
+    private int canvasMoveX;
+    private int canvasMoveY;
+    private boolean moveLocked;
+    private boolean zoomLocked;
+    private float zoom;
+    private int selectedLayer;
 
-    private Point prevMousePoint;
-    private int cachedMouseDown;
+    private Element cachedElement;
+    private Point cachedPoint;
+    private int cachedButton;
 
-    public CanvasPanel() {
-        this.elements.put(0, new ArrayList<>());
-        this.addMouseWheelListener(this);
+    private List<IRenderAttacher> renderAttachers = new ArrayList<>();
+
+    public CanvasPanel(int canvasWidth, int canvasHeight) {
         this.addMouseListener(this);
         this.addMouseMotionListener(this);
-    }
-
-    public void addToCanvas(ImageIcon image, int layer) {
-        addToCanvas(image, layer, 0, 0);
-    }
-    public void addToCanvas(ImageIcon image, int layer, int x, int y) {
-        if (!this.elements.containsKey(layer)) {
-            this.elements.put(layer, new ArrayList<>());
-            for (LayerListener layerListener : this.layerListeners) {
-                layerListener.layerAdded(layer);
-            }
-        }
-        this.elements.get(layer).add(new Element(ImageHelper.resize(image, getWidth(), getHeight()), x, y));
-        repaint();
-    }
-
-    public void toggleLayer(int layer) {
-        this.currLayer = layer;
-    }
-
-    public void addLayerListener(LayerListener listener) {
-        this.layerListeners.add(listener);
+        this.addMouseWheelListener(this);
+        this.canvasWidth = canvasWidth;
+        this.canvasHeight = canvasHeight;
+        this.cachedPoint = new Point(0,0);
     }
 
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
+        float cw = this.getWidth() / 2F;
+        float ch = this.getHeight() / 2F;
+        if (convergeZoom(1) > 15) {
+            g.translate(Math.round((cw - convergeZoom(this.getCanvasWidth()) / 2F) + convergeZoom(this.canvasMoveX)), Math.round((ch - convergeZoom(this.getCanvasHeight()) / 2F) + convergeZoom(this.canvasMoveY)));
+            g.setColor(Color.LIGHT_GRAY);
+            for (int xp = 0; xp < convergeZoom(this.getCanvasWidth()); xp += convergeZoom(1)) {
+                for (int yp = 0; yp < convergeZoom(this.getCanvasHeight()); yp += convergeZoom(1)) {
+                    g.drawLine(xp, yp, xp, Math.round(yp + convergeZoom(1)));
+                    g.drawLine(xp, Math.round(yp + convergeZoom(1)), Math.round(xp + convergeZoom(1)), Math.round(yp + convergeZoom(1)));
+                    g.drawLine(Math.round(xp + convergeZoom(1)), Math.round(yp + convergeZoom(1)), Math.round(xp + convergeZoom(1)), yp);
+                    g.drawLine(xp, yp, Math.round(xp + convergeZoom(1)), yp);
+                }
+            }
+            ((Graphics2D) g).setTransform(new AffineTransform());
+        }
         paintElements(g);
     }
 
     protected void paintElements(Graphics g) {
-        float r = (this.mouseRotation + 100) / 100;
         float cw = getWidth() / 2F;
         float ch = getHeight() / 2F;
-        for (int layer : this.elements.keySet()) {
-            for (Element element : this.elements.get(layer)) {
-                float w = element.getImage().getIconWidth();
-                float h = element.getImage().getIconHeight(); //* r
-                ((Graphics2D) g).scale(r, r);
-                g.drawImage(element.getImage().getImage(),Math.round(cw) + element.getOffX(), Math.round(ch) + element.getOffY(), Math.round(w), Math.round(h), this);
-                if (element == this.selectedElement) {
-                    g.setColor(Application.getTheme().getColorTheme().getSecondaryColor());
-                    g.drawRect(Math.round(cw - (w / 2F)) + element.getOffX(), Math.round(ch - (h / 2F)) + element.getOffY(), Math.round(w), Math.round(h));
-                }
-                else if (element == this.hoveredElement) {
-                    g.setColor(Application.getTheme().getColorTheme().getAccentColor());
-                    g.drawRect(Math.round(cw - (w / 2F)) + element.getOffX(), Math.round(ch - (h / 2F)) + element.getOffY(), Math.round(w), Math.round(h));
+        for (Layer layer : this.layerToElements.keySet()) {
+            if (!layer.isHidden()) {
+                for (Element element : this.layerToElements.get(layer)) {
+                    ((Graphics2D) g).scale(convergeZoom(element.getScaleFactor()), convergeZoom(element.getScaleFactor()));
+                    //((Graphics2D) g).translate(((cw + element.getOffsetX()) / convergeZoom(element.getScaleFactor())) + (convergeZoom(element.getOffsetX() * element.getScaleFactor() - (element.getWidth(this, g) / 2F))), ((ch + element.getOffsetY()) / convergeZoom(element.getScaleFactor())) + (convergeZoom(element.getOffsetY() * element.getScaleFactor() - (element.getHeight(this, g) / 2F))));
+                    ((Graphics2D) g).translate(((cw - convergeZoom(element.getWidth(this, g)) / convergeZoom(2F) + this.canvasMoveX) / convergeZoom(element.getScaleFactor())), (ch - convergeZoom(element.getHeight(this, g)) / convergeZoom(2F) + this.canvasMoveY) / convergeZoom(element.getScaleFactor()));
+                    element.draw(this, g);
+                    if (element == this.cachedElement) {
+                        g.setColor(rayTraceElement(this.cachedPoint, g) == element ? Application.getTheme().getColorTheme().getPrimaryColor() : Application.getTheme().getColorTheme().getSecondaryColor());
+                        g.drawRect(element.getOffsetX(), element.getOffsetY(), element.getWidth(this, g), element.getHeight(this, g));
+                    }
+                    IRenderAttacher renderAttacherToDestroy = null;
+                    for (IRenderAttacher renderAttacher : this.renderAttachers) {
+                        renderAttacher.rendered(g);
+                        renderAttacherToDestroy = renderAttacher;
+                        break;
+                    }
+                    if (renderAttacherToDestroy != null)
+                        this.renderAttachers.remove(renderAttacherToDestroy);
+                    ((Graphics2D) g).setTransform(new AffineTransform());
                 }
             }
         }
     }
 
-    @Override
-    public void mouseWheelMoved(MouseWheelEvent e) {
-        this.mouseRotation += e.getPreciseWheelRotation() * ZOOM_SENSITIVITY;
-        if (this.mouseRotation > 100) {
-            this.mouseRotation = 100;
+    public void addElement(Element element) {
+        addElement(this.selectedLayer, element);
+    }
+    public void addElement(int layer, Element element) {
+        addElement(layer, element, 0, 0);
+    }
+    public void addElement(int layer, Element element, int offX, int offY) {
+        Layer layerFrom = layerFromIndex(layer);
+        if (!this.layerToElements.containsKey(layerFrom)) {
+            this.layerToElements.put(layerFrom, new ArrayList<>());
         }
-        else if (this.mouseRotation < -100) {
-            this.mouseRotation = -100;
+        element.setOffsetX(offX);
+        element.setOffsetY(offY);
+        this.layerToElements.get(layerFrom).add(element);
+        this.cachedElement = element;
+        repaint();
+    }
+
+    public void deleteLayer(int layer) {
+        this.layerToElements.remove(layerFromIndex(layer));
+        repaint();
+    }
+
+    public void selectLayer(int layer) {
+        this.selectedLayer = layer;
+    }
+
+    public int getSelectedLayer() {
+        return selectedLayer;
+    }
+
+    public void merge() {
+        List<Element> elements = new ArrayList<>();
+        List<Layer> layers = new ArrayList<>();
+        int i = 0;
+        for (Layer layer : this.layerToElements.keySet()) {
+            if (i != 0) {
+                layers.add(layer);
+            }
+            i++;
+        }
+        for (Element element : elements) {
+            this.layerToElements.get(layerFromIndex(0)).add(element);
+        }
+        for (Layer layer : layers) {
+            this.layerToElements.remove(layer);
         }
         repaint();
     }
 
-    @Override
-    public void mouseDragged(MouseEvent e) {
-        if (this.cachedMouseDown == MouseEvent.BUTTON3) {
-            float dx = (float) (e.getX() - this.prevMousePoint.getX());
-            float dy = (float) (e.getY() - this.prevMousePoint.getY());
-            dx *= MOVE_SENSITIVITY;
-            dy *= MOVE_SENSITIVITY;
-            if (this.selectedElement == null) {
-                for (Element element : this.elements.get(this.currLayer)) {
-                    element.setOffX(Math.round(element.getOffX() + dx));
-                    element.setOffY(Math.round(element.getOffY() + dy));
+    public int getLayerAmount() {
+        return this.layerToElements.keySet().size();
+    }
+
+    public Layer layerFromIndex(int index) {
+        int i = 0;
+        for (Layer layer : this.layerToElements.keySet()) {
+            if (i == index) {
+                return layer;
+            }
+            i++;
+        }
+        return new Layer();
+    }
+
+    public float convergeZoom(float num) {
+        float r = (this.zoom + (ZOOM_SENSITIVITY)) / ZOOM_SENSITIVITY;
+        return num * r;
+    }
+
+    public int getCanvasWidth() {
+        return canvasWidth;
+    }
+
+    public int getCanvasHeight() {
+        return canvasHeight;
+    }
+
+    public int getCanvasX() {
+        return canvasMoveX;
+    }
+
+    public int getCanvasY() {
+        return canvasMoveY;
+    }
+
+    public void setMoveLocked(boolean locked) {
+        this.moveLocked = locked;
+    }
+
+    public void setZoomLocked(boolean locked) {
+        this.zoomLocked = locked;
+    }
+
+    public void setZoom(float zoom) {
+        this.zoom = zoom;
+    }
+
+    public void export(Window parentWindow) {
+        float cw = getCanvasWidth() / 2F;
+        float ch = getCanvasHeight() / 2F;
+        BufferedImage image = new BufferedImage(this.canvasWidth, this.canvasHeight, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D graphics2D = image.createGraphics();
+
+        for (Layer layer : this.layerToElements.keySet()) {
+            if (!layer.isHidden()) {
+                for (Element element : this.layerToElements.get(layer)) {
+                    graphics2D.scale(element.getScaleFactor(), element.getScaleFactor());
+                    graphics2D.translate(((cw - element.getWidth(this, graphics2D) / 2F) / element.getScaleFactor()) + this.canvasMoveX, ((ch - element.getHeight(this, graphics2D) / 2F) / element.getScaleFactor()) + this.canvasMoveY);
+                    element.parse(this, graphics2D);
+                    graphics2D.setTransform(new AffineTransform());
                 }
             }
-            else {
-                this.selectedElement.setOffX(Math.round(this.selectedElement.getOffX() + dx));
-                this.selectedElement.setOffY(Math.round(this.selectedElement.getOffY() + dy));
+        }
+
+        DetailedFile savedFile = FileDialog.saveFile(parentWindow, ".png");
+        if (savedFile != null) {
+            try {
+                ImageIO.write(image, "PNG", savedFile.getFile());
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-            this.prevMousePoint = e.getPoint();
-            repaint();
         }
     }
 
-    @Override
-    public void mouseMoved(MouseEvent e) {
-        this.hoveredElement = raytraceElement(e.getPoint());
-        repaint();
+    private Element rayTraceElement(Point point, Graphics graphics) {
+        float cw = getWidth() / 2F;
+        float ch = getHeight() / 2F;
+        for (Layer layer : this.layerToElements.keySet()) {
+            if (!layer.isHidden()) {
+                for (Element element : this.layerToElements.get(layer)) {
+                    float cwx = element.getOffsetX() + (element.getWidth(this, graphics) / 2F);
+                    float cwh = element.getOffsetY() + (element.getHeight(this, graphics) / 2F);
+                    cwx += cw;
+                    cwh += ch;
+                    float dx = (float) (point.getX() - cwx);
+                    float dy = (float) (point.getY() - cwh);
+                    if (dx < 0)
+                        dx *= -1;
+                    if (dy < 0)
+                        dy += -1;
+                    if (dx <= convergeZoom(element.getWidth(this, graphics)) / 2F && dy <= convergeZoom(element.getHeight(this, graphics)) / 2F) {
+                        return element;
+                    }
+                }
+            }
+        }
+        return null;
     }
 
     @Override
     public void mouseClicked(MouseEvent e) {
-        Element raytracedElement = raytraceElement(e.getPoint());
-        if (e.getButton()  == MouseEvent.BUTTON1 && raytracedElement != null) {
-            this.selectedElement = raytracedElement;
-            repaint();
-            return;
-        }
-        else if (this.selectedElement != null && e.getButton() == MouseEvent.BUTTON3) {
-            Application.promptYesOrNo("Delete Element", "Delete this element?", true, new MouseAdapter() {
-                @Override
-                public void mouseClicked(MouseEvent e) {
-                    for (int layer : elements.keySet()) {
-                        for (Element element : elements.get(layer)) {
-                            if (element == selectedElement) {
-                                elements.get(layer).remove(selectedElement);
-                                if (elements.get(layer).size() == 0) {
-                                    elements.remove(layer);
-                                    for (LayerListener layerListener : layerListeners) {
-                                        layerListener.layerRemoved(layer);
-                                    }
-                                }
-                                break;
-                            }
-                        }
-                    }
-                    repaint();
-                }
-            });
-            return;
-        }
-        this.selectedElement = null;
         repaint();
+        this.renderAttachers.add(g -> {
+           if (rayTraceElement(e.getPoint(), g) != this.cachedElement) {
+               this.cachedElement = null;
+               repaint();
+           }
+        });
     }
 
     @Override
     public void mousePressed(MouseEvent e) {
-        this.prevMousePoint = e.getPoint();
-        this.cachedMouseDown = e.getButton();
+        this.cachedPoint = e.getPoint();
+        this.cachedButton = e.getButton();
     }
 
     @Override
     public void mouseReleased(MouseEvent e) {
-        this.cachedMouseDown = 0;
+        this.cachedButton = 0;
+        setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
     }
 
     @Override
@@ -183,52 +280,65 @@ public class CanvasPanel extends JPanel implements MouseWheelListener, MouseMoti
 
     }
 
-    private Element raytraceElement(Point point) {
-        float r = (this.mouseRotation + 100) / 100;
-        for (Element element : this.elements.get(this.currLayer)) {
-            float dx = (float) (point.getX() - (element.getOffX() + (getWidth() / 2F)));
-            float dy = (float) (point.getY() - (element.getOffY() + (getHeight() / 2F)));
-            if (dx < 0)
-                dx *= -1;
-            if (dy < 0)
-                dy += -1;
-            if (dx <= (element.getImage().getIconWidth() * r) / 2F && dy <= (element.getImage().getIconHeight() * r) / 2F) {
-                return element;
+    @Override
+    public void mouseDragged(MouseEvent e) {
+        if (!this.moveLocked && this.cachedButton == MouseEvent.BUTTON3) {
+            float dx = (float) (e.getX() - this.cachedPoint.getX());
+            float dy = (float) (e.getY() - this.cachedPoint.getY());
+            dx *= MOVE_SENSITIVITY;
+            dy *= MOVE_SENSITIVITY;
+            setCursor(new Cursor(Cursor.HAND_CURSOR));
+            if (this.cachedElement == null) {
+                Layer layer = layerFromIndex(this.selectedLayer);
+                if (!layer.isLocked()) {
+                    for (Element element : this.layerToElements.get(layer)) {
+                        element.setOffsetX(Math.round(element.getOffsetX() + dx));
+                        element.setOffsetY(Math.round(element.getOffsetY() + dy));
+                    }
+                }
             }
+            else {
+                this.cachedElement.setOffsetX(Math.round(this.cachedElement.getOffsetX() + dx));
+                this.cachedElement.setOffsetY(Math.round(this.cachedElement.getOffsetY() + dy));
+            }
+            this.cachedPoint = e.getPoint();
+            repaint();
         }
-        return null;
+        else if (this.cachedButton == MouseEvent.BUTTON2) {
+            float dx = (float) (e.getX() - this.cachedPoint.getX());
+            float dy = (float) (e.getY() - this.cachedPoint.getY());
+            dx *= MOVE_SENSITIVITY;
+            dy *= MOVE_SENSITIVITY;
+            setCursor(new Cursor(Cursor.MOVE_CURSOR));
+            this.canvasMoveX += dx;
+            this.canvasMoveY += dy;
+            this.cachedPoint = e.getPoint();
+            repaint();
+        }
     }
 
-    private static class Element {
+    @Override
+    public void mouseMoved(MouseEvent e) {
+        this.cachedPoint = e.getPoint();
+        repaint();
+    }
 
-        private ImageIcon image;
-        private int offX;
-        private int offY;
-
-        public Element(ImageIcon image, int offX, int offY) {
-            this.image = image;
-            this.offX = offX;
-            this.offY = offY;
+    @Override
+    public void mouseWheelMoved(MouseWheelEvent e) {
+        if (!this.zoomLocked) {
+            this.zoom += e.getPreciseWheelRotation();
+/*            if (this.zoom > ZOOM_MAX) {
+                this.zoom = ZOOM_MAX;
+            } else if (this.zoom < -ZOOM_MAX) {
+                this.zoom = -ZOOM_MAX;
+            }*/
+            if (this.zoom < -(ZOOM_SENSITIVITY * 0.9F))
+                this.zoom = -(ZOOM_SENSITIVITY * 0.9F);
+            repaint();
         }
+    }
 
-        public ImageIcon getImage() {
-            return image;
-        }
-
-        public int getOffX() {
-            return offX;
-        }
-
-        public int getOffY() {
-            return offY;
-        }
-
-        public void setOffX(int offX) {
-            this.offX = offX;
-        }
-
-        public void setOffY(int offY) {
-            this.offY = offY;
-        }
+    private interface IRenderAttacher {
+        void rendered(Graphics g);
     }
 }

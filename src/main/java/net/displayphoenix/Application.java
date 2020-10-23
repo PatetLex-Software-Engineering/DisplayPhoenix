@@ -294,8 +294,9 @@ public class Application {
      * Executes simple command
      *
      * @param command Command to execute
+     * @return Exit value of command
      */
-    public static void systemExecute(String command) {
+    public static int systemExecute(String command) {
         try {
             Process process = Runtime.getRuntime().exec(command);
 
@@ -306,19 +307,13 @@ public class Application {
                 output.append(line + "\n");
             }
             int exitVal = process.waitFor();
-            if (exitVal == 0) {
-                System.out.println("[SUCCESS] Command : " + command + ".");
-                System.out.println(output);
-            } else {
-                String paste = "[ERROR] Command : " + command + ". Returned code " + exitVal;
-                System.out.println(paste);
-                openPaste(paste);
-            }
+            return exitVal;
         } catch (InterruptedException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
+        return -1;
     }
 
     /**
