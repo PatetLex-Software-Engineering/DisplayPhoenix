@@ -1,0 +1,30 @@
+{
+  "message0": "Get substring of %1 from index %2 to index %3",
+  "args0": [
+    {
+      "type": "input_value",
+      "name": "TEXT",
+      "check": "String"
+    },
+    {
+      "type": "input_value",
+      "name": "SINDEX",
+      "check": "Number"
+    },
+    {
+      "type": "input_value",
+      "name": "EINDEX",
+      "check": "Number"
+    }
+  ],
+  "inputsInline": true,
+  "output": "String",
+  "category": "Text",
+  "code": {
+    "javascript": "$[value%TEXT].substr($[value%SINDEX], $[value%EINDEX])",
+    "java": "$[value%TEXT].substring($[value%SINDEX], $[value%EINDEX])"
+  },
+  "colour": 165,
+  "tooltip": "",
+  "helpUrl": ""
+}

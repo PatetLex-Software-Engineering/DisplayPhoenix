@@ -1,18 +1,14 @@
 package net.displayphoenix;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import net.displayphoenix.bitly.Bitly;
 import net.displayphoenix.bitly.elements.Bit;
-import net.displayphoenix.bitly.enums.BitWidgetStyle;
-import net.displayphoenix.bitly.ui.BitWidget;
+import net.displayphoenix.blockly.Blockly;
+import net.displayphoenix.blockly.ui.BlocklyDependencyPanel;
 import net.displayphoenix.enums.WidgetStyle;
 import net.displayphoenix.generation.Module;
-import net.displayphoenix.image.CanvasPanel;
-import net.displayphoenix.image.elements.impl.BackgroundElement;
-import net.displayphoenix.image.elements.impl.ImageElement;
 import net.displayphoenix.ui.ColorTheme;
 import net.displayphoenix.ui.Theme;
+import net.displayphoenix.ui.widget.ProvisionWidget;
 import net.displayphoenix.util.ImageHelper;
 import net.displayphoenix.util.PanelHelper;
 
@@ -27,6 +23,7 @@ public class Test {
         Theme theme = new Theme(new ColorTheme(new Color(38, 38, 38), new Color(192, 226, 113), new Color(255, 255, 255), Color.GRAY), WidgetStyle.POPPING, new Font(Font.MONOSPACED, Font.PLAIN, 14), 1200, 800);
         Application.create("sda", ImageHelper.getImage("blunt_warning"), theme, "kdsa");
 
+        Blockly.queueText();
         Bitly.registerBit(new File("src/main/resources/bit/test.json"));
         Application.openWindow(parentFrame -> {
             Bit bit = Bitly.getBitFromType("test");

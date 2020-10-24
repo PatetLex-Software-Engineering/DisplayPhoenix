@@ -4,8 +4,10 @@ import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
 import net.displayphoenix.blockly.elements.Block;
 import net.displayphoenix.blockly.elements.Category;
+import net.displayphoenix.blockly.js.BlocklyJS;
 import net.displayphoenix.generation.Module;
 import net.displayphoenix.file.DetailedFile;
+import net.displayphoenix.util.FileHelper;
 
 import java.io.*;
 import java.util.*;
@@ -288,7 +290,7 @@ public class Blockly {
         JAVASCRIPT.registerBlockCode(numberBlock, "$[field%NUM]");
         JAVASCRIPT.escapeSyntax(numberBlock);
 
-        Blockly.registerBlock("math_arithmetic_custom", gson.fromJson(MATH_ARITHMETIC_CUSTOM, JsonObject.class), MATH);
+        Blockly.registerBlock("math_arithmetic_custom", gson.fromJson(FileHelper.readAllLines(BlocklyJS.getDefaultBlock("math_arithmetic_custom")), JsonObject.class), MATH);
         Block arithmeticBlock = Blockly.getBlockFromType("math_arithmetic_custom");
         JAVA.registerBlockCode(arithmeticBlock, "($[value%A] $[field%OP] $[value%B])");
         JAVA.manipulateField(arithmeticBlock, field -> {
@@ -327,112 +329,8 @@ public class Blockly {
         JAVA.registerBlockCode(printBlock, "System.out.println($[value%TEXT])");
         JAVASCRIPT.registerBlockCode(printBlock, "console.log($[value%TEXT])");
 
-        Blockly.registerBlock("string_length", gson.fromJson(STRING_LENGTH, JsonObject.class), TEXT);
-        Blockly.registerBlock("text_arithmetic", gson.fromJson(TEXT_ARITHMETIC, JsonObject.class), TEXT);
-        Blockly.registerBlock("text_substring", gson.fromJson(TEXT_SUBSTRING, JsonObject.class), TEXT);
+        Blockly.registerBlock("string_length", gson.fromJson(FileHelper.readAllLines(BlocklyJS.getDefaultBlock("string_length")), JsonObject.class), TEXT);
+        Blockly.registerBlock("text_arithmetic", gson.fromJson(FileHelper.readAllLines(BlocklyJS.getDefaultBlock("text_arithmetic")), JsonObject.class), TEXT);
+        Blockly.registerBlock("text_substring", gson.fromJson(FileHelper.readAllLines(BlocklyJS.getDefaultBlock("text_substring")), JsonObject.class), TEXT);
     }
-
-
-    private static final String MATH_ARITHMETIC_CUSTOM = "{\n" +
-            "  \"message0\": \"%1 %2 %3\",\n" +
-            "  \"args0\": [{\n" +
-            "    \"type\": \"input_value\",\n" +
-            "    \"name\": \"A\",\n" +
-            "    \"check\": \"Number\"\n" +
-            "  }, {\n" +
-            "    \"type\": \"field_dropdown\",\n" +
-            "    \"name\": \"OP\",\n" +
-            "    \"options\": [\n" +
-            "      [\"%{BKY_MATH_ADDITION_SYMBOL}\", \"ADD\"],\n" +
-            "      [\"%{BKY_MATH_SUBTRACTION_SYMBOL}\", \"MINUS\"],\n" +
-            "      [\"%{BKY_MATH_MULTIPLICATION_SYMBOL}\",\n" +
-            "        \"MULTIPLY\"\n" +
-            "      ],\n" +
-            "      [\"%{BKY_MATH_DIVISION_SYMBOL}\", \"DIVIDE\"]\n" +
-            "    ]\n" +
-            "  }, {\n" +
-            "    \"type\": \"input_value\",\n" +
-            "    \"name\": \"B\",\n" +
-            "    \"check\": \"Number\"\n" +
-            "  }],\n" +
-            "  \"inputsInline\": \"!0\",\n" +
-            "  \"output\": \"Number\",\n" +
-            "  \"style\": \"math_blocks\",\n" +
-            "  \"helpUrl\": \"%{BKY_MATH_ARITHMETIC_HELPURL}\",\n" +
-            "  \"extensions\": [\"math_op_tooltip\"]\n" +
-            "}";
-    private static final String STRING_LENGTH = "{\n" +
-            "  \"message0\": \"Length of %1\",\n" +
-            "  \"args0\": [\n" +
-            "    {\n" +
-            "      \"type\": \"input_value\",\n" +
-            "      \"name\": \"TEXT\",\n" +
-            "      \"check\": \"String\"\n" +
-            "    }\n" +
-            "  ],\n" +
-            "  \"inputsInline\": false,\n" +
-            "  \"output\": \"Number\",\n" +
-            "  \"category\": \"Text\",\n" +
-            "  \"colour\": 165,\n" +
-            "  \"code\": {\n" +
-            "    \"javascript\": \"$[value%TEXT].length\",\n" +
-            "    \"java\": \"$[value%TEXT].length()\"\n" +
-            "  },\n" +
-            "  \"tooltip\": \"\",\n" +
-            "  \"helpUrl\": \"\"\n" +
-            "}";
-    private static final String TEXT_ARITHMETIC = "{\n" +
-            "  \"message0\": \"%1 + %2\",\n" +
-            "  \"args0\": [\n" +
-            "    {\n" +
-            "      \"type\": \"input_value\",\n" +
-            "      \"name\": \"A\",\n" +
-            "      \"check\": \"String\"\n" +
-            "    },\n" +
-            "    {\n" +
-            "      \"type\": \"input_value\",\n" +
-            "      \"name\": \"B\",\n" +
-            "      \"check\": \"String\"\n" +
-            "    }\n" +
-            "  ],\n" +
-            "  \"inputsInline\": true,\n" +
-            "  \"output\": \"String\",\n" +
-            "  \"code\": {\n" +
-            "    \"javascript\": \"($[value%A] + $[value%B])\",\n" +
-            "    \"java\": \"($[value%A] + $[value%B])\"\n" +
-            "  },\n" +
-            "  \"colour\": 165,\n" +
-            "  \"tooltip\": \"\",\n" +
-            "  \"helpUrl\": \"\"\n" +
-            "}";
-    private static final String TEXT_SUBSTRING = "{\n" +
-            "  \"message0\": \"Get substring of %1 from index %2 to index %3\",\n" +
-            "  \"args0\": [\n" +
-            "    {\n" +
-            "      \"type\": \"input_value\",\n" +
-            "      \"name\": \"TEXT\",\n" +
-            "      \"check\": \"String\"\n" +
-            "    },\n" +
-            "    {\n" +
-            "      \"type\": \"input_value\",\n" +
-            "      \"name\": \"SINDEX\",\n" +
-            "      \"check\": \"Number\"\n" +
-            "    },\n" +
-            "    {\n" +
-            "      \"type\": \"input_value\",\n" +
-            "      \"name\": \"EINDEX\",\n" +
-            "      \"check\": \"Number\"\n" +
-            "    }\n" +
-            "  ],\n" +
-            "  \"inputsInline\": true,\n" +
-            "  \"output\": \"String\",\n" +
-            "  \"category\": \"Text\",\n" +
-            "  \"code\": {\n" +
-            "    \"javascript\": \"$[value%TEXT].substr($[value%SINDEX], $[value%EINDEX])\",\n" +
-            "    \"java\": \"$[value%TEXT].substring($[value%SINDEX], $[value%EINDEX])\"\n" +
-            "  },\n" +
-            "  \"colour\": 165,\n" +
-            "  \"tooltip\": \"\",\n" +
-            "  \"helpUrl\": \"\"\n" +
-            "}";
 }

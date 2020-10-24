@@ -110,7 +110,7 @@ public class Module {
         for (BitWidget widget : bit.getBits()) {
             for (String input : bits) {
                 if (input.equalsIgnoreCase(widget.getFlag())) {
-                    code = code.replace(getFlags("bit")[0] + input + getFlags("bit")[1], bit.getValueOfWidget(widget));
+                    code = code.replace(getFlags("bit")[0] + input + getFlags("bit")[1], bit.getValueOfWidget(this, widget));
                     break;
                 }
             }

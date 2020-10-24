@@ -11,7 +11,7 @@ public interface BlocklyHtmlGenerator {
                 "<html>\n" +
                 "<head>\n" +
                 "    <meta charset=\"utf-8\">\n" +
-                "    <title>Blockly</title>\n" + ///libs/blockly.jar!/jsdist/blockly_compressed.
+                "    <title>Blockly</title>\n" +
                 "    <script src=\"" + BlocklyJS.getBlocklyCompressed() + "\"></script>\n" +
                 "    <script src=\"" + BlocklyJS.getBlocksCompressed() + "\"></script>\n" +
                 "    <script src=\"" + BlocklyJS.getBlocklyLang("en") + "\"></script>\n" +

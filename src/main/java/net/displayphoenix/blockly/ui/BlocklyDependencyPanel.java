@@ -24,6 +24,7 @@ public class BlocklyDependencyPanel extends JPanel {
     private static Random rand = new Random();
 
     private Map<String, Integer> colorCache = new HashMap<>();
+    private List<String> addedProvisions = new ArrayList<>();
     private BlocklyPanel blocklyPanel;
     private JPanel dependencyPanel;
 
@@ -97,12 +98,19 @@ public class BlocklyDependencyPanel extends JPanel {
         return dependencies;
     }
 
+    public void addProvision(String provision) {
+        this.addedProvisions.add(provision);
+    }
+
     public List<String> getProvisions() {
         List<String> provisions = new ArrayList<>();
         for (ImplementedBlock implementedBlock : getBlocklyPanel().getWorkspace()) {
             for (String provision : getProvisionsFromBlock(implementedBlock)) {
                 provisions.add(provision);
             }
+        }
+        for (String provision : this.addedProvisions) {
+            provisions.add(provision);
         }
         provisions = ListHelper.removeDuplicates(provisions);
         return provisions;

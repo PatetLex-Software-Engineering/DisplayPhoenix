@@ -1,6 +1,10 @@
 package net.displayphoenix.bitly.elements;
 
 import net.displayphoenix.bitly.ui.BitWidget;
+import net.displayphoenix.blockly.elements.workspace.ImplementedBlock;
+import net.displayphoenix.blockly.gen.BlocklyXmlParser;
+import net.displayphoenix.generation.Module;
+import net.displayphoenix.ui.widget.ProvisionWidget;
 import net.displayphoenix.ui.widget.TextField;
 import net.displayphoenix.ui.widget.Toggle;
 import net.displayphoenix.util.ImageHelper;
@@ -31,13 +35,17 @@ public class Bit {
         return type;
     }
 
-    public String getValueOfWidget(BitWidget widget) {
+    public String getValueOfWidget(Module module, BitWidget widget) {
         switch (widget.getStyle()) {
             case TOGGLE:
                 return Boolean.toString(((Toggle) this.widgetComponentMap.get(widget)).isToggled());
-            case TEXT_FIELD:
-            case NUMBER_FIELD:
+            case TEXT:
+            case NUMBER:
                 return ((TextField) this.widgetComponentMap.get(widget)).getText();
+            case BLOCKLY:
+                ProvisionWidget provisionWidget = ((ProvisionWidget) this.widgetComponentMap.get(widget));
+                ImplementedBlock[] implementedBlocks = BlocklyXmlParser.fromWorkspaceXml(provisionWidget.getXml());
+                return module.getCodeFromBlock(implementedBlocks[0]);
         }
         return null;
     }

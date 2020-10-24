@@ -6,12 +6,21 @@
       "translationKey": "key.opacity"
     },
     {
-      "style": "NUMBER_FIELD",
+      "style": "NUMBER",
       "flag": "HARDNESS",
       "translationKey": "key.hard"
+    },
+    {
+      "style": "BLOCKLY",
+      "flag": "PRO",
+      "translationKey": "key.pro",
+      "provisions": [
+        "IDK",
+        "TEST"
+      ]
     }
   ],
   "code": {
-    "javascript": "block.setOpaque($[bit%OPAQUE])\n block.setHardness($[bit%HARDNESS])"
+    "javascript": "block.setOpaque($[bit%OPAQUE])\n block.setHardness($[bit%HARDNESS])\n $[bit%PRO]"
   }
 }
