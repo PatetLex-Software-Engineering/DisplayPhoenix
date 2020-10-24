@@ -14,7 +14,7 @@ public class TextField extends JTextField {
         super();
         this.setFont(Application.getTheme().getFont());
         this.setBackground(Application.getTheme().getColorTheme().getSecondaryColor());
-        this.setForeground(Application.getTheme().getColorTheme().getAccentColor());
+        this.setForeground(Application.getTheme().getColorTheme().getTextColor());
         this.setBorder(BorderFactory.createMatteBorder(2,2,2,2, Application.getTheme().getColorTheme().getAccentColor().darker().darker().darker().darker()));
         this.setCursor(new Cursor(Cursor.TEXT_CURSOR));
     }
@@ -23,7 +23,7 @@ public class TextField extends JTextField {
         super(text);
         this.setFont(Application.getTheme().getFont());
         this.setBackground(Application.getTheme().getColorTheme().getSecondaryColor());
-        this.setForeground(Application.getTheme().getColorTheme().getAccentColor());
+        this.setForeground(Application.getTheme().getColorTheme().getTextColor());
         this.setBorder(BorderFactory.createMatteBorder(2,2,2,2, Application.getTheme().getColorTheme().getAccentColor().darker().darker().darker().darker()));
         this.setCursor(new Cursor(Cursor.TEXT_CURSOR));
     }

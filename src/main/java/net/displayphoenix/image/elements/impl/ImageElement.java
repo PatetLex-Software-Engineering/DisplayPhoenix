@@ -16,16 +16,16 @@ public class ImageElement extends Element {
 
     @Override
     public void draw(CanvasPanel canvas, Graphics g) {
-        g.drawImage(this.image.getImage(), getOffsetX(), getOffsetY(), canvas);
+        g.drawImage(this.image.getImage(), 0, 0, canvas);
     }
 
     @Override
     public int getWidth(CanvasPanel canvas, Graphics g) {
-        return Math.round(canvas.convergeZoom(this.image.getImage().getWidth(canvas)));
+        return this.image.getIconWidth();
     }
 
     @Override
     public int getHeight(CanvasPanel canvas, Graphics g) {
-        return Math.round(canvas.convergeZoom(this.image.getImage().getHeight(canvas)));
+        return this.image.getIconHeight();
     }
 }

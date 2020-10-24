@@ -1,6 +1,6 @@
-package net.displayphoenix.blockly.gen.impl;
+package net.displayphoenix.generation.impl;
 
-import net.displayphoenix.blockly.gen.Module;
+import net.displayphoenix.generation.Module;
 
 /**
  * @author TBroski

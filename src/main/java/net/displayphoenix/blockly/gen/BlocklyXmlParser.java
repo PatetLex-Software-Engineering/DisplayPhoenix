@@ -1,5 +1,6 @@
-package net.displayphoenix.blockly;
+package net.displayphoenix.blockly.gen;
 
+import net.displayphoenix.blockly.Blockly;
 import net.displayphoenix.blockly.elements.workspace.Field;
 import net.displayphoenix.blockly.elements.workspace.ImplementedBlock;
 import net.displayphoenix.blockly.elements.workspace.Mutation;

@@ -1,0 +1,17 @@
+{
+  "widgets": [
+    {
+      "style": "TOGGLE",
+      "flag": "OPAQUE",
+      "translationKey": "key.opacity"
+    },
+    {
+      "style": "NUMBER_FIELD",
+      "flag": "HARDNESS",
+      "translationKey": "key.hard"
+    }
+  ],
+  "code": {
+    "javascript": "block.setOpaque($[bit%OPAQUE])\n block.setHardness($[bit%HARDNESS])"
+  }
+}

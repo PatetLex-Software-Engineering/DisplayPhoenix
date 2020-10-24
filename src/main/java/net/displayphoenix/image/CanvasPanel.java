@@ -13,14 +13,12 @@ import java.awt.event.*;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
 
 public class CanvasPanel extends JPanel implements MouseWheelListener, MouseMotionListener, MouseListener {
 
-    public static final float ZOOM_SENSITIVITY = 1F;
+    public static final float ZOOM_SENSITIVITY = 20F;
     public static final float MOVE_SENSITIVITY = 1F;
 
     private Map<Layer, List<Element>> layerToElements = new HashMap<>();
@@ -72,16 +70,19 @@ public class CanvasPanel extends JPanel implements MouseWheelListener, MouseMoti
     protected void paintElements(Graphics g) {
         float cw = getWidth() / 2F;
         float ch = getHeight() / 2F;
-        for (Layer layer : this.layerToElements.keySet()) {
+        List<Layer> layers = Arrays.asList(this.layerToElements.keySet().toArray(new Layer[this.layerToElements.keySet().size()]));
+        Collections.reverse(layers);
+        for (Layer layer : layers) {
             if (!layer.isHidden()) {
                 for (Element element : this.layerToElements.get(layer)) {
                     ((Graphics2D) g).scale(convergeZoom(element.getScaleFactor()), convergeZoom(element.getScaleFactor()));
-                    //((Graphics2D) g).translate(((cw + element.getOffsetX()) / convergeZoom(element.getScaleFactor())) + (convergeZoom(element.getOffsetX() * element.getScaleFactor() - (element.getWidth(this, g) / 2F))), ((ch + element.getOffsetY()) / convergeZoom(element.getScaleFactor())) + (convergeZoom(element.getOffsetY() * element.getScaleFactor() - (element.getHeight(this, g) / 2F))));
-                    ((Graphics2D) g).translate(((cw - convergeZoom(element.getWidth(this, g)) / convergeZoom(2F) + this.canvasMoveX) / convergeZoom(element.getScaleFactor())), (ch - convergeZoom(element.getHeight(this, g)) / convergeZoom(2F) + this.canvasMoveY) / convergeZoom(element.getScaleFactor()));
+                    ((Graphics2D) g).translate((cw + this.canvasMoveX) / convergeZoom(element.getScaleFactor()), (ch + this.canvasMoveY) / convergeZoom(element.getScaleFactor()));
+                    ((Graphics2D) g).translate(element.getOffsetX(), element.getOffsetY());
+                    ((Graphics2D) g).translate(-element.getWidth(this, g) / 2F, -element.getHeight(this, g) / 2F);
                     element.draw(this, g);
                     if (element == this.cachedElement) {
                         g.setColor(rayTraceElement(this.cachedPoint, g) == element ? Application.getTheme().getColorTheme().getPrimaryColor() : Application.getTheme().getColorTheme().getSecondaryColor());
-                        g.drawRect(element.getOffsetX(), element.getOffsetY(), element.getWidth(this, g), element.getHeight(this, g));
+                        g.drawRect(0, 0, element.getWidth(this, g), element.getHeight(this, g));
                     }
                     IRenderAttacher renderAttacherToDestroy = null;
                     for (IRenderAttacher renderAttacher : this.renderAttachers) {
@@ -120,7 +121,7 @@ public class CanvasPanel extends JPanel implements MouseWheelListener, MouseMoti
         repaint();
     }
 
-    public void selectLayer(int layer) {
+    public void setLayer(int layer) {
         this.selectedLayer = layer;
     }
 
@@ -152,14 +153,12 @@ public class CanvasPanel extends JPanel implements MouseWheelListener, MouseMoti
     }
 
     public Layer layerFromIndex(int index) {
-        int i = 0;
         for (Layer layer : this.layerToElements.keySet()) {
-            if (i == index) {
+            if (layer.getIndex() == index) {
                 return layer;
             }
-            i++;
         }
-        return new Layer();
+        return new Layer(index);
     }
 
     public float convergeZoom(float num) {
@@ -173,14 +172,6 @@ public class CanvasPanel extends JPanel implements MouseWheelListener, MouseMoti
 
     public int getCanvasHeight() {
         return canvasHeight;
-    }
-
-    public int getCanvasX() {
-        return canvasMoveX;
-    }
-
-    public int getCanvasY() {
-        return canvasMoveY;
     }
 
     public void setMoveLocked(boolean locked) {
@@ -201,11 +192,15 @@ public class CanvasPanel extends JPanel implements MouseWheelListener, MouseMoti
         BufferedImage image = new BufferedImage(this.canvasWidth, this.canvasHeight, BufferedImage.TYPE_INT_ARGB);
         Graphics2D graphics2D = image.createGraphics();
 
-        for (Layer layer : this.layerToElements.keySet()) {
+        List<Layer> layers = Arrays.asList(this.layerToElements.keySet().toArray(new Layer[this.layerToElements.keySet().size()]));
+        Collections.reverse(layers);
+        for (Layer layer : layers) {
             if (!layer.isHidden()) {
                 for (Element element : this.layerToElements.get(layer)) {
-                    graphics2D.scale(element.getScaleFactor(), element.getScaleFactor());
-                    graphics2D.translate(((cw - element.getWidth(this, graphics2D) / 2F) / element.getScaleFactor()) + this.canvasMoveX, ((ch - element.getHeight(this, graphics2D) / 2F) / element.getScaleFactor()) + this.canvasMoveY);
+                    graphics2D.scale(convergeZoom(element.getScaleFactor()), convergeZoom(element.getScaleFactor()));
+                    graphics2D.translate(cw / convergeZoom(element.getScaleFactor()), ch / convergeZoom(element.getScaleFactor()));
+                    graphics2D.translate(element.getOffsetX(), element.getOffsetY());
+                    graphics2D.translate(-element.getWidth(this, graphics2D) / 2F, -element.getHeight(this, graphics2D) / 2F);
                     element.parse(this, graphics2D);
                     graphics2D.setTransform(new AffineTransform());
                 }
@@ -225,7 +220,9 @@ public class CanvasPanel extends JPanel implements MouseWheelListener, MouseMoti
     private Element rayTraceElement(Point point, Graphics graphics) {
         float cw = getWidth() / 2F;
         float ch = getHeight() / 2F;
-        for (Layer layer : this.layerToElements.keySet()) {
+        List<Layer> layers = Arrays.asList(this.layerToElements.keySet().toArray(new Layer[this.layerToElements.keySet().size()]));
+        Collections.reverse(layers);
+        for (Layer layer : layers) {
             if (!layer.isHidden()) {
                 for (Element element : this.layerToElements.get(layer)) {
                     float cwx = element.getOffsetX() + (element.getWidth(this, graphics) / 2F);
@@ -292,14 +289,14 @@ public class CanvasPanel extends JPanel implements MouseWheelListener, MouseMoti
                 Layer layer = layerFromIndex(this.selectedLayer);
                 if (!layer.isLocked()) {
                     for (Element element : this.layerToElements.get(layer)) {
-                        element.setOffsetX(Math.round(element.getOffsetX() + dx));
-                        element.setOffsetY(Math.round(element.getOffsetY() + dy));
+                        element.setOffsetX(Math.round(element.getOffsetX() + (dx / convergeZoom(element.getScaleFactor()))));
+                        element.setOffsetY(Math.round(element.getOffsetY() + (dy / convergeZoom(element.getScaleFactor()))));
                     }
                 }
             }
             else {
-                this.cachedElement.setOffsetX(Math.round(this.cachedElement.getOffsetX() + dx));
-                this.cachedElement.setOffsetY(Math.round(this.cachedElement.getOffsetY() + dy));
+                this.cachedElement.setOffsetX(Math.round(this.cachedElement.getOffsetX() + (dx / convergeZoom(this.cachedElement.getScaleFactor()))));
+                this.cachedElement.setOffsetY(Math.round(this.cachedElement.getOffsetY() + (dy / convergeZoom(this.cachedElement.getScaleFactor()))));
             }
             this.cachedPoint = e.getPoint();
             repaint();

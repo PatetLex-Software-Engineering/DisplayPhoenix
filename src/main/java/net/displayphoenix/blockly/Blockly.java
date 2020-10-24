@@ -4,21 +4,19 @@ import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
 import net.displayphoenix.blockly.elements.Block;
 import net.displayphoenix.blockly.elements.Category;
-import net.displayphoenix.blockly.gen.Module;
-import net.displayphoenix.blockly.gen.impl.JavaModule;
-import net.displayphoenix.blockly.gen.impl.JavaScriptModule;
+import net.displayphoenix.generation.Module;
 import net.displayphoenix.file.DetailedFile;
 
 import java.io.*;
 import java.util.*;
 
+import static net.displayphoenix.generation.Module.JAVA;
+import static net.displayphoenix.generation.Module.JAVASCRIPT;
+
 /**
  * @author TBroski
  */
 public class Blockly {
-
-    public static final JavaScriptModule JAVASCRIPT = new JavaScriptModule();
-    public static final JavaModule JAVA = new JavaModule();
 
     public static final Category LOGIC = new Category() {
         @Override
@@ -92,24 +90,22 @@ public class Blockly {
         block.depend(blockObject.get("depend") != null ? blockObject.get("depend").getAsString() : null);
         block.provide(blockObject.get("provide") != null ? blockObject.get("provide").getAsString() : null);
         if (blockObject.get("fieldProvides") != null) {
-            Map<String, Map<String, String[]>> fieldProvides = gson.fromJson(blockObject.get("fieldProvides").toString(), new TypeToken<Map<String, Map<String, String[]>>>() {
-            }.getType());
+            Map<String, Map<String, String[]>> fieldProvides = gson.fromJson(blockObject.get("fieldProvides").toString(), new TypeToken<Map<String, Map<String, String[]>>>() {}.getType());
             for (String fieldKey : fieldProvides.keySet()) {
                 block.fieldProvide(fieldKey, fieldProvides.get(fieldKey));
             }
         }
         if (blockObject.get("code") != null) {
-            Map<String, String> code = gson.fromJson(blockObject.get("code").toString(), new TypeToken<Map<String, String>>() {
-            }.getType());
+            Map<String, String> code = gson.fromJson(blockObject.get("code").toString(), new TypeToken<Map<String, String>>() {}.getType());
             for (String codeKey : code.keySet()) {
-                getModuleFromName(codeKey).registerBlockCode(block, code.get(codeKey));
+                Module.getModuleFromName(codeKey).registerBlockCode(block, code.get(codeKey));
             }
         }
         if (blockObject.get("fieldManipulator") != null) {
             Map<String, Map<String, Map<String, String>>> fieldManipulator = gson.fromJson(blockObject.get("fieldManipulator").toString(), new TypeToken<Map<String, Map<String, Map<String, String>>>>() {
             }.getType());
             for (String moduleKey : fieldManipulator.keySet()) {
-                getModuleFromName(moduleKey).manipulateField(block, field -> {
+                Module.getModuleFromName(moduleKey).manipulateField(block, field -> {
                     for (String fieldKey : fieldManipulator.get(moduleKey).keySet()) {
                         if (field.getKey().equalsIgnoreCase(fieldKey)) {
                             for (String fieldValue : fieldManipulator.get(moduleKey).get(fieldKey).keySet()) {
@@ -129,7 +125,7 @@ public class Blockly {
             }.getType());
             for (String module : escape.keySet()) {
                 if (escape.get(module))
-                    getModuleFromName(module).escapeSyntax(block);
+                    Module.getModuleFromName(module).escapeSyntax(block);
             }
         }
         registerBlock(block, category);
@@ -201,15 +197,6 @@ public class Blockly {
             if (category.getName().equalsIgnoreCase(type)) {
                 return category;
             }
-        }
-        return null;
-    }
-
-    public static Module getModuleFromName(String name) {
-        if (name.equalsIgnoreCase("java")) {
-            return JAVA;
-        } else if (name.equalsIgnoreCase("javascript")) {
-            return JAVASCRIPT;
         }
         return null;
     }

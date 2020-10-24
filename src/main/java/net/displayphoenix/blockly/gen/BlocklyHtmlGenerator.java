@@ -1,4 +1,4 @@
-package net.displayphoenix.blockly;
+package net.displayphoenix.blockly.gen;
 
 import net.displayphoenix.blockly.js.BlocklyJS;
 

@@ -4,7 +4,6 @@ import net.displayphoenix.image.CanvasPanel;
 import net.displayphoenix.image.elements.ColorableElement;
 
 import java.awt.*;
-import java.awt.geom.AffineTransform;
 
 public class BackgroundElement extends ColorableElement {
 
@@ -14,13 +13,8 @@ public class BackgroundElement extends ColorableElement {
 
     @Override
     public void draw(CanvasPanel canvas, Graphics g) {
-        float cw = canvas.getWidth() / 2F;
-        float ch = canvas.getHeight() / 2F;
-        ((Graphics2D) g).setTransform(new AffineTransform());
-        ((Graphics2D) g).scale(canvas.convergeZoom(getScaleFactor()), canvas.convergeZoom(getScaleFactor()));
-        g.translate(Math.round((cw - canvas.convergeZoom(canvas.getCanvasWidth()) / 2F) + canvas.convergeZoom(canvas.getCanvasX())), Math.round((ch - canvas.convergeZoom(canvas.getCanvasHeight()) / 2F) + canvas.convergeZoom(canvas.getCanvasY())));
         g.setColor(this.getColor());
-        g.fillRect(getOffsetX(), getOffsetY(), getWidth(canvas, g), getHeight(canvas, g));
+        g.fillRect(0,0, getWidth(canvas, g), getHeight(canvas, g));
     }
 
     @Override

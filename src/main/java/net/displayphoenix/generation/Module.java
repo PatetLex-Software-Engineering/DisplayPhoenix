@@ -1,10 +1,14 @@
-package net.displayphoenix.blockly.gen;
+package net.displayphoenix.generation;
 
+import net.displayphoenix.bitly.elements.Bit;
+import net.displayphoenix.bitly.ui.BitWidget;
 import net.displayphoenix.blockly.elements.Block;
 import net.displayphoenix.blockly.elements.IMutator;
 import net.displayphoenix.blockly.elements.workspace.Field;
 import net.displayphoenix.blockly.elements.workspace.ImplementedBlock;
 import net.displayphoenix.blockly.elements.workspace.Mutation;
+import net.displayphoenix.generation.impl.JavaModule;
+import net.displayphoenix.generation.impl.JavaScriptModule;
 import net.displayphoenix.util.StringHelper;
 
 import java.security.InvalidParameterException;
@@ -17,6 +21,11 @@ import java.util.Map;
  * @author TBroski
  */
 public class Module {
+
+    public static final JavaScriptModule JAVASCRIPT = new JavaScriptModule();
+    public static final JavaModule JAVA = new JavaModule();
+
+    private final Map<Bit, String> bitCode = new HashMap<>();
 
     private final Map<Block, String> blockCode = new HashMap<>();
     private final Map<Block, IFieldManipulator> fieldManipulator = new HashMap<>();
@@ -32,12 +41,28 @@ public class Module {
         this.name = name;
     }
 
+    public static Module getModuleFromName(String name) {
+        if (name.equalsIgnoreCase("java")) {
+            return JAVA;
+        } else if (name.equalsIgnoreCase("javascript")) {
+            return JAVASCRIPT;
+        }
+        return null;
+    }
+
     public String[] getFlags(String key) {
         return new String[] {"$[" + key + "%", "]"};
     }
 
     public String addSyntax(String input) {
         return input;
+    }
+
+    public void registerBitCode(Bit bit, String codeInput) {
+        if (bitCode.containsKey(bit)) {
+            bitCode.remove(bit);
+        }
+        bitCode.put(bit, codeInput);
     }
 
     public void registerBlockCode(Block block, String codeInput) {
@@ -79,7 +104,21 @@ public class Module {
         this.blockMutators.put(block, mutator);
     }
 
-    public String getCode(ImplementedBlock block) {
+    public String getCodeFromBit(Bit bit) {
+        String code = this.bitCode.get(bit);
+        String[] bits = StringHelper.substringsBetween(code, getFlags("bit")[0], getFlags("bit")[1]);
+        for (BitWidget widget : bit.getBits()) {
+            for (String input : bits) {
+                if (input.equalsIgnoreCase(widget.getFlag())) {
+                    code = code.replace(getFlags("bit")[0] + input + getFlags("bit")[1], bit.getValueOfWidget(widget));
+                    break;
+                }
+            }
+        }
+        return code;
+    }
+
+    public String getCodeFromBlock(ImplementedBlock block) {
         String code = getRawCode(block.getBlock());
         for (Mutation mutation : block.getMutations()) {
             for (int im = 0; im < mutation.getAmount(); im++) {
@@ -120,7 +159,7 @@ public class Module {
                     if (input.equalsIgnoreCase(statementKey)) {
                         String codeAddition = "";
                         for (ImplementedBlock statementBlock : block.getStatementBlocks().get(statementKey)) {
-                            codeAddition += getCode(statementBlock) + "\n";
+                            codeAddition += getCodeFromBlock(statementBlock) + "\n";
                         }
                         code = code.replace(getFlags("statement")[0] + input + getFlags("statement")[1], codeAddition);
                         break;
@@ -136,7 +175,7 @@ public class Module {
                     if (input.equalsIgnoreCase(valueKey)) {
                         String codeAddition = "";
                         for (ImplementedBlock valueBlock : block.getValueBlocks().get(valueKey)) {
-                            codeAddition += this.valueManipulator.containsKey(block.getBlock()) ? this.valueManipulator.get(block.getBlock()).getValueCode(valueKey, getCode(valueBlock)) : getCode(valueBlock);
+                            codeAddition += this.valueManipulator.containsKey(block.getBlock()) ? this.valueManipulator.get(block.getBlock()).getValueCode(valueKey, getCodeFromBlock(valueBlock)) : getCodeFromBlock(valueBlock);
                         }
                         code = code.replace(getFlags("value")[0] + input + getFlags("value")[1], codeAddition);
                         break;

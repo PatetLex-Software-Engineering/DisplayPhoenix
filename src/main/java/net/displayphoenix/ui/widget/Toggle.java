@@ -14,8 +14,8 @@ import java.awt.event.ActionListener;
  */
 public class Toggle extends JButton {
 
-    private Clipper slideClipper = new Clipper(this, 0.005F, 1F, 0F).smooth(); //0.005F
-    private Clipper colorClipper = new Clipper(this, 0.005F, 1F, 0F).smooth(); //0.005F
+    private Clipper slideClipper = new Clipper(this, 0.01F, 1F, 0F).smooth(); //0.005F
+    private Clipper colorClipper = new Clipper(this, 0.01F, 1F, 0F).smooth(); //0.005F
 
     private ColorTheme colorTheme;
     private Color ballColor;
@@ -77,12 +77,12 @@ public class Toggle extends JButton {
     @Override
     protected void paintComponent(Graphics g) {
         g.setColor(this.borderColor);
-        g.fillRoundRect(0,0,this.getWidth(), this.getHeight(), 45,45);
+        g.fillRoundRect(0,0,this.getWidth(), this.getHeight(), this.getHeight(),this.getHeight());
         g.setColor(this.normalColor);
-        g.fillRoundRect(this.borderWidth / 2,this.borderWidth / 2, this.getWidth() - this.borderWidth, this.getHeight() - this.borderWidth, 45,45);
+        g.fillRoundRect(this.borderWidth / 2,this.borderWidth / 2, this.getWidth() - this.borderWidth, this.getHeight() - this.borderWidth, this.getHeight(),this.getHeight());
         ((Graphics2D) g).setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, colorClipper.getCurrentValue()));
         g.setColor(this.toggledColor);
-        g.fillRoundRect(this.borderWidth / 2,this.borderWidth / 2, this.getWidth() - this.borderWidth, this.getHeight() - this.borderWidth, 45,45);
+        g.fillRoundRect(this.borderWidth / 2,this.borderWidth / 2, this.getWidth() - this.borderWidth, this.getHeight() - this.borderWidth, this.getHeight(),this.getHeight());
         ((Graphics2D) g).setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1));
         g.setColor(this.ballColor);
         g.fillOval(Math.round((this.getWidth() - this.getHeight()) * this.slideClipper.getCurrentValue()) + Math.round(this.borderWidth / 2F), this.borderWidth / 2, this.getHeight() - this.borderWidth, this.getHeight() - this.borderWidth);
