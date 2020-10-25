@@ -1,14 +1,17 @@
 package net.displayphoenix;
 
+import com.google.gson.GsonBuilder;
 import net.displayphoenix.bitly.Bitly;
 import net.displayphoenix.bitly.elements.Bit;
+import net.displayphoenix.bitly.ui.BitArgument;
 import net.displayphoenix.blockly.Blockly;
 import net.displayphoenix.blockly.ui.BlocklyDependencyPanel;
 import net.displayphoenix.enums.WidgetStyle;
+import net.displayphoenix.file.DetailedFile;
+import net.displayphoenix.file.FileDialog;
 import net.displayphoenix.generation.Module;
 import net.displayphoenix.ui.ColorTheme;
 import net.displayphoenix.ui.Theme;
-import net.displayphoenix.ui.widget.ProvisionWidget;
 import net.displayphoenix.util.ImageHelper;
 import net.displayphoenix.util.PanelHelper;
 
@@ -27,7 +30,7 @@ public class Test {
         Bitly.registerBit(new File("src/main/resources/bit/test.json"));
         Application.openWindow(parentFrame -> {
             Bit bit = Bitly.getBitFromType("test");
-            parentFrame.add("South", bit.open());
+            parentFrame.add("South", bit.open(parentFrame));
             JButton getCode = new JButton("get code");
             getCode.addActionListener(new ActionListener() {
                 @Override

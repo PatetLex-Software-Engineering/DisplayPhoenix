@@ -31,6 +31,8 @@ public class ProvisionWidget extends JButton {
     }
     public ProvisionWidget(String text, String[] provisions) {
         setContentAreaFilled(false);
+        setBorderPainted(false);
+        setCursor(new Cursor(Cursor.HAND_CURSOR));
         setForeground(Application.getTheme().getColorTheme().getTextColor());
         setBackground(Application.getTheme().getColorTheme().getSecondaryColor());
         addMouseListener(new MouseAdapter() {
@@ -78,12 +80,10 @@ public class ProvisionWidget extends JButton {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        if (isBorderPainted()) {
-            g.setColor(Application.getTheme().getColorTheme().getAccentColor());
-            g.fillRoundRect(0, 0, getWidth(), getHeight(), getHeight(), getHeight());
-        }
+        g.setColor(Application.getTheme().getColorTheme().getAccentColor());
+        g.fillRoundRect(0, 0, getWidth(), getHeight(), getHeight(), getHeight());
         g.setColor(getBackground());
-        g.fillRoundRect(isBorderPainted() ? 6 : 0, isBorderPainted() ? 6 : 0, getWidth() + (isBorderPainted() ? -12 : 0), getHeight() + (isBorderPainted() ? -12 : 0), getHeight() + (isBorderPainted() ? -12 : 0), getHeight() + (isBorderPainted() ? -12 : 0));
+        g.fillRoundRect(6, 6, getWidth() - 12, getHeight() - 12, getHeight() - 12, getHeight() - 12);
         if (this.text != null) {
             g.setColor(getForeground());
             g.drawString(this.text, Math.round((getWidth() - (float) g.getFontMetrics().getStringBounds(this.text, g).getWidth()) / 2F), Math.round((getHeight() - (float) g.getFontMetrics().getStringBounds(this.text, g).getHeight()) / 2F));

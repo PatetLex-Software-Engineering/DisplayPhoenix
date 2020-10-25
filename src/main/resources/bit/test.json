@@ -1,26 +1,55 @@
 {
   "widgets": [
-    {
-      "style": "TOGGLE",
-      "flag": "OPAQUE",
-      "translationKey": "key.opacity"
-    },
-    {
-      "style": "NUMBER",
-      "flag": "HARDNESS",
-      "translationKey": "key.hard"
-    },
-    {
-      "style": "BLOCKLY",
-      "flag": "PRO",
-      "translationKey": "key.pro",
-      "provisions": [
-        "IDK",
-        "TEST"
-      ]
-    }
+    [
+      {
+        "style": "TOGGLE",
+        "flag": "OPAQUE",
+        "translationKey": "key.opacity"
+      },
+      {
+        "style": "NUMBER",
+        "flag": "HARDNESS",
+        "translationKey": "key.hard",
+        "helpUrl": "https://www.bing.com/search?q=hardness&cvid=4aa182503e904917b246b2a4e4751b3b&pglt=43&FORM=ANNTA1&PC=HCTS"
+      }
+    ],
+    [
+      {
+        "style": "RESOURCE",
+        "flag": "RES",
+        "translationKey": "key.res"
+      },
+      {
+        "style": "RESOURCE",
+        "flag": "RES1",
+        "translationKey": "key.res1",
+        "extensions": [
+          ".png"
+        ]
+      }
+    ],
+    [
+      {
+        "style": "BLOCKLY",
+        "flag": "PRO",
+        "translationKey": "key.pro",
+        "provisions": [
+          "Block",
+          "Player"
+        ]
+      },
+      {
+        "style": "BLOCKLY",
+        "flag": "PRO1",
+        "translationKey": "key.pro1",
+        "provisions": [
+          "Block",
+          "World"
+        ]
+      }
+    ]
   ],
   "code": {
-    "javascript": "block.setOpaque($[bit%OPAQUE])\n block.setHardness($[bit%HARDNESS])\n $[bit%PRO]"
+    "javascript": "block.setOpaque($[bit%OPAQUE])\n block.setHardness($[bit%HARDNESS])\n block.setFile($[bit%RES])\n Procedure 1;\n$[bit%PRO]\nProcedure 2;\n$[bit%PRO1]"
   }
 }

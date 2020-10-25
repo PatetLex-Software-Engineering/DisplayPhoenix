@@ -7,8 +7,11 @@ import net.displayphoenix.blockly.elements.Block;
 import net.displayphoenix.blockly.elements.workspace.ImplementedBlock;
 import net.displayphoenix.blockly.js.BlocklyJS;
 import net.displayphoenix.blockly.ui.BlocklyDependencyPanel;
+import net.displayphoenix.file.DetailedFile;
+import net.displayphoenix.file.FileDialog;
 import net.displayphoenix.lang.Localizer;
 import net.displayphoenix.ui.widget.ProvisionWidget;
+import net.displayphoenix.ui.widget.ResourceWidget;
 import net.displayphoenix.ui.widget.TextField;
 import net.displayphoenix.ui.widget.Toggle;
 import net.displayphoenix.util.ComponentHelper;
@@ -27,6 +30,9 @@ public class BitWidget {
     private String flag;
     private String helpUrl;
     private String[] provisions;
+    private String[] extensions;
+
+    private Object value;
 
     public BitWidget(BitWidgetStyle style, String flag, String translationKey) {
         this.style = style;
@@ -42,7 +48,7 @@ public class BitWidget {
         return flag;
     }
 
-    public Component[] create() {
+    public Component[] create(Window parentFrame) {
         JLabel label = new JLabel(Localizer.translate(this.translationKey));
         if (this.helpUrl != null) {
             label.setCursor(new Cursor(Cursor.HAND_CURSOR));
@@ -55,7 +61,6 @@ public class BitWidget {
         }
         ComponentHelper.themeComponent(label);
         ComponentHelper.deriveFont(label, 25F);
-        System.out.println(flag);
         switch (style) {
             case TOGGLE:
                 Toggle toggle = new Toggle();
@@ -134,8 +139,37 @@ public class BitWidget {
                 ComponentHelper.deriveFont(provisionWidget, 25);
                 provisionWidget.setPreferredSize(new Dimension(150, 75));
                 return new Component[] {PanelHelper.northAndCenterElements(PanelHelper.join(label), PanelHelper.join(provisionWidget)), provisionWidget};
+            case RESOURCE:
+                ResourceWidget resourceWidget = new ResourceWidget();
+                resourceWidget.addMouseListener(new MouseAdapter() {
+                    @Override
+                    public void mouseClicked(MouseEvent e) {
+                        resourceWidget.setFile(FileDialog.openFile(parentFrame, extensions));
+                    }
+                });
+                resourceWidget.setPreferredSize(new Dimension(150, 150));
+                return new Component[] {PanelHelper.northAndCenterElements(PanelHelper.join(label), PanelHelper.join(resourceWidget)), resourceWidget};
         }
         return null;
+    }
+
+    public void setValue(Component component, BitArgument argument) {
+        switch (style) {
+            case TOGGLE:
+                ((Toggle) component).setToggle(argument.getAsBoolean());
+                break;
+            case TEXT:
+            case NUMBER:
+                ((TextField) component).setText(argument.getAsString());
+                break;
+            case BLOCKLY:
+                ((ProvisionWidget) component).setXml(argument.getAsString());
+                break;
+            case RESOURCE:
+                ((ResourceWidget) component).setFile(new DetailedFile(new File(argument.getAsString())));
+                break;
+        }
+        component.repaint();
     }
 
     public Website getHelpWebsite() {

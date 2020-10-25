@@ -1,3 +1,9 @@
 {
-  "key.example.test": "Example"
+  "blockly.provision.text": "Provisions",
+  "key.opacity": "Block transparent",
+  "key.hard": "Block hardness",
+  "key.res": "Block Resource 1",
+  "key.res1": "Block Resource 2",
+  "key.pro": "On block placed",
+  "key.pro1": "On block tick"
 }

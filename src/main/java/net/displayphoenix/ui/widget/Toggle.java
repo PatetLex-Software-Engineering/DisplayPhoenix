@@ -88,6 +88,19 @@ public class Toggle extends JButton {
         g.fillOval(Math.round((this.getWidth() - this.getHeight()) * this.slideClipper.getCurrentValue()) + Math.round(this.borderWidth / 2F), this.borderWidth / 2, this.getHeight() - this.borderWidth, this.getHeight() - this.borderWidth);
     }
 
+    public void setToggle(boolean toggled) {
+        this.toggled = toggled;
+        if (toggled) {
+            colorClipper.increment();
+            slideClipper.increment();
+        }
+        else {
+            colorClipper.decrement();
+            slideClipper.decrement();
+        }
+        repaint();
+    }
+
     public boolean isToggled() {
         return toggled;
     }

@@ -1,5 +1,7 @@
 package net.displayphoenix.util;
 
+import net.displayphoenix.image.effects.ImageEffect;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -46,6 +48,10 @@ public class ImageHelper {
 
         buf.getGraphics().drawImage(image, x, y, w, h, null);
         return buf;
+    }
+
+    public static Image flip(ImageIcon image, int axis) {
+        return new ImageEffect(image).flip(axis);
     }
 
     private static ImageIcon fromPath(String path) {

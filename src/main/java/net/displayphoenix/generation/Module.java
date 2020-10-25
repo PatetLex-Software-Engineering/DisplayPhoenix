@@ -107,11 +107,16 @@ public class Module {
     public String getCodeFromBit(Bit bit) {
         String code = this.bitCode.get(bit);
         String[] bits = StringHelper.substringsBetween(code, getFlags("bit")[0], getFlags("bit")[1]);
-        for (BitWidget widget : bit.getBits()) {
-            for (String input : bits) {
-                if (input.equalsIgnoreCase(widget.getFlag())) {
-                    code = code.replace(getFlags("bit")[0] + input + getFlags("bit")[1], bit.getValueOfWidget(this, widget));
-                    break;
+        for (BitWidget[] widgets : bit.getBits()) {
+            for (BitWidget widget : widgets) {
+                for (String input : bits) {
+                    if (input.equalsIgnoreCase(widget.getFlag())) {
+                        String val = bit.getValueOfWidget(this, widget);
+                        if (val == null)
+                            val = "";
+                        code = code.replace(getFlags("bit")[0] + input + getFlags("bit")[1], val);
+                        break;
+                    }
                 }
             }
         }

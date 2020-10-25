@@ -31,7 +31,7 @@ public class Bitly {
     public static void registerBit(File bitFile) {
         try {
             JsonObject bitObject = gson.fromJson(new FileReader(bitFile), JsonObject.class);
-            Bit bit = new Bit(new DetailedFile(bitFile).getFileName(), gson.fromJson(bitObject.get("widgets").toString(), new TypeToken<BitWidget[]>(){}.getType()));
+            Bit bit = new Bit(new DetailedFile(bitFile).getFileName(), gson.fromJson(bitObject.get("widgets").toString(), new TypeToken<List<BitWidget[]>>(){}.getType()));
             registerBit(bit);
             Map<String, String> moduleToCode = gson.fromJson(bitObject.get("code").toString(), new TypeToken<Map<String, String>>(){}.getType());
             for (String module : moduleToCode.keySet()) {

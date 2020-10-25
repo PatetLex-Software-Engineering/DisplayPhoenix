@@ -11,8 +11,8 @@
   ],
   "colour": 285,
   "code": {
-    "javascript": "if (true) {\n $[statement%EVENT]\n }",
-    "java": "if (true) {\n $[statement%EVENT]\n }"
+    "javascript": "$[statement%EVENT]",
+    "java": "$[statement%EVENT]"
   },
   "tooltip": "",
   "helpUrl": ""
