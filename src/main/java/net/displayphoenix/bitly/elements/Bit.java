@@ -106,7 +106,7 @@ public class Bit {
     }
 
     private JPanel getPageWidgets(Window parentFrame, JPanel componentPanel, BitArgument... arguments) {
-        FadeOnHoverWidget prevPage = this.currentPage > 0 ? new FadeOnHoverWidget(ImageHelper.resize(new ImageIcon(ImageHelper.flip(ImageHelper.getImage(Application.getTheme().getWidgetStyle().getName() + "_arrow"), ImageEffect.HORIZONTAL)), 50), ImageHelper.resize(new ImageIcon(ImageHelper.flip(ImageHelper.getImage(Application.getTheme().getWidgetStyle().getName() + "_hovered_arrow"), ImageEffect.HORIZONTAL)), 50), 0.005F) : null;
+        FadeOnHoverWidget prevPage = this.currentPage > 0 ? new FadeOnHoverWidget(ImageHelper.resize(new ImageIcon(ImageHelper.flip(ImageHelper.getImage(Application.getTheme().getWidgetStyle().getName() + "_arrow").getImage(), ImageEffect.HORIZONTAL)), 50), ImageHelper.resize(new ImageIcon(ImageHelper.flip(ImageHelper.getImage(Application.getTheme().getWidgetStyle().getName() + "_hovered_arrow").getImage(), ImageEffect.HORIZONTAL)), 50), 0.005F) : null;
         FadeOnHoverWidget nextPage = new FadeOnHoverWidget(ImageHelper.resize(ImageHelper.getImage(Application.getTheme().getWidgetStyle().getName() + "_arrow"), 50), ImageHelper.resize(ImageHelper.getImage(Application.getTheme().getWidgetStyle().getName() + "_hovered_arrow"), 50), 0.005F);
         final JPanel[] pagePanel = {this.currentPage + 1 < this.widgets.size() ? this.currentPage > 0 ? PanelHelper.westAndEastElements(PanelHelper.join(prevPage), PanelHelper.join(nextPage)) : PanelHelper.join(FlowLayout.RIGHT, nextPage) : PanelHelper.join(FlowLayout.LEFT, prevPage)};
         if (prevPage != null) {

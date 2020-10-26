@@ -50,8 +50,28 @@ public class ImageHelper {
         return buf;
     }
 
-    public static Image flip(ImageIcon image, int axis) {
+    public static Color[][] getImagePixels(BufferedImage image) {
+        Color[][] pixels = new Color[image.getWidth()][image.getHeight()];
+
+        for (int x = 0; x < image.getWidth(); x++) {
+            for (int y = 0; y < image.getHeight(); y++) {
+                pixels[x][y] = new Color(image.getRGB(x, y));
+            }
+        }
+
+        return pixels;
+    }
+
+    public static Image flip(Image image, int axis) {
         return new ImageEffect(image).flip(axis);
+    }
+
+    public static Image overlay(Image image, Color color, float opacity) {
+        return new ImageEffect(image).overlay(color, opacity);
+    }
+
+    public static Image rotate(Image image, float angle) {
+        return new ImageEffect(image).rotate(angle);
     }
 
     private static ImageIcon fromPath(String path) {

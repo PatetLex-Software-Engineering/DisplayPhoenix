@@ -12,14 +12,14 @@ public class FontElement extends ColorableElement {
 
     public FontElement(String text) {
         this.text = text;
+        setColor(Color.BLACK);
     }
 
     @Override
     public void draw(CanvasPanel canvas, Graphics g) {
         g.setColor(this.getColor());
         g.setFont(this.font);
-        //((Graphics2D) g).drawString(this.text, ((cw + getOffsetX()) / canvas.convergeZoom(this.pointSize)) + (canvas.convergeZoom(getOffsetX() * this.pointSize)), ((ch + getOffsetY()) / canvas.convergeZoom(this.pointSize)) + (canvas.convergeZoom(getOffsetY() * this.pointSize)));
-        g.drawString(this.text, getOffsetX(), getOffsetY());
+        g.drawString(this.text, 0, 0);
     }
 
     public void font(Font font) {
