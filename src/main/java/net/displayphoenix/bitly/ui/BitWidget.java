@@ -1,6 +1,7 @@
 package net.displayphoenix.bitly.ui;
 
 import net.displayphoenix.Application;
+import net.displayphoenix.bitly.elements.Bit;
 import net.displayphoenix.bitly.enums.BitWidgetStyle;
 import net.displayphoenix.blockly.Blockly;
 import net.displayphoenix.blockly.elements.Block;
@@ -15,6 +16,7 @@ import net.displayphoenix.ui.widget.ResourceWidget;
 import net.displayphoenix.ui.widget.TextField;
 import net.displayphoenix.ui.widget.Toggle;
 import net.displayphoenix.util.ComponentHelper;
+import net.displayphoenix.util.ImageHelper;
 import net.displayphoenix.util.PanelHelper;
 import net.displayphoenix.web.Website;
 
@@ -31,25 +33,65 @@ public class BitWidget {
     private String helpUrl;
     private String[] provisions;
     private String[] extensions;
+    private String path;
+    private int width;
+    private int height;
+
 
     private Object value;
 
+    /**
+     * Main component of Bitly, used as widgets for main panel
+     *
+     * @see BitWidgetStyle
+     *
+     * @param style  Style of widget
+     * @param flag  Flag for code
+     * @param translationKey  Translation key for Bit comment
+     */
     public BitWidget(BitWidgetStyle style, String flag, String translationKey) {
         this.style = style;
         this.translationKey = translationKey;
         this.flag = flag;
     }
 
+    /**
+     * Returns style of widget
+     *
+     * @see BitWidgetStyle
+     *
+     * @return Style of widget
+     */
     public BitWidgetStyle getStyle() {
         return style;
     }
 
+    /**
+     * Returns code flag of widget
+     * 
+     * @see net.displayphoenix.generation.Module#getCodeFromBit(Bit)
+     *
+     * @return  Flag of bit
+     */
     public String getFlag() {
         return flag;
     }
 
+    /**
+     *
+     * Creates the main component and panel component
+     *
+     * @see FileDialog#openFile(Window, String...)
+     * 
+     * @param parentFrame  Can be null, used for file dialog
+     * 
+     * @return  Component array of both panel and component
+     */
     public Component[] create(Window parentFrame) {
+        // Widget comment
         JLabel label = new JLabel(Localizer.translate(this.translationKey));
+
+        // Creates help website if applicable
         if (this.helpUrl != null) {
             label.setCursor(new Cursor(Cursor.HAND_CURSOR));
             label.addMouseListener(new MouseAdapter() {
@@ -59,8 +101,12 @@ public class BitWidget {
                 }
             });
         }
+
+        // Themes label
         ComponentHelper.themeComponent(label);
         ComponentHelper.deriveFont(label, 25F);
+
+        // Checks for each individual style
         switch (style) {
             case TOGGLE:
                 Toggle toggle = new Toggle();
@@ -149,11 +195,25 @@ public class BitWidget {
                 });
                 resourceWidget.setPreferredSize(new Dimension(150, 150));
                 return new Component[] {PanelHelper.northAndCenterElements(PanelHelper.join(label), PanelHelper.join(resourceWidget)), resourceWidget};
+            case IMAGE:
+                JLabel label1 = new JLabel(ImageHelper.resize(ImageHelper.fromPath(this.path), this.width > 0 ? this.width : 150, this.height > 0 ? this.height : 150));
+                label1.setPreferredSize(new Dimension(this.width > 0 ? this.width : 150, this.height > 0 ? this.height : 150));
+                return new Component[] {PanelHelper.northAndCenterElements(PanelHelper.join(label1), PanelHelper.join(label1)), label1};
         }
         return null;
     }
 
+    /**
+     * Sets the value of a widget to argument
+     *
+     * @see Bit#open(Window, BitArgument...) 
+     * 
+     * @param component Component to set
+     * @param argument Argument to set to
+     */
     public void setValue(Component component, BitArgument argument) {
+
+        // Switch for each style
         switch (style) {
             case TOGGLE:
                 ((Toggle) component).setToggle(argument.getAsBoolean());
@@ -172,6 +232,13 @@ public class BitWidget {
         component.repaint();
     }
 
+    /**
+     * Returns website of <code>helpUrl</code>
+     *
+     * @see BitWidget#create(Window)
+     *
+     * @return Website of help url
+     */
     public Website getHelpWebsite() {
         return this.helpUrl != null ? new Website(this.helpUrl) : null;
     }

@@ -14,6 +14,8 @@ import java.awt.*;
 import java.awt.event.*;
 import java.awt.geom.AffineTransform;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class LayerViewPanel extends JPanel implements LayerListener {
@@ -30,7 +32,7 @@ public class LayerViewPanel extends JPanel implements LayerListener {
         this.canvas.addLayerListener(this);
         setOpaque(canvas.isOpaque());
         setBackground(canvas.getBackground());
-        setForeground(Application.getTheme().getColorTheme().getSecondaryColor());
+        setForeground(Application.getTheme().getColorTheme().getPrimaryColor());
         this.layerPanel = PanelHelper.join();
         loadLayerPanel();
 
@@ -96,7 +98,7 @@ public class LayerViewPanel extends JPanel implements LayerListener {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         g.setColor(getForeground());
-        g.fillRoundRect(0, 0, getWidth(), getHeight(), 15, 15);
+        g.fillRect(0, 0, getWidth(), getHeight());
     }
 
     @Override
@@ -141,18 +143,25 @@ public class LayerViewPanel extends JPanel implements LayerListener {
             float ch = getHeight() / 2F;
             g.setColor(getForeground());
             g.drawString(String.valueOf(this.layer.getIndex()), 0, (int) (getHeight() - g.getFontMetrics().getStringBounds(String.valueOf(this.layer.getIndex()), g).getHeight()));
-            if (this.layerView.getCanvas().getSelectedLayer() == this.layer.getIndex()) {
-                g.setColor(Application.getTheme().getColorTheme().getPrimaryColor());
-                g.drawRect(0, 0, getWidth() - 1, getHeight() - 1);
+            if (this.layerView.getCanvas().getSelectedLayer() == this.layer) {
+                g.setColor(Application.getTheme().getColorTheme().getSecondaryColor());
+                g.fillRect(0, 0, 3, getHeight());
+                g.fillRect(0, 0, getWidth(), 3);
+                g.fillRect(getWidth() - 3, 0, 3, getHeight());
+                g.fillRect(0, getHeight() - 3, getWidth(), 3);
             }
-            for (Element element : this.layerView.getCanvas().getLayers().get(this.layer)) { // * (getWidth() / this.canvas.getWidth())
-                ((Graphics2D) g).scale((element.getScaleFactor() * ((float) getWidth() / (float) this.layerView.getCanvas().getWidth())), (element.getScaleFactor() * ((float) getWidth() / (float) this.layerView.getCanvas().getWidth())));
-                ((Graphics2D) g).translate((cw) / (element.getScaleFactor() * ((float) getWidth() / (float) this.layerView.getCanvas().getWidth())), (ch) / (element.getScaleFactor() * ((float) getWidth() / (float) this.layerView.getCanvas().getWidth())));
-                ((Graphics2D) g).translate(element.getOffsetX(), element.getOffsetY());
-                ((Graphics2D) g).translate(-element.getWidth(this.layerView.getCanvas(), g) / 2F, -element.getHeight(this.layerView.getCanvas(), g) / 2F);
-                element.draw(this.layerView.getCanvas(), g);
-                ((Graphics2D) g).setTransform(new AffineTransform());
+            ((Graphics2D) g).scale((float) getWidth() / (float) this.layerView.getCanvas().getWidth(), (float) getHeight() / (float) this.layerView.getCanvas().getHeight());
+            ((Graphics2D) g).translate(cw / (float) getWidth() / (float) this.layerView.getCanvas().getWidth(), ch / (float) getHeight() / (float) this.layerView.getCanvas().getHeight());
+            for (Pixel[] x : this.layerView.getCanvas().getLayers().get(this.layer)) {
+                for (Pixel y : x) {
+                    if (y != null) {
+                        y.draw(g);
+                    }
+                    g.translate(0, 1);
+                }
+                g.translate(1, -this.layerView.getCanvas().getCanvasHeight());
             }
+            ((Graphics2D) g).setTransform(new AffineTransform());
             Graphics2D g2d = (Graphics2D) g;
             if (this.clipper.getCurrentValue() != 0) {
                 g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, this.clipper.getCurrentValue()));

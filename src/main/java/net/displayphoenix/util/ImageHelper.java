@@ -74,7 +74,7 @@ public class ImageHelper {
         return new ImageEffect(image).rotate(angle);
     }
 
-    private static ImageIcon fromPath(String path) {
+    public static ImageIcon fromPath(String path) {
         if (CACHE.get(path) != null)
             return CACHE.get(path);
         else {

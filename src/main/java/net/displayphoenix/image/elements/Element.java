@@ -4,7 +4,7 @@ import net.displayphoenix.image.CanvasPanel;
 
 import java.awt.*;
 
-public abstract class Element {
+public abstract class Element implements Cloneable {
 
     private float scale = 1F;
     private int offX;
@@ -49,5 +49,14 @@ public abstract class Element {
 
     public void setCentered(boolean centered) {
         this.centered = centered;
+    }
+
+    public Element clone() {
+        try {
+            return (Element) super.clone();
+        } catch (CloneNotSupportedException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }

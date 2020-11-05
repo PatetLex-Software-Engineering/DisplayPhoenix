@@ -44,10 +44,10 @@ public class FileDialog {
     }
 
     public static File getFileDirectory(Window parentWindow) {
-        return getWorkspaceDirectorySelectDialog(parentWindow);
+        return getDirectorySelectDialog(parentWindow);
     }
 
-    private static File getWorkspaceDirectorySelectDialog(Window f) {
+    private static File getDirectorySelectDialog(Window f) {
         JFileChooser fc = new JFileChooser();
         fc.setPreferredSize(new Dimension(720, 420));
 
@@ -63,7 +63,7 @@ public class FileDialog {
             }
         });
 
-        fc.setDialogTitle("Select directory for the bot");
+        fc.setDialogTitle("Select directory");
         fc.setAcceptAllFileFilterUsed(false);
         fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 

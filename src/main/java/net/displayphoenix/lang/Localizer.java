@@ -23,14 +23,12 @@ public class Localizer {
 
     public static void create() {
         loadValues();
-        System.out.println("Loaded lang values");
     }
 
-    private static void loadValues() {
+    public static void loadLangFromDirectory(File directory) {
         try {
-            new File("lang").mkdir();
             for (Local local : Local.values()) {
-                File file = new File("lang/" + local.getTag() + ".json");
+                File file = new File(directory.getPath() + local.getTag() + ".json");
 
                 if (!file.createNewFile()) {
                     FileReader reader = new FileReader(file);
@@ -60,5 +58,11 @@ public class Localizer {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private static void loadValues() {
+        File langDir = new File("lang");
+        langDir.mkdir();
+        loadLangFromDirectory(langDir);
     }
 }

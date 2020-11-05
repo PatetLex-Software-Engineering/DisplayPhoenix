@@ -7,8 +7,13 @@ import net.displayphoenix.blockly.elements.IMutator;
 import net.displayphoenix.blockly.elements.workspace.Field;
 import net.displayphoenix.blockly.elements.workspace.ImplementedBlock;
 import net.displayphoenix.blockly.elements.workspace.Mutation;
+import net.displayphoenix.blockly.gen.BlocklyXmlParser;
 import net.displayphoenix.generation.impl.JavaModule;
 import net.displayphoenix.generation.impl.JavaScriptModule;
+import net.displayphoenix.ui.widget.ProvisionWidget;
+import net.displayphoenix.ui.widget.ResourceWidget;
+import net.displayphoenix.ui.widget.TextField;
+import net.displayphoenix.ui.widget.Toggle;
 import net.displayphoenix.util.StringHelper;
 
 import java.security.InvalidParameterException;
@@ -106,18 +111,33 @@ public class Module {
 
     public String getCodeFromBit(Bit bit) {
         String code = this.bitCode.get(bit);
+        String[] plugins = StringHelper.substringsBetween(code, getFlags("plugin")[0], getFlags("plugin")[1]);
         String[] bits = StringHelper.substringsBetween(code, getFlags("bit")[0], getFlags("bit")[1]);
-        for (BitWidget[] widgets : bit.getBits()) {
-            for (BitWidget widget : widgets) {
+        for (BitWidget[] page : bit.getBits()) {
+            for (BitWidget widget : page) {
                 for (String input : bits) {
                     if (input.equalsIgnoreCase(widget.getFlag())) {
-                        String val = bit.getValueOfWidget(this, widget);
+                        String val = getValueOfWidget(bit, widget);
                         if (val == null)
                             val = "";
                         code = code.replace(getFlags("bit")[0] + input + getFlags("bit")[1], val);
                         break;
                     }
                 }
+            }
+        }
+        if (plugins != null) {
+            for (String input : plugins) {
+                String val = " ";
+                for (Bit pluginBit : bit.getPlugins()) {
+                    if (input.equalsIgnoreCase(pluginBit.getPluginFlag())) {
+                        String bitVal = getCodeFromBit(pluginBit);
+                        if (bitVal == null)
+                            bitVal = "";
+                        val += bitVal + "\n";
+                    }
+                }
+                code = code.replace(getFlags("plugin")[0] + input + getFlags("plugin")[1], val);
             }
         }
         return code;
@@ -196,6 +216,30 @@ public class Module {
             }
         }
         return blockSyntax.contains(block.getBlock()) ? code : addSyntax(code);
+    }
+
+    private String getValueOfWidget(Bit bit, BitWidget widget) {
+        switch (widget.getStyle()) {
+            case TOGGLE:
+                return Boolean.toString(((Toggle) bit.getWidgetComponentMap().get(widget)[1]).isToggled());
+            case TEXT:
+            case NUMBER:
+                return ((TextField) bit.getWidgetComponentMap().get(widget)[1]).getText();
+            case BLOCKLY:
+                ProvisionWidget provisionWidget = ((ProvisionWidget) bit.getWidgetComponentMap().get(widget)[1]);
+                if (provisionWidget.getXml() == null)
+                    return null;
+                ImplementedBlock[] implementedBlocks = BlocklyXmlParser.fromWorkspaceXml(provisionWidget.getXml());
+                for (ImplementedBlock implementedBlock : implementedBlocks) {
+                    if (implementedBlock.getBlock().getType().equalsIgnoreCase("event_wrapper")) {
+                        return this.getCodeFromBlock(implementedBlock);
+                    }
+                }
+                break;
+            case RESOURCE:
+                return ((ResourceWidget) bit.getWidgetComponentMap().get(widget)[1]).getFile().getFile().getPath();
+        }
+        return null;
     }
 
     public String getRawCode(Block block) {

@@ -13,10 +13,10 @@ import net.displayphoenix.util.ImageHelper;
 import net.displayphoenix.util.PanelHelper;
 
 import javax.swing.*;
-import javax.swing.plaf.basic.BasicPanelUI;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -24,48 +24,98 @@ import java.util.Map;
 
 public class Bit {
 
-    private Map<BitWidget, Component[]> widgetComponentMap = new HashMap<>();
+    private transient List<Bit> plugins = new ArrayList<>();
+    private transient Map<BitWidget, Component[]> widgetComponentMap = new HashMap<>();
+    private String plugin;
+    private String pluginFlag;
     private String type;
     private List<BitWidget[]> widgets;
     private transient int currentPage;
 
-    public Bit(String type, List<BitWidget[]> widgets) {
+    /**
+     * Main element of Bitly, used to bridge UI to syntax code
+     *
+     * @param type  Type name of bit, identifier
+     * @param plugin  Name of bit to insert
+     * @param pluginFlag  Flag of code input
+     * @param widgets  All widgets within bit
+     */
+    public Bit(String type, String plugin, String pluginFlag, List<BitWidget[]> widgets) {
         this.widgets = widgets;
+        this.pluginFlag = pluginFlag;
         this.type = type;
+        this.plugin = plugin;
     }
 
+    /**
+     * @return  Type of widget
+     */
     public String getType() {
         return type;
     }
 
-    public String getValueOfWidget(Module module, BitWidget widget) {
-        switch (widget.getStyle()) {
-            case TOGGLE:
-                return Boolean.toString(((Toggle) this.widgetComponentMap.get(widget)[1]).isToggled());
-            case TEXT:
-            case NUMBER:
-                return ((TextField) this.widgetComponentMap.get(widget)[1]).getText();
-            case BLOCKLY:
-                ProvisionWidget provisionWidget = ((ProvisionWidget) this.widgetComponentMap.get(widget)[1]);
-                if (provisionWidget.getXml() == null)
-                    return null;
-                ImplementedBlock[] implementedBlocks = BlocklyXmlParser.fromWorkspaceXml(provisionWidget.getXml());
-                for (ImplementedBlock implementedBlock : implementedBlocks) {
-                    if (implementedBlock.getBlock().getType().equalsIgnoreCase("event_wrapper")) {
-                        return module.getCodeFromBlock(implementedBlock);
-                    }
-                }
-                break;
-            case RESOURCE:
-                return ((ResourceWidget) this.widgetComponentMap.get(widget)[1]).getFile().getFile().getPath();
-        }
-        return null;
+    /**
+     * @return  Name of bit to plugin
+     */
+    public String getPlugin() {
+        return plugin;
     }
 
+    /**
+     * @return  Flag of code used in bit to insert
+     */
+    public String getPluginFlag() {
+        return pluginFlag;
+    }
+
+    /**
+     * @return  All plugins of bit
+     */
+    public List<Bit> getPlugins() {
+        return plugins;
+    }
+
+    public Map<BitWidget, Component[]> getWidgetComponentMap() {
+        return widgetComponentMap;
+    }
+
+    /**
+     * Adds plugin if not already, adds all widgets
+     * 
+     * @see net.displayphoenix.bitly.Bitly#registerBit(Bit)
+     * @see Bit#getWidgetComponentMap()
+     * 
+     * @param bit  Plugin bit
+     */
+    public void addPlugin(Bit bit) {
+        // Check for existing plugin
+        if (!this.plugins.contains(bit)) {
+            this.plugins.add(bit);
+
+            // Add all pages from plugin bit to parent bit
+            for (BitWidget[] page : bit.getBits()) {
+                this.widgets.add(page);
+            }
+        }
+    }
+
+    /**
+     * @return  Pages of bit object
+     */
     public List<BitWidget[]> getBits() {
         return widgets;
     }
 
+    /**
+     * Creates bit panel
+     *
+     * @see BitWidget#create(Window)
+     * 
+     * @param parentFrame  Can be null, used for file dialogs
+     * @param arguments  Arguments to pass to widgets
+     * @return Panel of representative Bit
+     *
+     */
     public JPanel open(Window parentFrame, BitArgument... arguments) {
         List<Component> pageComponents = getPageComponents(parentFrame, arguments);
         JPanel componentPanel = PanelHelper.join(pageComponents.toArray(new Component[pageComponents.size()]));
@@ -80,14 +130,26 @@ public class Bit {
     }
 
     private List<Component> getPageComponents(Window parentFrame, BitArgument[] arguments) {
+        return getPageComponents(parentFrame, this.currentPage, arguments);
+    }
+    protected List<Component> getPageComponents(Window parentFrame, int page, BitArgument[] arguments) {
         int i = 0;
         List<Component> pageComponents = new ArrayList<>();
         for (BitWidget[] widgetArr : this.widgets) {
-            if (i == this.currentPage) {
+            if (i == page) {
                 for (BitWidget widget : widgetArr) {
                     if (!this.widgetComponentMap.containsKey(widget)) {
                         Component[] component = widget.create(parentFrame);
                         this.widgetComponentMap.put(widget, component);
+                        for (Bit pluginBit : this.plugins) {
+                            for (BitWidget[] pluginPage : pluginBit.widgets) {
+                                for (BitWidget pluginWidget : pluginPage) {
+                                    if (pluginWidget == widget) {
+                                        pluginBit.widgetComponentMap.put(widget, component);
+                                    }
+                                }
+                            }
+                        }
                         pageComponents.add(component[0]);
                         for (BitArgument argument : arguments) {
                             if (argument.getFlag().equalsIgnoreCase(widget.getFlag())) {
@@ -108,7 +170,7 @@ public class Bit {
     private JPanel getPageWidgets(Window parentFrame, JPanel componentPanel, BitArgument... arguments) {
         FadeOnHoverWidget prevPage = this.currentPage > 0 ? new FadeOnHoverWidget(ImageHelper.resize(new ImageIcon(ImageHelper.flip(ImageHelper.getImage(Application.getTheme().getWidgetStyle().getName() + "_arrow").getImage(), ImageEffect.HORIZONTAL)), 50), ImageHelper.resize(new ImageIcon(ImageHelper.flip(ImageHelper.getImage(Application.getTheme().getWidgetStyle().getName() + "_hovered_arrow").getImage(), ImageEffect.HORIZONTAL)), 50), 0.005F) : null;
         FadeOnHoverWidget nextPage = new FadeOnHoverWidget(ImageHelper.resize(ImageHelper.getImage(Application.getTheme().getWidgetStyle().getName() + "_arrow"), 50), ImageHelper.resize(ImageHelper.getImage(Application.getTheme().getWidgetStyle().getName() + "_hovered_arrow"), 50), 0.005F);
-        final JPanel[] pagePanel = {this.currentPage + 1 < this.widgets.size() ? this.currentPage > 0 ? PanelHelper.westAndEastElements(PanelHelper.join(prevPage), PanelHelper.join(nextPage)) : PanelHelper.join(FlowLayout.RIGHT, nextPage) : PanelHelper.join(FlowLayout.LEFT, prevPage)};
+        final JPanel[] pagePanel = {this.currentPage + 1 < widgets.size() ? this.currentPage > 0 ? PanelHelper.westAndEastElements(PanelHelper.join(prevPage), PanelHelper.join(nextPage)) : PanelHelper.join(FlowLayout.RIGHT, nextPage) : PanelHelper.join(FlowLayout.LEFT, prevPage)};
         if (prevPage != null) {
             prevPage.addActionListener(new ActionListener() {
                 @Override
@@ -125,7 +187,7 @@ public class Bit {
                     componentPanel.repaint();
 
                     pagePanel[0].removeAll();
-                    JPanel newPagePanel = getPageWidgets(parentFrame, componentPanel);
+                    JPanel newPagePanel = getPageWidgets(parentFrame, componentPanel, arguments);
                     pagePanel[0].add(newPagePanel);
                     pagePanel[0].revalidate();
                     pagePanel[0].repaint();
@@ -147,7 +209,7 @@ public class Bit {
                 }
 
                 pagePanel[0].removeAll();
-                JPanel newPagePanel = getPageWidgets(parentFrame, componentPanel);
+                JPanel newPagePanel = getPageWidgets(parentFrame, componentPanel, arguments);
                 pagePanel[0].add(newPagePanel);
                 pagePanel[0].revalidate();
                 pagePanel[0].repaint();

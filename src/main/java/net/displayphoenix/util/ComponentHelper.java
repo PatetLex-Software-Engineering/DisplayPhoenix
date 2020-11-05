@@ -30,4 +30,14 @@ public class ComponentHelper {
         list.setCellRenderer(cellRenderer);
         return list;
     }
+
+    public static void addScrollPane(JList jList) {
+        addScrollPane(jList, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+    }
+    public static void addScrollPane(JList jList, int horizontalPolicy) {
+        JScrollPane scrollBar = new JScrollPane(jList);
+        scrollBar.setHorizontalScrollBarPolicy(horizontalPolicy);
+    }
+
+
 }

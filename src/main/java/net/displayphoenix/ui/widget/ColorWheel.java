@@ -1,19 +1,27 @@
 package net.displayphoenix.ui.widget;
 
 import net.displayphoenix.Application;
+import net.displayphoenix.ui.interfaces.ColorListener;
+import net.displayphoenix.util.ColorHelper;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ColorWheel extends JPanel implements MouseListener, MouseMotionListener {
+
+    private List<ColorListener> colorListeners = new ArrayList<>();
 
     private Color[][] cachedColors;
 
     private int rgbPickerX;
     private int rgbPickerY;
+
+    private float brightness;
 
     private Point cachedPoint;
 
@@ -21,7 +29,8 @@ public class ColorWheel extends JPanel implements MouseListener, MouseMotionList
         setOpaque(false);
         addMouseListener(this);
         addMouseMotionListener(this);
-        setForeground(Application.getTheme().getColorTheme().getAccentColor());
+        setForeground(Application.getTheme().getColorTheme().getSecondaryColor());
+        this.brightness = 1F;
     }
 
     public Color getColor() {
@@ -29,7 +38,38 @@ public class ColorWheel extends JPanel implements MouseListener, MouseMotionList
         float pickerRadius = rgbPickerWidth / 2;
         int centerX = getWidth() / 2;
         int centerY = getHeight() / 2;
-        return this.cachedColors[centerX - this.rgbPickerX - Math.round(pickerRadius)][centerY - this.rgbPickerY - Math.round(pickerRadius)];
+        Color color = this.cachedColors[centerX - this.rgbPickerX - Math.round(pickerRadius)][centerY - this.rgbPickerY - Math.round(pickerRadius)];
+        if (color != null)
+            color = new Color(Math.round(color.getRed() * this.brightness), Math.round(color.getGreen() * this.brightness), Math.round(color.getBlue() * this.brightness));
+        return color;
+    }
+
+    public void setColor(Color key, float tolerance) {
+        int centerX = getWidth() / 2;
+        int centerY = getHeight() / 2;
+        float rgbPickerWidth = getWidth() * 0.1F;
+        float pickerRadius = rgbPickerWidth / 2;
+        int j = 0;
+        Color keyNormal = ColorHelper.max(key);
+        for (Color[] xColors : this.cachedColors) {
+            int k = 0;
+            for (Color yColor : xColors) {
+                if (yColor != null && ColorHelper.isColorTolerated(keyNormal, yColor, tolerance)) {
+                    this.rgbPickerX = centerX - j - Math.round(pickerRadius);
+                    this.rgbPickerY = centerY - k - Math.round(pickerRadius);
+                    for (ColorListener colorListener : this.colorListeners) {
+                        colorListener.onColorSet(key);
+                    }
+                    repaint();
+                }
+                k++;
+            }
+            j++;
+        }
+    }
+
+    protected void setBrightness(float brightness) {
+        this.brightness = brightness;
     }
 
     @Override
@@ -99,6 +139,10 @@ public class ColorWheel extends JPanel implements MouseListener, MouseMotionList
                 g.fillRect(0, getHeight() - swatchSize, swatchSize, swatchSize);
             }
         }
+    }
+
+    public void addColorListener(ColorListener colorListener) {
+        this.colorListeners.add(colorListener);
     }
 
     @Override
