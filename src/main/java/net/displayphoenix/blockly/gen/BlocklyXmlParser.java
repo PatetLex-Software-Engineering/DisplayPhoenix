@@ -4,6 +4,7 @@ import net.displayphoenix.blockly.Blockly;
 import net.displayphoenix.blockly.elements.workspace.Field;
 import net.displayphoenix.blockly.elements.workspace.ImplementedBlock;
 import net.displayphoenix.blockly.elements.workspace.Mutation;
+import net.displayphoenix.blockly.ui.BlocklyPanel;
 import net.displayphoenix.util.DOMHelper;
 import org.w3c.dom.*;
 import org.xml.sax.InputSource;
@@ -20,8 +21,19 @@ import java.util.*;
  * @author TBroski
  */
 public interface BlocklyXmlParser {
+
+    /**
+     * Parses an xml string to java objects
+     *
+     * @see ImplementedBlock
+     * @see BlocklyPanel#getRawWorkspace()
+     *
+     * @param xml  Xml to parse
+     * @return
+     */
     static ImplementedBlock[] fromWorkspaceXml(String xml) {
         try {
+            // Building document
             DocumentBuilder documentBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
             InputSource is = new InputSource();
             is.setCharacterStream(new StringReader(xml));
@@ -29,16 +41,23 @@ public interface BlocklyXmlParser {
             xmlDoc.getDocumentElement().normalize();
 
             List<ImplementedBlock> implementedBlocks = new ArrayList<>();
+
+            // Get all blocks
             NodeList blocks = xmlDoc.getElementsByTagName("block");
             for (int i = 0; i < blocks.getLength(); i++) {
                 Node block = blocks.item(i);
+
+                // Parse node to ImplementBlock object
                 ImplementedBlock implementedBlock = getImplementedBlock(block);
+
+                // Checking if implement block is not a inner block
                 if (implementedBlock.getX() != ImplementedBlock.INNER_BLOCK) {
+                    // Adding the block
                     implementedBlocks.add(implementedBlock);
-                    //printBlock("", implementedBlock);
                 }
             }
 
+            // Converting blocks to array
             ImplementedBlock[] array = new ImplementedBlock[implementedBlocks.size()];
             array = implementedBlocks.toArray(array);
             return array;
@@ -52,40 +71,81 @@ public interface BlocklyXmlParser {
         return null;
     }
 
+    /**
+     * Parses blocks to an xml string
+     *
+     * @see BlocklyPanel#addBlocks(String)
+     *
+     * @param blocks  Blocks to parse
+     * @return
+     */
     static String parseWorkspaceXml(ImplementedBlock... blocks) {
+        // Create StringBuilder
         StringBuilder xmlBuilder = new StringBuilder();
+
+        // Append base
         xmlBuilder.append("<xml xmlns=\"https://developers.google.com/blockly/xml\">");
+
+        // Iterate each block
         int i = 0;
         for (ImplementedBlock block : blocks) {
+            // State if next block
             if (i > 0) {
                 xmlBuilder.append("<next>");
             }
+
+            // Append block
             xmlBuilder.append(parseImplementedBlock(block));
+
+            // Close if nect block
             if (i > 0) {
                 xmlBuilder.append("</next>");
             }
             i++;
         }
+
+        // Close
         xmlBuilder.append("</xml>");
         return xmlBuilder.toString();
     }
 
+    /**
+     * Obtains information from Node object and converts to ImplementedBlock object
+     *
+     * @param block  Node of block
+     *
+     * @return
+     */
     static ImplementedBlock getImplementedBlock(Node block) {
+
+        // Get block type
         String type = block.getAttributes().item(0).getTextContent();
+
+        // Get x and y
         int x = ImplementedBlock.INNER_BLOCK;
         int y = ImplementedBlock.INNER_BLOCK;
+
+        // Iterating each node attribute
         for (int ia = 0; ia < block.getAttributes().getLength(); ia++) {
             Node attribute = block.getAttributes().item(ia);
+
+            // Setting x if found
             if (attribute.getNodeName().equalsIgnoreCase("x")) {
                 x = Integer.parseInt(attribute.getTextContent());
             }
+
+            // Setting y if found
             else if (attribute.getNodeName().equalsIgnoreCase("y")) {
                 y = Integer.parseInt(attribute.getTextContent());
             }
+
+            // Setting type if found
             else if (attribute.getNodeName().equalsIgnoreCase("type")) {
                 type = attribute.getTextContent();
             }
         }
+
+        // Checking if next block
         if (block.getParentNode() != null && block.getParentNode().getNodeName().equalsIgnoreCase("next")) {
             x = ImplementedBlock.NEXT_BLOCK;
             y = ImplementedBlock.NEXT_BLOCK;
@@ -112,6 +172,8 @@ public interface BlocklyXmlParser {
             NodeList statementList = element.getElementsByTagName("statement");
             for (int ist = 0; ist < statementList.getLength(); ist++) {
                 Node statementNode = statementList.item(ist);
+
+                // Checking if statement is in reach of block
                 if (DOMHelper.getNodesBetween(block, statementNode).size() == 0 && statementNode.getNodeType() == Node.ELEMENT_NODE) {
                     Element statement = (Element) statementNode;
                     NodeList blockList = statement.getElementsByTagName("block");
@@ -192,6 +254,13 @@ public interface BlocklyXmlParser {
         return validBlock;
     }
 
+    /**
+     * Parses block to xml string
+     *
+     * @param block  Block to parse
+     *
+     * @return
+     */
     static String parseImplementedBlock(ImplementedBlock block) {
         StringBuilder blockBuilder = new StringBuilder();
 
@@ -239,38 +308,5 @@ public interface BlocklyXmlParser {
         //Appending bottom wrapper
         blockBuilder.append("</block>");
         return blockBuilder.toString();
-    }
-
-    static void printBlock(String pre, ImplementedBlock implementedBlock) {
-        if (implementedBlock.getX() == ImplementedBlock.NEXT_BLOCK) {
-            System.out.println(pre + "-- Next Block");
-        }
-        System.out.println(pre + "[BLOCK OPEN]");
-        if (implementedBlock.getX() == ImplementedBlock.INNER_BLOCK) {
-            System.out.println(pre + "-- Inner Block");
-        }
-        System.out.println(pre + "Type: " + implementedBlock.getBlock().getType());
-        if (implementedBlock.getX()  >= 0) {
-            System.out.println(pre + "X: " + implementedBlock.getX());
-            System.out.println(pre + "Y: " + implementedBlock.getY());
-        }
-        for (Field field : implementedBlock.getFields()) {
-            System.out.println(pre + "Block Field ID: " + field.getKey() + " === " + field.getValue());
-        }
-        for (String statement : implementedBlock.getValueBlocks().keySet()) {
-            System.out.println(pre + "Value ID: " + statement + ". Open");
-            for (ImplementedBlock innerBlock : implementedBlock.getValueBlocks().get(statement)) {
-                printBlock(pre + "\t", innerBlock);
-            }
-            System.out.println(pre + "Value ID: " + statement + ". Close");
-        }
-        for (String statement : implementedBlock.getStatementBlocks().keySet()) {
-            System.out.println(pre + "Statement ID: " + statement + ". Open");
-            for (ImplementedBlock innerBlock : implementedBlock.getStatementBlocks().get(statement)) {
-                printBlock(pre + "\t", innerBlock);
-            }
-            System.out.println(pre + "Statement ID: " + statement + ". Close");
-        }
-        System.out.println(pre + "[BLOCK CLOSED]");
     }
 }

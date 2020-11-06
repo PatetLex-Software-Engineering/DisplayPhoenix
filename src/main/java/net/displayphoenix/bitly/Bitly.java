@@ -17,6 +17,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * @author TBroski
+ */
 public class Bitly {
 
     private static final Gson gson = new GsonBuilder().setLenient().setPrettyPrinting().create();

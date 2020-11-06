@@ -11,6 +11,16 @@ public class BlocklyInvolveEvent extends BlocklyEvent {
 
     private final ImplementedBlock[] blocks;
 
+    /**
+     * Blockly event with multiple blocks
+     *
+     * @see BlocklyEvent
+     *
+     * @param type  Type of event
+     * @param workspace  Workspace of event
+     * @param block  Block of event
+     * @param blocksInvolved  All blocks involved
+     */
     public BlocklyInvolveEvent(String type, BlocklyPanel workspace, Block block, ImplementedBlock[] blocksInvolved) {
         super(type, workspace, block);
         this.blocks = blocksInvolved;

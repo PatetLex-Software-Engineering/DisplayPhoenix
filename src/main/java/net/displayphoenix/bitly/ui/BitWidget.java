@@ -160,7 +160,7 @@ public class BitWidget {
                                     dependencyPanel.addProvision(provision);
                                 }
                                 if (provisionWidget.getXml() != null) {
-                                    dependencyPanel.getBlocklyPanel().setWorkspace(provisionWidget.getXml());
+                                    dependencyPanel.getBlocklyPanel().addBlocks(provisionWidget.getXml());
                                 } else {
                                     Block event = Blockly.getBlockFromType("event_wrapper");
                                     if (event == null) {
@@ -169,7 +169,7 @@ public class BitWidget {
                                         event.persist();
                                         event.hide();
                                     }
-                                    dependencyPanel.getBlocklyPanel().setWorkspace(new ImplementedBlock(event, 50, 50));
+                                    dependencyPanel.getBlocklyPanel().addBlocks(new ImplementedBlock(event, 50, 50));
                                 }
                                 parentFrame.addWindowListener(new WindowAdapter() {
                                     @Override

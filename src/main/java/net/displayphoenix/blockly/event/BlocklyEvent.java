@@ -12,6 +12,13 @@ public class BlocklyEvent {
     private final BlocklyPanel workspace;
     private final Block block;
 
+    /**
+     * Base block event
+     *
+     * @param type  Type of event
+     * @param workspace  Workspace of event
+     * @param block  Block of event
+     */
     public BlocklyEvent(String type, BlocklyPanel workspace, Block block) {
         this.type = type;
         this.workspace = workspace;

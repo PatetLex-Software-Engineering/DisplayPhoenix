@@ -20,6 +20,10 @@ public class FileDialog {
     private static File previousDirectory = new File(System.getProperty("user.home"));
 
     public static DetailedFile openFile(Window parentWindow, String... extensions) {
+        if (parentWindow == null) {
+            parentWindow = new JWindow();
+            parentWindow.setIconImage(Application.getIcon().getImage());
+        }
         File[] files = getBasicFileDialog(parentWindow, getFileFiltersForStringArray(extensions), true, false);
         if (files != null) {
             return convert(files)[0];

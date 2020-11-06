@@ -1,6 +1,8 @@
 package net.displayphoenix.blockly.elements.workspace;
 
 import net.displayphoenix.blockly.elements.Block;
+import net.displayphoenix.blockly.gen.BlocklyHtmlGenerator;
+import net.displayphoenix.blockly.gen.BlocklyXmlParser;
 
 import java.util.*;
 
@@ -21,6 +23,15 @@ public class ImplementedBlock {
     private Map<String, List<ImplementedBlock>> valueBlocks = new HashMap<>();
     private List<Mutation> mutations = new ArrayList<>();
 
+    /**
+     * Main element of blockly
+     * Contains fields, statement blocks, value blocks, and mutations
+     *
+     * @param block  Block
+     * @param x  X position
+     * @param y  Y position
+     * @param fields  Fields of block
+     */
     public ImplementedBlock(Block block, int x, int y, Field... fields) {
         this.type = block;
         this.x = x;
@@ -28,6 +39,13 @@ public class ImplementedBlock {
         this.fields = fields;
     }
 
+    /**
+     * Adds a statement block to block
+     * For example, an if-statement
+     *
+     * @param statementKey  Key of statement
+     * @param implementedBlock  Block to add
+     */
     public void addStatementBlock(String statementKey, ImplementedBlock implementedBlock) {
         if (!this.innerBlocks.containsKey(statementKey)) {
             this.innerBlocks.put(statementKey, new ArrayList<>());
@@ -35,6 +53,14 @@ public class ImplementedBlock {
         this.innerBlocks.get(statementKey).add(implementedBlock);
     }
 
+    /**
+     * Adds a value block
+     *
+     * For example, an print block with text value block of "Hello World!"
+     *
+     * @param valueKey  Key of value
+     * @param implementedBlock  Block to add
+     */
     public void addValueBlock(String valueKey, ImplementedBlock implementedBlock) {
         if (!this.valueBlocks.containsKey(valueKey)) {
             this.valueBlocks.put(valueKey, new ArrayList<>());
@@ -42,6 +68,12 @@ public class ImplementedBlock {
         this.valueBlocks.get(valueKey).add(implementedBlock);
     }
 
+    /**
+     * Advanced mutation for blocks
+     * For example, if-statement with else if and else
+     *
+     * @param mutation  Mutation to add
+     */
     public void addMutation(Mutation mutation) {
         this.mutations.add(mutation);
     }
@@ -71,6 +103,21 @@ public class ImplementedBlock {
         return mutations;
     }
 
+    /**
+     * Parses block to xml
+     * @return
+     */
+    @Override
+    public String toString() {
+        return BlocklyXmlParser.parseImplementedBlock(this);
+    }
+
+    /**
+     * Checks if block equals other block
+     *
+     * @param obj  Other block
+     * @return
+     */
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof ImplementedBlock) {

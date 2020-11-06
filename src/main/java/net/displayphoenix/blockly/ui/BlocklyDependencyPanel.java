@@ -28,9 +28,14 @@ public class BlocklyDependencyPanel extends JPanel {
     private BlocklyPanel blocklyPanel;
     private JPanel dependencyPanel;
 
+    /**
+     * BlocklyPanel with dependencies and provisions
+     *
+     * @see BlocklyPanel
+     */
     public BlocklyDependencyPanel() {
         this.setLayout(new BorderLayout());
-        this.blocklyPanel = new BlocklyPanel(Math.round(Application.getTheme().getWidth() * 0.8F), Application.getTheme().getHeight());
+        this.blocklyPanel = new BlocklyPanel(Math.round(getParent().getWidth() * 0.8F), getParent().getHeight());
         this.dependencyPanel = new JPanel(new BorderLayout());
 
         this.dependencyPanel.setBackground(Application.getTheme().getColorTheme().getSecondaryColor());
@@ -48,6 +53,9 @@ public class BlocklyDependencyPanel extends JPanel {
         this.add(PanelHelper.westAndCenterElements(this.blocklyPanel, this.dependencyPanel));
     }
 
+    /**
+     * @return BlocklyPanel of panel
+     */
     public BlocklyPanel getBlocklyPanel() {
         return blocklyPanel;
     }
@@ -77,41 +85,82 @@ public class BlocklyDependencyPanel extends JPanel {
         this.dependencyPanel.repaint();
     }
 
+    /**
+     * @return List of unsatisfied dependencies
+     */
     public List<String> getUnsatisfiedDependencies() {
+        // Getting all dependencies
         List<String> dependencies = getDependencies();
+
+        // Iterating provisions
         for (String provision : getProvisions()) {
+
+            // Checking if dependencies contain a provision
             if (dependencies.contains(provision)) {
+
+                // Removes satisfied dependency
                 dependencies.remove(provision);
             }
         }
         return dependencies;
     }
 
+    /**
+     * @return All unsatisfied dependencies
+     */
     public List<String> getDependencies() {
         List<String> dependencies = new ArrayList<>();
+
+        // Iterating dependencies of all blocks
         for (ImplementedBlock implementedBlock : getBlocklyPanel().getWorkspace()) {
+
+            // Iterating all dependencies
             for (String dependency : getDependenciesFromBlock(implementedBlock)) {
+
+                // Adding dependency
                 dependencies.add(dependency);
             }
         }
+
+        // Removing duplicates
         dependencies = ListHelper.removeDuplicates(dependencies);
         return dependencies;
     }
 
+    /**
+     * Adds a provision to panel
+     *
+     * @param provision Provision to add
+     */
     public void addProvision(String provision) {
         this.addedProvisions.add(provision);
     }
 
+    /**
+     * Returns a list of all provisions
+     *
+     * @see BlocklyDependencyPanel#getUnsatisfiedDependencies()
+     *
+     * @return All provisions
+     */
     public List<String> getProvisions() {
         List<String> provisions = new ArrayList<>();
+
+        // Iterating all blocks
         for (ImplementedBlock implementedBlock : getBlocklyPanel().getWorkspace()) {
+
+            // Adding all provisions
             for (String provision : getProvisionsFromBlock(implementedBlock)) {
                 provisions.add(provision);
             }
         }
+
+        // Adding manual provisions
         for (String provision : this.addedProvisions) {
             provisions.add(provision);
         }
+
+        // Removing duplicates
         provisions = ListHelper.removeDuplicates(provisions);
         return provisions;
     }

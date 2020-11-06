@@ -1,6 +1,5 @@
 package net.displayphoenix.image;
 
-import com.sun.org.apache.bcel.internal.generic.LADD;
 import net.displayphoenix.Application;
 import net.displayphoenix.file.DetailedFile;
 import net.displayphoenix.file.FileDialog;
@@ -24,8 +23,8 @@ public class CanvasPanel extends JPanel implements MouseWheelListener, MouseMoti
     public static final float MOVE_SENSITIVITY = 1F;
 
     private List<LayerListener> layerListeners = new ArrayList<>();
-    //private Map<Layer, List<Element>> layerToElements = new HashMap<>();
     private Map<Layer, Pixel[][]> layerToPixels = new HashMap<>();
+    private Map<Layer, CanvasElement> elements = new HashMap<>();
     private int canvasWidth;
     private int canvasHeight;
     private int canvasMoveX;
@@ -35,7 +34,6 @@ public class CanvasPanel extends JPanel implements MouseWheelListener, MouseMoti
     private float zoom;
     private int selectedLayer;
 
-    private Element cachedElement;
     private Point cachedPoint;
     private int cachedButton;
 
@@ -112,15 +110,23 @@ public class CanvasPanel extends JPanel implements MouseWheelListener, MouseMoti
                     g.translate(1, -this.canvasHeight);
                 }
                 g.translate(-this.canvasWidth, 0);
+
+                if (this.elements.containsKey(layer)) {
+                    CanvasElement element = this.elements.get(layer);
+                    ((Graphics2D) g).translate(element.offX, element.offY);
+                    element.getElement().draw(this, g);
+                    g.setColor(Application.getTheme().getColorTheme().getSecondaryColor());
+                    g.drawRect(0, 0, element.getElement().getWidth(this, g), element.getElement().getHeight(this, g));
+                }
             }
-            IRenderAttacher renderAttacherToDestroy = null;
-            for (IRenderAttacher renderAttacher : this.renderAttachers) {
-                renderAttacher.rendered(g);
-                renderAttacherToDestroy = renderAttacher;
-                break;
-            }
-            if (renderAttacherToDestroy != null)
-                this.renderAttachers.remove(renderAttacherToDestroy);
+        }
+        List<IRenderAttacher> renderAttachers = new ArrayList<>();
+        for (IRenderAttacher renderAttacher : this.renderAttachers) {
+            renderAttacher.rendered(g);
+            renderAttachers.add(renderAttacher);
+        }
+        for (IRenderAttacher renderAttacherToDestroy : renderAttachers) {
+            this.renderAttachers.remove(renderAttacherToDestroy);
         }
     }
 
@@ -134,10 +140,6 @@ public class CanvasPanel extends JPanel implements MouseWheelListener, MouseMoti
         }
     }
 
-    public void setSelectedElement(Element element) {
-        this.cachedElement = element;
-    }
-
     public void setPixel(int x, int y, Pixel pixel) {
         setPixel(this.selectedLayer, x, y, pixel);
     }
@@ -146,19 +148,6 @@ public class CanvasPanel extends JPanel implements MouseWheelListener, MouseMoti
     }
     public void setPixel(Layer layer, int x, int y, Pixel pixel) {
         this.layerToPixels.get(layer)[x][y] = pixel;
-        repaint();
-        revalidate();
-    }
-
-    public void addElement(Element element) {
-        addElement(this.selectedLayer, element);
-    }
-    public void addElement(int layer, Element element) {
-        Layer layerFrom = layerFromIndex(layer);
-        if (!this.layerToPixels.containsKey(layerFrom)) {
-            addLayer(layerFrom);
-        }
-        this.cachedElement = element;
         repaint();
         revalidate();
     }
@@ -184,11 +173,6 @@ public class CanvasPanel extends JPanel implements MouseWheelListener, MouseMoti
     }
     public void addLayer(Layer layer) {
         Pixel[][] pixels = new Pixel[this.canvasWidth][this.canvasHeight];
-/*        for (int j = 0; j < this.canvasWidth; j++) {
-            for (int k = 0; k < this.canvasHeight; k++) {
-                pixels[j][k] = null;
-            }
-        }*/
         this.layerToPixels.put(layer, pixels);
         for (LayerListener layerListener : this.layerListeners) {
             layerListener.onLayerAdded(layer);
@@ -311,44 +295,37 @@ public class CanvasPanel extends JPanel implements MouseWheelListener, MouseMoti
         return canvasMoveY;
     }
 
-    /*    private Element rayTraceElement(Point point, Graphics graphics) {
-        float cw = getWidth() / 2F;
-        float ch = getHeight() / 2F;
-        List<Layer> layers = Arrays.asList(this.layerToElements.keySet().toArray(new Layer[this.layerToElements.keySet().size()]));
-        Collections.reverse(layers);
-        for (Layer layer : layers) {
-            if (!layer.isHidden()) {
-                List<Element> elements = this.layerToElements.get(layer);
-                Collections.reverse(elements);
-                for (Element element : elements) {
-                    float cwx = element.getOffsetX() + (element.getWidth(this, graphics) / 2F);
-                    float cwh = element.getOffsetY() + (element.getHeight(this, graphics) / 2F);
-                    cwx += cw;
-                    cwh += ch;
-                    float dx = (float) (point.getX() - cwx);
-                    float dy = (float) (point.getY() - cwh);
-                    if (dx < 0)
-                        dx *= -1;
-                    if (dy < 0)
-                        dy += -1;
-                    if (dx <= convergeZoom(element.getWidth(this, graphics)) / 2F && dy <= convergeZoom(element.getHeight(this, graphics)) / 2F) {
-                        return element;
-                    }
-                }
-            }
+    public void setElement(Layer layer, Element element, int offX, int offY) {
+        if (this.elements.containsKey(layer)) {
+            this.elements.remove(layer);
+        }
+        CanvasElement canvasElement = new CanvasElement(element);
+        canvasElement.offX = offX;
+        canvasElement.offY = offY;
+        this.elements.put(layer, canvasElement);
+        repaint();
+    }
+
+    private CanvasElement rayTraceElement(Point point, Graphics2D graphics) {
+        CanvasElement element = this.elements.get(this.getSelectedLayer());
+        AffineTransform transform = graphics.getTransform();
+        if (element != null) {
+            return (point.getX() > transform.getTranslateX() && point.getX() < transform.getTranslateX() + convergeZoom(element.getElement().getWidth(this, graphics))) && (point.getY() > transform.getTranslateY() && point.getY() < transform.getTranslateY() + convergeZoom(element.getElement().getHeight(this, graphics))) ? element : null;
         }
         return null;
-    }*/
+    }
 
     @Override
     public void mouseClicked(MouseEvent e) {
         repaint();
-/*        this.renderAttachers.add(g -> {
-           if (rayTraceElement(e.getPoint(), g) != this.cachedElement) {
-               this.cachedElement = null;
+        this.renderAttachers.add(g -> {
+            CanvasElement element = this.elements.get(this.getSelectedLayer());
+            if (rayTraceElement(e.getPoint(), (Graphics2D) g) == null && element != null) {
+               element.getElement().parse(this, Math.round(element.offX), Math.round(element.offY));
+               this.elements.remove(this.getSelectedLayer());
                repaint();
            }
-        });*/
+        });
     }
 
     @Override
@@ -381,18 +358,15 @@ public class CanvasPanel extends JPanel implements MouseWheelListener, MouseMoti
         dy *= MOVE_SENSITIVITY;
         if (!this.moveLocked && this.cachedButton == MouseEvent.BUTTON3) {
             setCursor(new Cursor(Cursor.HAND_CURSOR));
-            if (this.cachedElement == null) {
-                Layer layer = layerFromIndex(this.selectedLayer);
-                if (!layer.isLocked()) {
-
-                }
-                repaint();
+            if (this.elements.containsKey(this.getSelectedLayer())) {
+                this.elements.get(this.getSelectedLayer()).offX += dx / convergeZoom(1);
+                this.elements.get(this.getSelectedLayer()).offY += dy / convergeZoom(1);
             }
-            else if (this.cachedButton == MouseEvent.BUTTON2) {
+            else {
 
-                repaint();
             }
             this.cachedPoint = e.getPoint();
+            repaint();
         }
         else if (this.cachedButton == MouseEvent.BUTTON2) {
             setCursor(new Cursor(Cursor.MOVE_CURSOR));
@@ -426,29 +400,44 @@ public class CanvasPanel extends JPanel implements MouseWheelListener, MouseMoti
 
     @Override
     public void keyTyped(KeyEvent e) {
-        if (this.cachedElement instanceof KeyListener) {
-            ((KeyListener) this.cachedElement).keyTyped(e);
+        //if (this.cachedElement instanceof KeyListener) {
+            //((KeyListener) this.cachedElement).keyTyped(e);
             repaint();
-        }
+        //}
     }
 
     @Override
     public void keyPressed(KeyEvent e) {
-        if (this.cachedElement instanceof KeyListener) {
+/*        if (this.cachedElement instanceof KeyListener) {
             ((KeyListener) this.cachedElement).keyPressed(e);
             repaint();
-        }
+        }*/
     }
 
     @Override
     public void keyReleased(KeyEvent e) {
-        if (this.cachedElement instanceof KeyListener) {
+/*        if (this.cachedElement instanceof KeyListener) {
             ((KeyListener) this.cachedElement).keyReleased(e);
             repaint();
-        }
+        }*/
     }
 
     private interface IRenderAttacher {
         void rendered(Graphics g);
+    }
+
+    private static class CanvasElement {
+
+        private Element element;
+        private float offX;
+        private float offY;
+
+        public CanvasElement(Element element) {
+            this.element = element;
+        }
+
+        public Element getElement() {
+            return element;
+        }
     }
 }

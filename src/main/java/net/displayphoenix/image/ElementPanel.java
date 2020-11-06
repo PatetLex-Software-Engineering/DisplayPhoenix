@@ -26,7 +26,7 @@ public class ElementPanel extends JPanel {
                 if (e.getClickCount() == 2) {
                     Element element = elementList.getSelectedValue();
                     Element clone = element.clone();
-                    canvas.addElement(clone);
+                    //canvas.addElement(clone);
                 }
             }
         });

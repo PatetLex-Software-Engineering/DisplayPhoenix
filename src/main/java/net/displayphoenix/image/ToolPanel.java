@@ -20,14 +20,15 @@ public class ToolPanel extends JPanel {
         this.colorWheel = new BrightnessColorWheel();
         this.colorWheel.setPreferredSize(new Dimension(150, 200));
         JPanel defaultPanel = PanelHelper.join(this.colorWheel);
-        JPanel toolPanel = PanelHelper.join();
+        JPanel toolPanel = new JPanel(new GridLayout(5, 2, 5, 5));
+        toolPanel.revalidate();
+        toolPanel.setOpaque(false);
         for (Tool tool : tools) {
             ToolButton toolButton = new ToolButton(this, tool);
             toolButton.setPreferredSize(new Dimension(25, 25));
             toolButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
             toolPanel.add(PanelHelper.join(toolButton));
         }
-        toolPanel.setLayout(new GridLayout(5, 2));
         add(PanelHelper.northAndSouthElements(toolPanel, defaultPanel));
         ToolPanel toolkit = this;
         canvas.addMouseListener(new MouseAdapter() {

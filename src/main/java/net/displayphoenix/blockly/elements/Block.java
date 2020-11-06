@@ -23,36 +23,75 @@ public class Block {
     private String type;
     private String init;
 
+    /**
+     * Base element of Blockly, static data of block
+     *
+     * For custom blocks use,
+     * @see Block#Block(String, String, JsonObject) 
+     *
+     * @param type  Block type, identifier
+     */
     public Block(String type) {
         this.type = type;
         this.isDefault = true;
     }
+
+    /**
+     * Custom block, has blockly json and init
+     *
+     * @param type  Block type, identifier
+     * @param init  Init json
+     * @param blocklyJson  Blockly json
+     */
     public Block(String type, String init, JsonObject blocklyJson) {
         this.type = type;
         this.init = init;
         this.blocklyJson = blocklyJson;
     }
 
+    /**
+     * Hides block in categories
+     * @return
+     */
     public Block hide() {
         this.isHidden = true;
         return this;
     }
 
+    /**
+     * Persists block, block cannot be deleted
+     * @return
+     */
     public Block persist() {
         this.doesPersist = true;
         return this;
     }
 
+    /**
+     * Sets dependency of block
+     * @param type  Dependency
+     * @return
+     */
     public Block depend(String type) {
         this.dependType = type;
         return this;
     }
 
+    /**
+     * Sets provision of block
+     * @param type  Provision
+     * @return
+     */
     public Block provide(String type) {
         this.provideType = type;
         return this;
     }
 
+    /**
+     * Add field provisions
+     * @param fieldKey  Field key
+     * @param valToType  Field value to provision type
+     */
     public void fieldProvide(String fieldKey, Map<String, String[]> valToType) {
         this.fieldProvides.put(fieldKey, valToType);
     }
@@ -85,11 +124,24 @@ public class Block {
         return this.fieldProvides.get(fieldKey);
     }
 
+    /**
+     * Get category of block
+     * @return
+     */
     public Category getCategory() {
+        // Iterating each registered category
         for (Category category : Blockly.getBlocklyCategories()) {
+
+            // Iterating block of category
             for (Block block : Blockly.getBlocksFromCategory(category)) {
-                if (block.getType().equalsIgnoreCase(this.getType())) {
-                    return category;
+
+                // Checking if block is not hidden
+                if (!block.isHidden) {
+
+                    // Checking block type
+                    if (block.getType().equalsIgnoreCase(this.getType())) {
+                        return category;
+                    }
                 }
             }
         }

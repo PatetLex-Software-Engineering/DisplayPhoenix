@@ -4,11 +4,11 @@ import java.io.File;
 public class BitlyPluginLoader {
 
     /**
-     * Iterates through all subfiles and registers each as JSON object
+     * Iterates through all sub-files and registers each as JSON object
      *
      * @see Bitly#registerBit(File)
      *
-     * @param directory  Directory of plugins
+     * @param directory  Directory of bits
      */
     public static void loadBitsFromDirectory(File directory) {
         // Iterating all sub files

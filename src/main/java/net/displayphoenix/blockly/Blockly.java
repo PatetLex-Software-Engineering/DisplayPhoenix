@@ -2,6 +2,9 @@ package net.displayphoenix.blockly;
 
 import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
+import net.displayphoenix.bitly.Bitly;
+import net.displayphoenix.bitly.BitlyPluginLoader;
+import net.displayphoenix.bitly.elements.Bit;
 import net.displayphoenix.blockly.elements.Block;
 import net.displayphoenix.blockly.elements.Category;
 import net.displayphoenix.blockly.js.BlocklyJS;
@@ -74,35 +77,69 @@ public class Blockly {
             BLOCKS.put(category, new ArrayList<>());
         }
     }
-
+    /**
+     * Registers a block object, unless it already exists <code>!BLOCKS.get(category).contains(bit)</code>.
+     * Maps block with category
+     *
+     * @see Blockly#registerBlock(File, Category)
+     * @see Blockly#getBlockFromType(String)
+     * @see BlocklyPluginLoader#loadBlocksFromDirectory(File)
+     *
+     * @param block  Block to register
+     * @param category  Category to map
+     */
     public static void registerBlock(Block block, Category category) {
+        // Checking for category and block
         if (!BLOCKS.containsKey(category)) {
             BLOCKS.put(category, new ArrayList<>());
         } else if (BLOCKS.get(category).contains(block)) {
-            System.out.println("[ERROR] Block: " + block.getType() + ". Already registered, skipping.");
             return;
         }
+
+        // Mapping category to block
         BLOCKS.get(category).add(block);
+
+        // Log
         if (block.isCustom())
             System.out.println("[BLOCKLY] Registered block: " + block.getType() + ".");
     }
 
+    /**
+     * Registers a JsonObject
+     *
+     * @see Blockly#registerBlock(Block, Category)
+     *
+     * @param name  Type name of block
+     * @param blockObject JSON object of block
+     * @param category  Category to map
+     */
     public static void registerBlock(String name, JsonObject blockObject, Category category) {
+        // Creating block object
         Block block = new Block(name, blockObject.get("init") != null ? blockObject.get("init").getAsString() : null, blockObject);
+
+        // Adding dependencies (if applicable)
         block.depend(blockObject.get("depend") != null ? blockObject.get("depend").getAsString() : null);
+
+        // Adding provisions (if applicable)
         block.provide(blockObject.get("provide") != null ? blockObject.get("provide").getAsString() : null);
+
+        // Adding field provisions (if applicable)
         if (blockObject.get("fieldProvides") != null) {
             Map<String, Map<String, String[]>> fieldProvides = gson.fromJson(blockObject.get("fieldProvides").toString(), new TypeToken<Map<String, Map<String, String[]>>>() {}.getType());
             for (String fieldKey : fieldProvides.keySet()) {
                 block.fieldProvide(fieldKey, fieldProvides.get(fieldKey));
             }
         }
+
+        // Registering code
         if (blockObject.get("code") != null) {
             Map<String, String> code = gson.fromJson(blockObject.get("code").toString(), new TypeToken<Map<String, String>>() {}.getType());
             for (String codeKey : code.keySet()) {
                 Module.getModuleFromName(codeKey).registerBlockCode(block, code.get(codeKey));
             }
         }
+
+        // Adding field manipulators (if applicable)
         if (blockObject.get("fieldManipulator") != null) {
             Map<String, Map<String, Map<String, String>>> fieldManipulator = gson.fromJson(blockObject.get("fieldManipulator").toString(), new TypeToken<Map<String, Map<String, Map<String, String>>>>() {
             }.getType());
@@ -122,6 +159,8 @@ public class Blockly {
                 });
             }
         }
+
+        // Does block escape syntax?
         if (blockObject.get("escape") != null) {
             Map<String, Boolean> escape = gson.fromJson(blockObject.get("escape").toString(), new TypeToken<Map<String, Boolean>>() {
             }.getType());
@@ -130,18 +169,39 @@ public class Blockly {
                     Module.getModuleFromName(module).escapeSyntax(block);
             }
         }
+
+        // Registering block object
         registerBlock(block, category);
     }
+
+    /**
+     * Parses JSON file, using Gson
+     * 
+     * @see Blockly#registerBlock(File, Category)
+     * @see Blockly#registerBlock(String, JsonObject, Category) 
+     * @see BlocklyPluginLoader#loadBlocksFromDirectory(File)
+     * 
+     * @param blockJson  JSON file of block
+     * @param category  Category to register
+     */
     public static void registerBlock(File blockJson, Category category) {
         JsonObject blockObject = null;
         try {
+            // Parsing block object
             blockObject = gson.fromJson(new FileReader(blockJson), JsonObject.class);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
+
+        // Registering block
         registerBlock(new DetailedFile(blockJson).getFileName(), blockObject, category);
     }
 
+    /**
+     * Get html of blocks
+     *
+     * @return HTML of blocks
+     */
     public static String parseBlocks() {
         JsonArray array = new JsonArray();
         for (List<Block> blocks : BLOCKS.values()) {
@@ -155,6 +215,12 @@ public class Blockly {
         return array.toString();
     }
 
+    /**
+     * Returns html of catgeories
+     *
+     * @param builder  String builder to append
+     * @param categories  Catergories to register
+     */
     public static void appendCategories(StringBuilder builder, Category... categories) {
         for (Category category : categories) {
             builder.append("    <category name=\"" + category.getName() + "\" colour=\"" + category.getColor() + "\"> \n");
@@ -171,18 +237,34 @@ public class Blockly {
         }
     }
 
+    /**
+     * @return All registered blockly categories
+     */
     public static Category[] getBlocklyCategories() {
         Category[] categories = new Category[BLOCKS.keySet().size()];
         categories = BLOCKS.keySet().toArray(categories);
         return categories;
     }
 
+    /**
+     * @param category  Category of blocks
+     * @return All blocks in category
+     */
     public static Block[] getBlocksFromCategory(Category category) {
         Block[] blockArray = new Block[BLOCKS.get(category).size()];
         blockArray = BLOCKS.get(category).toArray(blockArray);
         return blockArray;
     }
 
+    /**
+     * Obtains a block from type name
+     *
+     * @see Blockly#registerBlock(Block, Category)
+     *
+     * @param type Type name of block
+     *
+     * @return Block object corresponding to type name
+     */
     public static Block getBlockFromType(String type) {
         for (Category category : BLOCKS.keySet()) {
             for (Block block : BLOCKS.get(category)) {
@@ -194,6 +276,15 @@ public class Blockly {
         return null;
     }
 
+    /**
+     * Obtains a category from type name
+     *
+     * @see Blockly#registerCategory(Category)
+     *
+     * @param type Type name of category
+     *
+     * @return Category object corresponding to type name
+     */
     public static Category getCategoryFromType(String type) {
         for (Category category : BLOCKS.keySet()) {
             if (category.getName().equalsIgnoreCase(type)) {
@@ -203,6 +294,9 @@ public class Blockly {
         return null;
     }
 
+    /**
+     * Register default Flow Control blocks
+     */
     public static void queueFlowControl() {
         Block ifBlock = new Block("controls_if");
         Blockly.registerBlock(ifBlock, FLOW);
@@ -235,6 +329,9 @@ public class Blockly {
         JAVASCRIPT.escapeSyntax(repeatBlock);
     }
 
+    /**
+     * Register default Logic blocks
+     */
     public static void queueLogic() {
         Block compareBlock = new Block("logic_compare");
         Blockly.registerBlock(compareBlock, LOGIC);
@@ -282,6 +379,9 @@ public class Blockly {
         JAVASCRIPT.escapeSyntax(booleanBlock);
     }
 
+    /**
+     * Register default Math blocks
+     */
     public static void queueMath() {
         Block numberBlock = new Block("math_number");
         Blockly.registerBlock(numberBlock, MATH);
@@ -316,6 +416,9 @@ public class Blockly {
         JAVASCRIPT.escapeSyntax(arithmeticBlock);
     }
 
+    /**
+     * Register default Text blocks
+     */
     public static void queueText() {
         Block textBlock = new Block("text");
         Blockly.registerBlock(textBlock, TEXT);

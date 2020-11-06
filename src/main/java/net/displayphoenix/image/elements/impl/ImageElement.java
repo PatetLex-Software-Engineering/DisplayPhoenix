@@ -1,11 +1,13 @@
 package net.displayphoenix.image.elements.impl;
 
 import net.displayphoenix.image.CanvasPanel;
+import net.displayphoenix.image.Pixel;
 import net.displayphoenix.image.elements.Element;
 import net.displayphoenix.util.ImageHelper;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.image.BufferedImage;
 
 public class ImageElement extends Element {
 
@@ -13,6 +15,18 @@ public class ImageElement extends Element {
 
     public ImageElement(ImageIcon image) {
         this.image = image;
+    }
+
+    @Override
+    public void parse(CanvasPanel canvas, int offsetX, int offsetY) {
+        ImageIcon newImage = ImageHelper.resize(this.image, Math.round(this.image.getIconWidth() * this.getScaleFactor()), Math.round(this.image.getIconHeight() * this.getScaleFactor()));
+        for (int i = 0; i < newImage.getIconWidth(); i++) {
+            for (int j = 0; j < newImage.getIconHeight(); j++) {
+                if ((offsetX + i > 0 && offsetX + i < canvas.getCanvasWidth()) && (offsetY + j > 0 && offsetY + j < canvas.getCanvasHeight())) {
+                    canvas.setPixel(offsetX + i, offsetY + j, new Pixel(new Color(((BufferedImage) newImage.getImage()).getRGB(i, j))));
+                }
+            }
+        }
     }
 
     @Override

@@ -22,6 +22,11 @@ public class FontElement extends ColorableElement implements KeyListener {
     }
 
     @Override
+    public void parse(CanvasPanel canvas, int offsetX, int offsetY) {
+
+    }
+
+    @Override
     public void draw(CanvasPanel canvas, Graphics g) {
         g.setColor(this.getColor());
         g.setFont(this.font);

@@ -45,27 +45,65 @@ public class BlocklyPanel extends JFXPanel {
 
     private String prevXml;
 
+    /**
+     * Main Blockly Panel, uses WebView and JavaScript bridging to manipulate elements in java
+     *
+     * @see BlocklyDependencyPanel
+     */
     public BlocklyPanel() {
         load();
     }
+
+    /**
+     * Allows to specify blockly panel size
+     *
+     * @param width  Width of panel
+     * @param height  Height of panel
+     */
     public BlocklyPanel(int width, int height) {
         this.setBounds(0, 0, width, height);
         this.setPreferredSize(new Dimension(width, height));
         load();
     }
 
+    /**
+     * Allows to get the workspace of the panel in java code
+     *
+     * @see BlocklyXmlParser#fromWorkspaceXml(String)
+     * @see BlocklyPanel#getRawWorkspace()
+     * @see BlocklyPanel#addBlocks(String)
+     *
+     * @return Array of blocks in workspace
+     */
     public ImplementedBlock[] getWorkspace() {
         return BlocklyXmlParser.fromWorkspaceXml(getRawWorkspace());
     }
+
+    /**
+     * @return Raw xml of BlocklyPanel
+     */
     public String getRawWorkspace() {
         return (String) executeJavaScriptSynchronously("Blockly.Xml.domToText(Blockly.Xml.workspaceToDom(workspace, true))");
     }
 
-    public void setWorkspace(ImplementedBlock... blocks) {
+    /**
+     * Parses blocks and add xml string
+     *
+     * @param blocks  Blocks to parse
+     */
+    public void addBlocks(ImplementedBlock... blocks) {
         String xml = BlocklyXmlParser.parseWorkspaceXml(blocks);
-        setWorkspace(xml);
+        addBlocks(xml);
     }
-    public void setWorkspace(String xml) {
+
+    /**
+     * Adds blocks from raw xml string
+     *
+     * @see BlocklyPanel#addBlocks(ImplementedBlock...)
+     * 
+     * @param xml  Xml to set
+     */
+    public void addBlocks(String xml) {
         xml = xml.replace("'", "\\'").replace("\n", "\\n").replace("\r", "\\r");
         if (this.isLoaded) {
             executeJavaScriptSynchronously("Blockly.Xml.domToWorkspace(Blockly.Xml.textToDom('" + xml + "'), workspace)");
@@ -74,21 +112,41 @@ public class BlocklyPanel extends JFXPanel {
         else {
             System.out.println("Can't set workspace before loading. Loading to queue.");
             String finalXml = xml;
-            queueOnLoad(() -> setWorkspace(finalXml));
+            queueOnLoad(() -> addBlocks(finalXml));
         }
     }
+
+    /**
+     * Clears workspace
+     */
     public void clear() {
         executeJavaScriptSynchronously("workspace.clear()");
     }
 
+    /**
+     * Prompts and imports xml file to workspace
+     *
+     * @param window  Can be null, parent window for FileDialog
+     */
     public void importXmlFileToWorkspace(Window window) {
-        setWorkspace(FileHelper.readAllLines(FileDialog.openFile(window).getFile()));
+        addBlocks(FileHelper.readAllLines(FileDialog.openFile(window).getFile()));
     }
 
+    /**
+     * Queue statement to run when Blockly runs
+     *
+     * @param runnable  Code to run
+     */
     public void queueOnLoad(Runnable runnable) {
         this.runOnLoad.add(runnable);
     }
 
+    /**
+     * Whitelist categories to show in BlocklyPanel
+     *
+     * @param categories  Categories to show
+     * @return
+     */
     public BlocklyPanel whitelist(Category... categories) {
         ThreadHelper.runOnFxThread(() -> {
             StringBuilder html = new StringBuilder();
@@ -104,7 +162,7 @@ public class BlocklyPanel extends JFXPanel {
         this.engine.loadContent(html);
     }
 
-    public void load() {
+    protected void load() {
         setOpaque(false);
         ThreadHelper.runOnFxThread(() -> {
             WebView blockly = new WebView();
@@ -209,10 +267,31 @@ public class BlocklyPanel extends JFXPanel {
         });
     }
 
+    /**
+     * Attach event listener to Blockly panel
+     *
+     * https://developers.google.com/blockly/guides/configure/web/events
+     *
+     * @param listener
+     */
     public void addBlocklyEventListener(IBlocklyListener listener) {
         this.eventListeners.add(listener);
     }
 
+    /**
+     * Fires an event, called from JavaScript
+     *
+     * @param type
+     * @param blockId
+     * @param element
+     * @param name
+     * @param oldValue
+     * @param newValue
+     * @param newCoordinateX
+     * @param newCoordinateY
+     * @param oldCoordinateX
+     * @param oldCoordinateY
+     */
     @SuppressWarnings("unused")
     public void fire(String type, String blockId, String element, String name, String oldValue, String newValue, String newCoordinateX, String newCoordinateY, String oldCoordinateX, String oldCoordinateY) {
 

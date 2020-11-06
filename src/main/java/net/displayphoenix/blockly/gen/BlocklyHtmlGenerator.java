@@ -6,6 +6,12 @@ import net.displayphoenix.blockly.js.BlocklyJS;
  * @author TBroski
  */
 public interface BlocklyHtmlGenerator {
+
+    /**
+     * Appends top part of html
+     *
+     * @param builder  StringBuilder to append
+     */
     static void appendTopWrapper(StringBuilder builder) {
         builder.append("<!DOCTYPE html>\n" +
                 "<html>\n" +
@@ -33,6 +39,12 @@ public interface BlocklyHtmlGenerator {
                 "<xml id=\"toolbox\" style=\"display: none\">\n");
     }
 
+    /**
+     * Appends bottom part of html
+     *
+     * @param builder  StringBuilder to append
+     * @param blocksArray  Blocks to define
+     */
     static void appendBottomWrapper(StringBuilder builder, String blocksArray) { //480, 600
         builder.append("</xml>\n" +
                 "\n" +
