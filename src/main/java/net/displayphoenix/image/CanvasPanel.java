@@ -37,6 +37,7 @@ public class CanvasPanel extends JPanel implements MouseWheelListener, MouseMoti
 
     private Point cachedPoint;
     private int cachedButton;
+    private boolean placedElement;
 
     private List<IRenderAttacher> renderAttachers = new ArrayList<>();
 
@@ -436,7 +437,7 @@ public class CanvasPanel extends JPanel implements MouseWheelListener, MouseMoti
     @Override
     public void keyTyped(KeyEvent e) {
         CanvasElement canvasElement = this.elements.get(this.getSelectedLayer());
-        if (canvasElement.element  instanceof KeyListener) {
+        if (canvasElement != null && canvasElement.element  instanceof KeyListener) {
             ((KeyListener) canvasElement.element).keyTyped(e);
             repaint();
         }
@@ -445,7 +446,7 @@ public class CanvasPanel extends JPanel implements MouseWheelListener, MouseMoti
     @Override
     public void keyPressed(KeyEvent e) {
         CanvasElement canvasElement = this.elements.get(this.getSelectedLayer());
-        if (canvasElement.element  instanceof KeyListener) {
+        if (canvasElement != null && canvasElement.element  instanceof KeyListener) {
             ((KeyListener) canvasElement.element).keyPressed(e);
             repaint();
         }
@@ -454,7 +455,7 @@ public class CanvasPanel extends JPanel implements MouseWheelListener, MouseMoti
     @Override
     public void keyReleased(KeyEvent e) {
         CanvasElement canvasElement = this.elements.get(this.getSelectedLayer());
-        if (canvasElement.element instanceof KeyListener) {
+        if (canvasElement != null && canvasElement.element instanceof KeyListener) {
             ((KeyListener) canvasElement.element).keyReleased(e);
             repaint();
         }

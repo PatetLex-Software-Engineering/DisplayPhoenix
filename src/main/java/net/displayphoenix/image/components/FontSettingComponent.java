@@ -15,9 +15,6 @@ public class FontSettingComponent extends JPanel implements ISettingComponent<Fo
 
     public FontSettingComponent(FontSetting setting) {
         this.setting = setting;
-        setForeground(Application.getTheme().getColorTheme().getSecondaryColor());
-        setBackground(Application.getTheme().getColorTheme().getAccentColor());
-        setOpaque(false);
         String[] fontNames = new String[setting.getFonts().length];
         int arialIndex = 0;
         for (int i = 0; i < setting.getFonts().length; i++) {
@@ -30,6 +27,23 @@ public class FontSettingComponent extends JPanel implements ISettingComponent<Fo
         this.fontList = new JComboBox(fontNames);
         this.fontList.setSelectedIndex(arialIndex);
         add(this.fontList);
+        setForeground(Application.getTheme().getColorTheme().getSecondaryColor());
+        setBackground(Application.getTheme().getColorTheme().getPrimaryColor());
+        setOpaque(false);
+    }
+
+    @Override
+    public void setForeground(Color fg) {
+        super.setForeground(fg);
+        if (this.fontList != null)
+            this.fontList.setForeground(fg);
+    }
+
+    @Override
+    public void setBackground(Color bg) {
+        super.setBackground(bg);
+        if (this.fontList != null)
+            this.fontList.setBackground(bg);
     }
 
     @Override
