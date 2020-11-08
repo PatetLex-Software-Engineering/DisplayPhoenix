@@ -1,27 +1,39 @@
 package net.displayphoenix.image;
 
 import net.displayphoenix.Application;
+import net.displayphoenix.image.components.FontSettingComponent;
+import net.displayphoenix.image.components.IntegerSettingComponent;
+import net.displayphoenix.image.interfaces.ISettingComponent;
+import net.displayphoenix.image.tools.FontSetting;
+import net.displayphoenix.image.tools.IntegerSetting;
+import net.displayphoenix.image.tools.Setting;
 import net.displayphoenix.image.tools.Tool;
+import net.displayphoenix.lang.Localizer;
 import net.displayphoenix.ui.widget.BrightnessColorWheel;
 import net.displayphoenix.ui.widget.ColorWheel;
+import net.displayphoenix.util.ComponentHelper;
 import net.displayphoenix.util.ImageHelper;
 import net.displayphoenix.util.PanelHelper;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ToolPanel extends JPanel {
 
     private BrightnessColorWheel colorWheel;
+
     private int cachedButton;
+    private JPanel settingsPanel;
+    private List<ISettingComponent> settingComponents = new ArrayList<>();
 
     public ToolPanel(CanvasPanel canvas, Tool... tools) {
         this.colorWheel = new BrightnessColorWheel();
         this.colorWheel.setPreferredSize(new Dimension(150, 200));
         JPanel defaultPanel = PanelHelper.join(this.colorWheel);
-        JPanel toolPanel = new JPanel(new GridLayout(5, 2, 5, 5));
-        toolPanel.revalidate();
+        JPanel toolPanel = new JPanel(new GridLayout(Math.round((float) Math.ceil(tools.length / 2F)), 2));
         toolPanel.setOpaque(false);
         for (Tool tool : tools) {
             ToolButton toolButton = new ToolButton(this, tool);
@@ -29,7 +41,8 @@ public class ToolPanel extends JPanel {
             toolButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
             toolPanel.add(PanelHelper.join(toolButton));
         }
-        add(PanelHelper.northAndSouthElements(toolPanel, defaultPanel));
+        this.settingsPanel = PanelHelper.join();
+        add(PanelHelper.northAndSouthElements(toolPanel, PanelHelper.northAndCenterElements(this.settingsPanel, defaultPanel)));
         ToolPanel toolkit = this;
         canvas.addMouseListener(new MouseAdapter() {
             @Override
@@ -43,10 +56,7 @@ public class ToolPanel extends JPanel {
                     if ((x >= 0 && x < canvas.getCanvasWidth()) && (y >= 0 && y < canvas.getCanvasHeight())) {
                         if (e.getButton() == MouseEvent.BUTTON1) {
                             cachedButton = e.getButton();
-                            ToolButton.selectedTool.onLeftClick(toolkit, canvas, x, y);
-                        } else if (e.getButton() == MouseEvent.BUTTON3) {
-                            cachedButton = e.getButton();
-                            ToolButton.selectedTool.onRightClick(toolkit, canvas, x, y);
+                            ToolButton.selectedTool.onLeftClick(toolkit, canvas, x, y, settingComponents.toArray(new ISettingComponent[settingComponents.size()]));
                         }
                     }
                 }
@@ -62,9 +72,7 @@ public class ToolPanel extends JPanel {
                     y = Math.round((float) Math.floor(((y - canvas.getCanvasY()) / canvas.convergeZoom(1)) + (canvas.getCanvasHeight() / 2)));
                     if ((x >= 0 && x < canvas.getCanvasWidth()) && (y >= 0 && y < canvas.getCanvasHeight())) {
                         if (cachedButton == MouseEvent.BUTTON1) {
-                            ToolButton.selectedTool.onLeftClick(toolkit, canvas, x, y);
-                        } else if (e.getButton() == MouseEvent.BUTTON3) {
-                            ToolButton.selectedTool.onRightClick(toolkit, canvas, x, y);
+                            ToolButton.selectedTool.onLeftClick(toolkit, canvas, x, y, settingComponents.toArray(new ISettingComponent[settingComponents.size()]));
                         }
                     }
                 }
@@ -81,8 +89,37 @@ public class ToolPanel extends JPanel {
 
     @Override
     protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
         g.setColor(getForeground());
         g.fillRect(0, 0, getWidth(), getHeight());
+    }
+
+    protected void loadSettings() {
+        this.settingsPanel.removeAll();
+        this.settingComponents.clear();
+        if (ToolButton.selectedTool != null && ToolButton.selectedTool.getSettings() != null) {
+            JPanel panel = PanelHelper.join();
+            for (Setting setting : ToolButton.selectedTool.getSettings()) {
+                JLabel label = new JLabel(Localizer.translate(setting.getTranslationKey()));
+                ComponentHelper.themeComponent(label);
+                ComponentHelper.deriveFont(label, 14);
+                if (setting instanceof IntegerSetting) {
+                    IntegerSettingComponent integerSettingComponent = new IntegerSettingComponent((IntegerSetting) setting);
+                    integerSettingComponent.setPreferredSize(new Dimension(getWidth(), Math.round(getWidth() * 0.2F)));
+                    this.settingComponents.add(integerSettingComponent);
+                    panel = PanelHelper.northAndCenterElements(panel, PanelHelper.northAndCenterElements(PanelHelper.join(label), PanelHelper.join(integerSettingComponent)));
+                }
+                else if (setting instanceof FontSetting) {
+                    FontSettingComponent fontSettingComponent = new FontSettingComponent((FontSetting) setting);
+                    fontSettingComponent.setPreferredSize(new Dimension(getWidth(), Math.round(getWidth() * 0.2F)));
+                    this.settingComponents.add(fontSettingComponent);
+                    panel = PanelHelper.northAndCenterElements(panel, PanelHelper.northAndCenterElements(PanelHelper.join(label), PanelHelper.join(fontSettingComponent)));
+                }
+            }
+            this.settingsPanel.add(panel);
+        }
+        this.settingsPanel.revalidate();
+        this.settingsPanel.repaint();
     }
 
     private static class ToolButton extends JButton implements MouseListener {
@@ -119,6 +156,7 @@ public class ToolPanel extends JPanel {
             if (e.getButton() == MouseEvent.BUTTON1) {
                 selectedTool = selectedTool == this.tool ? null : this.tool;
                 this.toolkit.repaint();
+                this.toolkit.loadSettings();
             }
         }
 

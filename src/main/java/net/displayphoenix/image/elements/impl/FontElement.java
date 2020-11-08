@@ -1,29 +1,54 @@
 package net.displayphoenix.image.elements.impl;
 
 import net.displayphoenix.image.CanvasPanel;
+import net.displayphoenix.image.Pixel;
 import net.displayphoenix.image.elements.ColorableElement;
+import net.displayphoenix.util.CanvasHelper;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.image.BufferedImage;
 
 public class FontElement extends ColorableElement implements KeyListener {
 
     private String text;
-    private Font font = Font.getFont(Font.SANS_SERIF);
+    private Font font;
 
+    public FontElement(String text) {
+        this(text, Color.BLACK, 1F);
+    }
     public FontElement(String text, Color color, float scale) {
+        this(text, color, Font.getFont(Font.SANS_SERIF), scale);
+    }
+    public FontElement(String text, Color color, Font font, float scale) {
         this.text = text;
         setColor(color);
         setScaleFactor(scale);
-    }
-    public FontElement(String text) {
-        this(text, Color.BLACK, 1F);
+        this.font = font.deriveFont(12F);
     }
 
     @Override
     public void parse(CanvasPanel canvas, int offsetX, int offsetY) {
+        BufferedImage image = new BufferedImage(Math.round(canvas.getCanvasWidth() * this.getScaleFactor()), Math.round(canvas.getCanvasHeight() * this.getScaleFactor()), BufferedImage.TYPE_INT_ARGB);
+        Graphics2D graphics2D = image.createGraphics();
 
+        graphics2D.scale(this.getScaleFactor(), this.getScaleFactor());
+        graphics2D.setColor(this.getColor());
+        graphics2D.setFont(this.getFont());
+        graphics2D.drawString(this.text, 0, (image.getHeight() / this.getScaleFactor()) - getHeight(canvas, graphics2D));
+
+        float height = getHeight(canvas, graphics2D) * this.getScaleFactor();
+        for (int i = 0; i < image.getWidth(); i++) {
+            for (int j = image.getHeight() - 1; j >= 0; j--) {
+                Color rgb = new Color(image.getRGB(i, j));
+                int alpha = (image.getRGB(i, j) >> 24) & 0xff;
+                int oj = j - image.getHeight() + Math.round(height);
+                if (alpha > 0 && CanvasHelper.isPointInBounds(canvas, offsetX + i, offsetY + oj + Math.round(height))) {
+                    canvas.setPixel(offsetX + i, offsetY + oj + Math.round(height), new Pixel(rgb));
+                }
+            }
+        }
     }
 
     @Override
@@ -49,6 +74,11 @@ public class FontElement extends ColorableElement implements KeyListener {
     @Override
     public int getHeight(CanvasPanel canvas, Graphics g) {
         return (int) g.getFontMetrics().getStringBounds(this.text, g).getHeight();
+    }
+
+    @Override
+    public int defaultOffsetY(CanvasPanel canvas, Graphics g) {
+        return getHeight(canvas, g);
     }
 
     @Override

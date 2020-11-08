@@ -2,10 +2,13 @@ package net.displayphoenix;
 
 import net.displayphoenix.enums.WidgetStyle;
 import net.displayphoenix.image.*;
+import net.displayphoenix.image.elements.Layer;
+import net.displayphoenix.image.elements.StaticElement;
 import net.displayphoenix.image.elements.impl.ImageElement;
 import net.displayphoenix.image.tools.impl.*;
 import net.displayphoenix.ui.ColorTheme;
 import net.displayphoenix.ui.Theme;
+import net.displayphoenix.util.ColorHelper;
 import net.displayphoenix.util.ImageHelper;
 import net.displayphoenix.util.PanelHelper;
 
@@ -20,17 +23,17 @@ public class Test {
         Application.create("sda", ImageHelper.getImage("blunt_warning"), theme, "kdsa");
 
         Application.openWindow(parentFrame -> {
-            CanvasPanel canvas = new CanvasPanel(16, 16);
+            CanvasPanel canvas = new CanvasPanel(150, 150);
             //canvas.addElement(0, new FontElement("Hello!", Color.BLACK, 4F));
             //canvas.setSelectedElement(null);
-            canvas.setZoom(50);
-            canvas.setPreferredSize(new Dimension(parentFrame.getWidth() - 400, parentFrame.getHeight()));
+            canvas.setZoom(10);
+            canvas.setPreferredSize(new Dimension(parentFrame.getWidth() - 600, parentFrame.getHeight()));
             LayerViewPanel viewPanel = new LayerViewPanel(canvas);
             viewPanel.setPreferredSize(new Dimension(200, parentFrame.getHeight()));
-            ToolPanel toolPanel = new ToolPanel(canvas, new PencilTool(), new BucketTool(), new PickerTool(), new EraserTool(), new ImageTool());
+            ToolPanel toolPanel = new ToolPanel(canvas, new PencilTool(), new BucketTool(), new PickerTool(), new EraserTool(), new ImageTool(), new TextTool());
             toolPanel.setPreferredSize(new Dimension(200, parentFrame.getHeight()));
-            //ElementPanel elementPanel = new ElementPanel(canvas, new ImageElement(ImageHelper.resize(ImageHelper.getImage("blunt_warning"), 100, 100)));
-            //elementPanel.setPreferredSize(new Dimension(200, parentFrame.getHeight()));
+            ElementPanel elementPanel = new ElementPanel(canvas, new ImageElement(ImageHelper.resize(ImageHelper.getImage("blunt_warning"), 100, 100)));
+            elementPanel.setPreferredSize(new Dimension(200, parentFrame.getHeight()));
 
             JButton button = new JButton("save");
             button.addActionListener(new ActionListener() {
@@ -40,7 +43,7 @@ public class Test {
                 }
             });
 
-            parentFrame.add(PanelHelper.northAndCenterElements(button, PanelHelper.westAndCenterElements(toolPanel, PanelHelper.westAndCenterElements(canvas, viewPanel))));
+            parentFrame.add(PanelHelper.northAndCenterElements(button, PanelHelper.westAndCenterElements(PanelHelper.westAndCenterElements(elementPanel, toolPanel), PanelHelper.westAndCenterElements(canvas, viewPanel))));
         });
     }
 }

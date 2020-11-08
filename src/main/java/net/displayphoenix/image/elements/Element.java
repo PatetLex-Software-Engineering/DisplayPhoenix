@@ -30,6 +30,14 @@ public abstract class Element implements Cloneable {
         this.centered = centered;
     }
 
+    public int defaultOffsetX(CanvasPanel canvas, Graphics g) {
+        return 0;
+    }
+
+    public int defaultOffsetY(CanvasPanel canvas, Graphics g) {
+        return 0;
+    }
+
     public Element clone() {
         try {
             return (Element) super.clone();

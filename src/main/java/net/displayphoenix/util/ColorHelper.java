@@ -25,13 +25,30 @@ public class ColorHelper {
     }
 
     public static boolean isColorTolerated(Color key, Color input, float tolerance) {
+        if (input == key)
+            return true;
+        if (input == null)
+            return true;
+        if (key == null)
+            return false;
+        float t = tolerance / 100;
         float r = input.getRed();
         float g = input.getGreen();
         float b = input.getBlue();
         float kr = key.getRed();
         float kg = key.getGreen();
         float kb = key.getBlue();
-        return (r - tolerance <= kr && r + tolerance >= kr) &&  (g - tolerance <= kg && g + tolerance >= kg) && (b - tolerance <= kb && b + tolerance >= kb);
+        //return (r - tolerance <= kr && r + tolerance >= kr) &&  (g - tolerance <= kg && g + tolerance >= kg) && (b - tolerance <= kb && b + tolerance >= kb);
+        float raR = r - kr;
+        float raG = g - kg;
+        float raB = b - kb;
+        if (raR < 0)
+            raR *= -1;
+        if (raG < 0)
+            raG *= -1;
+        if (raB < 0)
+            raB *= -1;
+        return ((raR / 255F) <= t) && ((raG / 255F) <= t) && ((raB / 255F) <= t);
     }
 
     public static Color max(Color input) {

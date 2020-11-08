@@ -22,8 +22,10 @@ public class ImageElement extends Element {
         ImageIcon newImage = ImageHelper.resize(this.image, Math.round(this.image.getIconWidth() * this.getScaleFactor()), Math.round(this.image.getIconHeight() * this.getScaleFactor()));
         for (int i = 0; i < newImage.getIconWidth(); i++) {
             for (int j = 0; j < newImage.getIconHeight(); j++) {
-                if ((offsetX + i > 0 && offsetX + i < canvas.getCanvasWidth()) && (offsetY + j > 0 && offsetY + j < canvas.getCanvasHeight())) {
-                    canvas.setPixel(offsetX + i, offsetY + j, new Pixel(new Color(((BufferedImage) newImage.getImage()).getRGB(i, j))));
+                if ((offsetX + i >= 0 && offsetX + i < canvas.getCanvasWidth()) && (offsetY + j >= 0 && offsetY + j < canvas.getCanvasHeight())) {
+                    Color rgb = new Color(((BufferedImage) newImage.getImage()).getRGB(i, j));
+                    int alpha = (((BufferedImage) newImage.getImage()).getRGB(i, j) >> 24) & 0xff;
+                    canvas.setPixel(offsetX + i, offsetY + j, alpha > 0 ? new Pixel(rgb) : null);
                 }
             }
         }

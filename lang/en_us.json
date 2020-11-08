@@ -5,5 +5,9 @@
   "key.res": "Block Resource 1",
   "key.res1": "Block Resource 2",
   "key.pro": "On block placed",
-  "key.pro1": "On block tick"
+  "key.pro1": "On block tick",
+
+  "canvas.point.setting.text": "Point size",
+  "canvas.tolerance.setting.text": "Tolerance",
+  "canvas.font.setting.text": "Font"
 }

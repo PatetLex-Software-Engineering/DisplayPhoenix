@@ -2,6 +2,7 @@ package net.displayphoenix.image;
 
 import net.displayphoenix.Application;
 import net.displayphoenix.image.elements.Element;
+import net.displayphoenix.image.elements.Layer;
 import net.displayphoenix.util.ComponentHelper;
 import net.displayphoenix.util.PanelHelper;
 
@@ -26,7 +27,7 @@ public class ElementPanel extends JPanel {
                 if (e.getClickCount() == 2) {
                     Element element = elementList.getSelectedValue();
                     Element clone = element.clone();
-                    //canvas.addElement(clone);
+                    canvas.setElement(getLayerToAdd(canvas), clone, 0, 0, true);
                 }
             }
         });
@@ -38,6 +39,10 @@ public class ElementPanel extends JPanel {
         elementListPanel.setForeground(canvas.getForeground());
         elementListPanel.setOpaque(false);
         add(elementListPanel);
+    }
+
+    protected Layer getLayerToAdd(CanvasPanel canvas) {
+        return canvas.getSelectedLayer();
     }
 
     @Override
@@ -68,11 +73,12 @@ public class ElementPanel extends JPanel {
             this.canvasToDraw = new CanvasPanel(this.getWidth(), this.getHeight());
         }
 
-
         @Override
         protected void paintComponent(Graphics g) {
             super.paintComponent(g);
             this.canvasToDraw.setPreferredSize(new Dimension(this.element.getWidth(this.canvasToDraw, g), this.element.getHeight(this.canvasToDraw, g)));
+            ((Graphics2D) g).translate(getWidth() / 2F, getHeight() / 2F);
+            ((Graphics2D) g).translate(-this.element.getWidth(this.canvasToDraw, g) / 2F, -this.element.getHeight(this.canvasToDraw, g) / 2F);
             this.element.draw(this.canvasToDraw, g);
         }
     }

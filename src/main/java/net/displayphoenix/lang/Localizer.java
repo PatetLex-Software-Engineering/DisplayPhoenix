@@ -28,7 +28,7 @@ public class Localizer {
     public static void loadLangFromDirectory(File directory) {
         try {
             for (Local local : Local.values()) {
-                File file = new File(directory.getPath() + local.getTag() + ".json");
+                File file = new File(directory.getPath() + "/" + local.getTag() + ".json");
 
                 if (!file.createNewFile()) {
                     FileReader reader = new FileReader(file);
