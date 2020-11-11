@@ -1,6 +1,6 @@
 package net.displayphoenix.util;
 
-import net.displayphoenix.image.effects.ImageEffect;
+import net.displayphoenix.canvasly.effects.ImageEffect;
 
 import javax.swing.*;
 import java.awt.*;

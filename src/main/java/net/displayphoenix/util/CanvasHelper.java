@@ -1,6 +1,6 @@
 package net.displayphoenix.util;
 
-import net.displayphoenix.image.CanvasPanel;
+import net.displayphoenix.canvasly.CanvasPanel;
 
 public class CanvasHelper {
 

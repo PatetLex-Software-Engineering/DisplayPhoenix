@@ -1,4 +1,4 @@
-package net.displayphoenix.image;
+package net.displayphoenix.canvasly;
 
 import net.displayphoenix.Application;
 import net.displayphoenix.util.ImageHelper;

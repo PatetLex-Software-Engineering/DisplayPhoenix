@@ -1,7 +1,7 @@
-package net.displayphoenix.image;
+package net.displayphoenix.canvasly;
 
 import net.displayphoenix.Application;
-import net.displayphoenix.image.interfaces.LayerListener;
+import net.displayphoenix.canvasly.interfaces.LayerListener;
 import net.displayphoenix.util.ImageHelper;
 
 import javax.swing.*;

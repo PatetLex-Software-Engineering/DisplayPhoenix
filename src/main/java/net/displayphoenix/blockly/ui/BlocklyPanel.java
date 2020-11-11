@@ -125,11 +125,9 @@ public class BlocklyPanel extends JFXPanel {
 
     /**
      * Prompts and imports xml file to workspace
-     *
-     * @param window  Can be null, parent window for FileDialog
      */
-    public void importXmlFileToWorkspace(Window window) {
-        addBlocks(FileHelper.readAllLines(FileDialog.openFile(window).getFile()));
+    public void importXmlFileToWorkspace() {
+        addBlocks(FileHelper.readAllLines(FileDialog.openFile().getFile()));
     }
 
     /**

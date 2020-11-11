@@ -80,14 +80,10 @@ public class BitWidget {
     /**
      *
      * Creates the main component and panel component
-     *
-     * @see FileDialog#openFile(Window, String...)
-     * 
-     * @param parentFrame  Can be null, used for file dialog
      * 
      * @return  Component array of both panel and component
      */
-    public Component[] create(Window parentFrame) {
+    public Component[] create() {
         // Widget comment
         JLabel label = new JLabel(Localizer.translate(this.translationKey));
 
@@ -190,7 +186,7 @@ public class BitWidget {
                 resourceWidget.addMouseListener(new MouseAdapter() {
                     @Override
                     public void mouseClicked(MouseEvent e) {
-                        resourceWidget.setFile(FileDialog.openFile(parentFrame, extensions));
+                        resourceWidget.setFile(FileDialog.openFile(extensions));
                     }
                 });
                 resourceWidget.setPreferredSize(new Dimension(150, 150));
@@ -235,7 +231,7 @@ public class BitWidget {
     /**
      * Returns website of <code>helpUrl</code>
      *
-     * @see BitWidget#create(Window)
+     * @see BitWidget#create()
      *
      * @return Website of help url
      */
