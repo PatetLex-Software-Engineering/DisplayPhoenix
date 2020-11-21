@@ -6,9 +6,6 @@ import net.displayphoenix.canvasly.ToolPanel;
 import net.displayphoenix.canvasly.interfaces.ISettingComponent;
 import net.displayphoenix.canvasly.tools.Setting;
 import net.displayphoenix.canvasly.tools.Tool;
-import net.displayphoenix.util.CanvasHelper;
-import net.displayphoenix.util.ColorHelper;
-import net.displayphoenix.util.ImageHelper;
 
 import javax.swing.*;
 import java.awt.*;
@@ -18,84 +15,128 @@ public class BucketTool extends Tool {
 
     @Override
     public ImageIcon getIcon() {
-        return ImageHelper.getImage("image/bucket");
+        return getImage("image/bucket");
     }
 
     @Override
     public void onLeftClick(ToolPanel toolkit, CanvasPanel canvas, int x, int y, ISettingComponent[] settingComponents) {
-        Pixel[][] pixels = canvas.getLayers().get(canvas.getSelectedLayer());
-        float tolerance = (int) settingComponents[0].getValue();
-        Color key = getPixelColor(pixels, x, y);
-        Color fill = toolkit.getColorWheel().getColor();
-        fillCanvas(canvas, pixels, x, y, fill, key, tolerance);
+        fill(canvas, x, y, getPixelColor(canvas, x, y), toolkit.getColorWheel().getColor(), (Integer) settingComponents[0].getValue());
         canvas.repaint();
     }
 
-    private void fillCanvas(CanvasPanel canvas, Pixel[][] pixels, int x, int y, Color fill, Color key, float tolerance) {
+    private void fill(CanvasPanel canvas, int x, int y, Color key, Color fill, float tolerance) {
         for (int i = x; i < canvas.getCanvasWidth(); i++) {
-            for (int j = y; j < canvas.getCanvasHeight(); j++) {
-                if (ColorHelper.isColorTolerated(key, getPixelColor(pixels, i, j), tolerance)) {
-                    pixels[i][j] = new Pixel(fill);
+            if (getPixelColor(canvas, i, y) != fill) {
+                for (int j = y + 1; j < canvas.getCanvasHeight(); j++) {
+                    if (getPixelColor(canvas, i, j) != fill) {
+                        if (isColorTolerated(key, getPixelColor(canvas, i, j), tolerance)) {
+                            canvas.setPixel(i, j, new Pixel(fill));
+                            fill(canvas, i, j, key, fill, tolerance);
+                        } else {
+                            break;
+                        }
+                    }
                 }
-                else {
-                    checkCanvas(canvas, pixels, i, j, fill, key, tolerance);
-                    break;
-                }
-            }
-            for (int j = y - 1; j >= 0; j--) {
-                if (ColorHelper.isColorTolerated(key, getPixelColor(pixels, i, j), tolerance)) {
-                    pixels[i][j] = new Pixel(fill);
-                }
-                else {
-                    checkCanvas(canvas, pixels, i, j, fill, key, tolerance);
+                if (isColorTolerated(key, getPixelColor(canvas, i, y), tolerance)) {
+                    canvas.setPixel(i, y, new Pixel(fill));
+                } else {
                     break;
                 }
             }
         }
         for (int i = x - 1; i >= 0; i--) {
-            for (int j = y; j < canvas.getCanvasHeight(); j++) {
-                if (ColorHelper.isColorTolerated(key, getPixelColor(pixels, i, j), tolerance)) {
-                    pixels[i][j] = new Pixel(fill);
+            if (getPixelColor(canvas, i, y) != fill) {
+                for (int j = y + 1; j < canvas.getCanvasHeight(); j++) {
+                    if (getPixelColor(canvas, i, j) != fill) {
+                        if (isColorTolerated(key, getPixelColor(canvas, i, j), tolerance)) {
+                            canvas.setPixel(i, j, new Pixel(fill));
+                            fill(canvas, i, j, key, fill, tolerance);
+                        } else {
+                            break;
+                        }
+                    }
                 }
-                else {
-                    checkCanvas(canvas, pixels, i, j, fill, key, tolerance);
+                if (isColorTolerated(key, getPixelColor(canvas, i, y), tolerance)) {
+                    canvas.setPixel(i, y, new Pixel(fill));
+                } else {
                     break;
                 }
             }
-            for (int j = y - 1; j >= 0; j--) {
-                if (ColorHelper.isColorTolerated(key, getPixelColor(pixels, i, j), tolerance)) {
-                    pixels[i][j] = new Pixel(fill);
+        }
+        for (int i = x; i < canvas.getCanvasWidth(); i++) {
+            if (y - 1 < 0 || getPixelColor(canvas, i, y - 1) != fill) {
+                for (int j = y - 1; j >= 0; j--) {
+                    if (getPixelColor(canvas, i, j) != fill) {
+                        if (isColorTolerated(key, getPixelColor(canvas, i, j), tolerance)) {
+                            canvas.setPixel(i, j, new Pixel(fill));
+                            fill(canvas, i, j, key, fill, tolerance);
+                        } else {
+                            break;
+                        }
+                    }
                 }
-                else {
-                    checkCanvas(canvas, pixels, i, j, fill, key, tolerance);
+                if (y - 1 >= 0 && isColorTolerated(key, getPixelColor(canvas, i, y - 1), tolerance)) {
+                    canvas.setPixel(i, y - 1, new Pixel(fill));
+                } else {
+                    break;
+                }
+            }
+        }
+        for (int i = x - 1; i >= 0; i--) {
+            if (y - 1 < 0 || getPixelColor(canvas, i, y - 1) != fill) {
+                for (int j = y - 1; j >= 0; j--) {
+                    if (getPixelColor(canvas, i, j) != fill) {
+                        if (isColorTolerated(key, getPixelColor(canvas, i, j), tolerance)) {
+                            canvas.setPixel(i, j, new Pixel(fill));
+                            fill(canvas, i, j, key, fill, tolerance);
+                        } else {
+                            break;
+                        }
+                    }
+                }
+                if (y - 1 >= 0 && isColorTolerated(key, getPixelColor(canvas, i, y - 1), tolerance)) {
+                    canvas.setPixel(i, y - 1, new Pixel(fill));
+                } else {
                     break;
                 }
             }
         }
     }
 
-    private void checkCanvas(CanvasPanel canvas, Pixel[][] pixels, int x, int y, Color fill, Color key, float tolerance) {
-        if (CanvasHelper.isPointInBounds(canvas, x + 1, y) && ColorHelper.isColorTolerated(key, getPixelColor(pixels, x + 1, y), tolerance) && getPixelColor(pixels, x + 1, y) != fill) {
-            fillCanvas(canvas, pixels, x + 1, y, fill, key, tolerance);
-        }
-        else if (CanvasHelper.isPointInBounds(canvas, x - 1, y) && ColorHelper.isColorTolerated(key, getPixelColor(pixels, x - 1, y), tolerance) && getPixelColor(pixels, x - 1, y) != fill) {
-            fillCanvas(canvas, pixels, x - 1, y, fill, key, tolerance);
-        }
-        else if (CanvasHelper.isPointInBounds(canvas, x, y + 1) && ColorHelper.isColorTolerated(key, getPixelColor(pixels, x, y + 1), tolerance) && getPixelColor(pixels, x, y + 1) != fill) {
-            fillCanvas(canvas, pixels, x, y + 1, fill, key, tolerance);
-        }
-        else if (CanvasHelper.isPointInBounds(canvas, x, y - 1) && ColorHelper.isColorTolerated(key, getPixelColor(pixels, x, y - 1), tolerance) && getPixelColor(pixels, x, y - 1) != fill) {
-            fillCanvas(canvas, pixels, x, y - 1, fill, key, tolerance);
-        }
-    }
 
     @Override
     public List<Setting> getSettings() {
         return Tool.getToleranceSettings();
     }
 
-    private Color getPixelColor(Pixel[][] pArr, int x, int y) {
-        Pixel pixel = pArr[x][y];
+    private Color getPixelColor(CanvasPanel canvas, int x, int y) {
+        Pixel pixel = canvas.getLayers().get(canvas.getSelectedLayer())[x][y];
         return pixel != null ? pixel.getColor() : null;
+    }
+
+    private static boolean isColorTolerated(Color key, Color input, float tolerance) {
+        float t = tolerance / 100;
+        if (input == key)
+            return true;
+        if (input == null)
+            return t >= 1 ? true : false;
+        if (key == null)
+            return false;
+        float r = input.getRed();
+        float g = input.getGreen();
+        float b = input.getBlue();
+        float kr = key.getRed();
+        float kg = key.getGreen();
+        float kb = key.getBlue();
+        float raR = r - kr;
+        float raG = g - kg;
+        float raB = b - kb;
+        if (raR < 0)
+            raR *= -1;
+        if (raG < 0)
+            raG *= -1;
+        if (raB < 0)
+            raB *= -1;
+        return ((raR / 255F) <= t) && ((raG / 255F) <= t) && ((raB / 255F) <= t);
     }
 }

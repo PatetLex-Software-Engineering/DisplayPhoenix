@@ -6,8 +6,7 @@ import net.displayphoenix.canvasly.ToolPanel;
 import net.displayphoenix.canvasly.interfaces.ISettingComponent;
 import net.displayphoenix.canvasly.tools.Setting;
 import net.displayphoenix.canvasly.tools.Tool;
-import net.displayphoenix.util.CanvasHelper;
-import net.displayphoenix.util.ImageHelper;
+import net.displayphoenix.canvasly.util.CanvasHelper;
 
 import javax.swing.*;
 import java.util.List;
@@ -16,7 +15,7 @@ public class PencilTool extends Tool {
 
     @Override
     public ImageIcon getIcon() {
-        return ImageHelper.getImage("image/pencil");
+        return getImage("image/pencil");
     }
 
     @Override

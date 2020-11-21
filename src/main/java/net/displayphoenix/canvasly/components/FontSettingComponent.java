@@ -1,6 +1,5 @@
 package net.displayphoenix.canvasly.components;
 
-import net.displayphoenix.Application;
 import net.displayphoenix.canvasly.interfaces.ISettingComponent;
 import net.displayphoenix.canvasly.tools.FontSetting;
 import net.displayphoenix.canvasly.tools.Setting;
@@ -27,8 +26,6 @@ public class FontSettingComponent extends JPanel implements ISettingComponent<Fo
         this.fontList = new JComboBox(fontNames);
         this.fontList.setSelectedIndex(arialIndex);
         add(this.fontList);
-        setForeground(Application.getTheme().getColorTheme().getSecondaryColor());
-        setBackground(Application.getTheme().getColorTheme().getPrimaryColor());
         setOpaque(false);
     }
 
@@ -59,5 +56,12 @@ public class FontSettingComponent extends JPanel implements ISettingComponent<Fo
     @Override
     public Setting getSetting() {
         return this.setting;
+    }
+
+    @Override
+    public void setPreferredSize(Dimension preferredSize) {
+        super.setPreferredSize(preferredSize);
+        if (this.fontList != null)
+            this.fontList.setPreferredSize(new Dimension(Math.round(preferredSize.width * 0.9F), Math.round(preferredSize.height * 0.9F)));
     }
 }

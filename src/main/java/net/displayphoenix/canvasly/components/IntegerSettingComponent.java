@@ -1,6 +1,5 @@
 package net.displayphoenix.canvasly.components;
 
-import net.displayphoenix.Application;
 import net.displayphoenix.canvasly.interfaces.ISettingComponent;
 import net.displayphoenix.canvasly.tools.IntegerSetting;
 import net.displayphoenix.canvasly.tools.Setting;
@@ -21,8 +20,6 @@ public class IntegerSettingComponent extends JPanel implements ISettingComponent
 
     public IntegerSettingComponent(IntegerSetting setting) {
         this.setting = setting;
-        setForeground(Application.getTheme().getColorTheme().getSecondaryColor());
-        setBackground(Application.getTheme().getColorTheme().getAccentColor());
         addMouseListener(this);
         addMouseMotionListener(this);
         setOpaque(false);
@@ -113,5 +110,14 @@ public class IntegerSettingComponent extends JPanel implements ISettingComponent
     @Override
     public void mouseMoved(MouseEvent e) {
 
+    }
+
+    @Override
+    public void setBackground(Color bg) {
+        if (this.getBackground() != null) {
+            super.setBackground(bg.brighter().brighter());
+            return;
+        }
+        super.setBackground(bg);
     }
 }

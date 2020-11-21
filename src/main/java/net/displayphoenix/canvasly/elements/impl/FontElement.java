@@ -3,7 +3,7 @@ package net.displayphoenix.canvasly.elements.impl;
 import net.displayphoenix.canvasly.CanvasPanel;
 import net.displayphoenix.canvasly.Pixel;
 import net.displayphoenix.canvasly.elements.ColorableElement;
-import net.displayphoenix.util.CanvasHelper;
+import net.displayphoenix.canvasly.util.CanvasHelper;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;

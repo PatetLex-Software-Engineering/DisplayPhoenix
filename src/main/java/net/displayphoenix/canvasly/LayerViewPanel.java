@@ -27,9 +27,6 @@ public class LayerViewPanel extends JPanel implements LayerListener {
         }
         this.canvas = canvas;
         this.canvas.addLayerListener(this);
-        setOpaque(canvas.isOpaque());
-        setBackground(canvas.getBackground());
-        setForeground(Application.getTheme().getColorTheme().getPrimaryColor());
         this.layerPanel = PanelHelper.join();
         loadLayerPanel();
 
@@ -54,7 +51,6 @@ public class LayerViewPanel extends JPanel implements LayerListener {
         JPanel layerManipulateLayer = PanelHelper.join(addLayer, removeLayer);
 
         add(PanelHelper.northAndSouthElements(this.layerPanel, layerManipulateLayer));
-        //add(this.layerPanel);
     }
 
     public CanvasPanel getCanvas() {
@@ -94,7 +90,7 @@ public class LayerViewPanel extends JPanel implements LayerListener {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        g.setColor(getForeground());
+        g.setColor(getBackground());
         g.fillRect(0, 0, getWidth(), getHeight());
     }
 
@@ -117,7 +113,7 @@ public class LayerViewPanel extends JPanel implements LayerListener {
 
     private static class LayerWidget extends JPanel implements MouseListener, MouseMotionListener {
 
-        private Clipper clipper =  new Clipper(this, 0.02F, 0.6F, 0F).smooth();
+        private Clipper clipper =  new Clipper(0.02F, 0.6F, 0F).smooth();
 
         private Layer layer;
         private LayerViewPanel layerView;
@@ -129,19 +125,22 @@ public class LayerViewPanel extends JPanel implements LayerListener {
             this.layer = layer;
             this.addMouseListener(this);
             this.addMouseMotionListener(this);
+            this.clipper.addListener(() -> {
+                repaint();
+            });
         }
 
         @Override
         protected void paintComponent(Graphics g) {
             super.paintComponent(g);
             g.setColor(this.layerView.getCanvas().getBackground());
-            g.fillRoundRect(0, 0, getWidth(), getHeight(), 5, 5);
+            g.fillRect(0, 0, getWidth(), getHeight());
             float cw = getWidth() / 2F;
             float ch = getHeight() / 2F;
             g.setColor(getForeground());
             g.drawString(String.valueOf(this.layer.getIndex()), 0, (int) (getHeight() - g.getFontMetrics().getStringBounds(String.valueOf(this.layer.getIndex()), g).getHeight()));
             if (this.layerView.getCanvas().getSelectedLayer() == this.layer) {
-                g.setColor(Application.getTheme().getColorTheme().getSecondaryColor());
+                g.setColor(getForeground());
                 g.fillRect(0, 0, 3, getHeight());
                 g.fillRect(0, 0, getWidth(), 3);
                 g.fillRect(getWidth() - 3, 0, 3, getHeight());
@@ -162,7 +161,7 @@ public class LayerViewPanel extends JPanel implements LayerListener {
             Graphics2D g2d = (Graphics2D) g;
             if (this.clipper.getCurrentValue() != 0) {
                 g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, this.clipper.getCurrentValue()));
-                g2d.setColor(Application.getTheme().getColorTheme().getPrimaryColor());
+                g2d.setColor(getForeground());
                 g2d.fillRect(0, 0, getWidth(), getHeight());
             }
         }
@@ -218,7 +217,7 @@ public class LayerViewPanel extends JPanel implements LayerListener {
 
     private static class CornerLayerButton extends JButton implements MouseListener {
 
-        private Clipper clipper =  new Clipper(this, 0.01F, 0.6F, 0F).smooth();
+        private Clipper clipper =  new Clipper(0.01F, 0.6F, 0F).smooth();
 
         private ImageIcon cornerIcon;
         private ImageIcon hoveredCornerIcon;
@@ -228,9 +227,10 @@ public class LayerViewPanel extends JPanel implements LayerListener {
             this.hoveredCornerIcon = ImageHelper.resize(hoveredCornerIcon, 15);
             setBorderPainted(false);
             setContentAreaFilled(false);
-            setBackground(Application.getTheme().getColorTheme().getAccentColor());
-            setForeground(Application.getTheme().getColorTheme().getAccentColor().darker().darker());
             addMouseListener(this);
+            this.clipper.addListener(() -> {
+                repaint();
+            });
         }
 
         @Override
@@ -272,6 +272,15 @@ public class LayerViewPanel extends JPanel implements LayerListener {
         @Override
         public void mouseExited(MouseEvent e) {
             this.clipper.decrement();
+        }
+
+        @Override
+        public void setBackground(Color bg) {
+            if (this.getBackground() != null) {
+                super.setBackground(bg.brighter().brighter());
+                return;
+            }
+            super.setBackground(bg);
         }
     }
 }

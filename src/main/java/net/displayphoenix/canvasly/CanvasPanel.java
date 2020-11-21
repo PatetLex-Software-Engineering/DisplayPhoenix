@@ -1,20 +1,16 @@
 package net.displayphoenix.canvasly;
 
-import net.displayphoenix.Application;
-import net.displayphoenix.file.DetailedFile;
-import net.displayphoenix.file.FileDialog;
+
 import net.displayphoenix.canvasly.elements.Element;
 import net.displayphoenix.canvasly.elements.Layer;
 import net.displayphoenix.canvasly.elements.StaticElement;
 import net.displayphoenix.canvasly.interfaces.LayerListener;
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
 import java.util.*;
 import java.util.List;
 
@@ -37,6 +33,7 @@ public class CanvasPanel extends JPanel implements MouseWheelListener, MouseMoti
 
     private Point cachedPoint;
     private int cachedButton;
+    private boolean placedElement;
 
     private List<IRenderAttacher> renderAttachers = new ArrayList<>();
 
@@ -78,7 +75,7 @@ public class CanvasPanel extends JPanel implements MouseWheelListener, MouseMoti
             g.setColor(Color.LIGHT_GRAY);
             g.fillRect(0, 0, Math.round(convergeZoom(getCanvasWidth())), Math.round(convergeZoom(getCanvasHeight())));
         }
-        ((Graphics2D) g).setTransform(new AffineTransform());
+        ((Graphics2D) g).translate(-(cw + this.canvasMoveX), -(ch + this.canvasMoveY));
         paintPixels(g);
         ((Graphics2D) g).setTransform(new AffineTransform());
         if (convergeZoom(1) > 15) {
@@ -97,14 +94,16 @@ public class CanvasPanel extends JPanel implements MouseWheelListener, MouseMoti
     }
 
     protected void paintPixels(Graphics g) {
-        float cw = getWidth() / 2F;
-        float ch = getHeight() / 2F;
+/*        float cw = getWidth() / 2F;
+        float ch = getHeight() / 2F;*/
+        float cw = (this.getWidth() - convergeZoom(this.getCanvasWidth())) / 2F;
+        float ch = (this.getHeight() - convergeZoom(this.getCanvasHeight())) / 2F;
         List<Layer> layers = Arrays.asList(this.layerToPixels.keySet().toArray(new Layer[this.layerToPixels.keySet().size()]));
         Collections.sort(layers, Comparator.comparingInt(Layer::getIndex));
         for (Layer layer : layers) {
             ((Graphics2D) g).scale(convergeZoom(1), convergeZoom(1));
             ((Graphics2D) g).translate((cw + this.canvasMoveX) / convergeZoom(1), (ch + this.canvasMoveY) / convergeZoom(1));
-            ((Graphics2D) g).translate(-(this.canvasWidth / 2F), -(this.canvasHeight / 2F));
+            //((Graphics2D) g).translate(-(this.canvasWidth / 2F), -(this.canvasHeight / 2F));
             if (!layer.isHidden()) {
                 for (Pixel[] x : this.layerToPixels.get(layer)) {
                     for (Pixel y : x) {
@@ -122,7 +121,7 @@ public class CanvasPanel extends JPanel implements MouseWheelListener, MouseMoti
                     ((Graphics2D) g).translate(element.offX, element.offY);
                     ((Graphics2D) g).scale(element.element.getScaleFactor(), element.element.getScaleFactor());
                     element.element.draw(this, g);
-                    g.setColor(Application.getTheme().getColorTheme().getSecondaryColor());
+                    g.setColor(getForeground());
                     g.drawRect(0, 0, element.element.getWidth(this, g), element.element.getHeight(this, g));
                     ((Graphics2D) g).translate(-element.offX, -element.offY);
                     ((Graphics2D) g).scale(element.element.getScaleFactor() / 1, element.element.getScaleFactor() / 1);
@@ -276,17 +275,6 @@ public class CanvasPanel extends JPanel implements MouseWheelListener, MouseMoti
         this.zoom = zoom;
     }
 
-    public void export(Window parentWindow) {
-        DetailedFile savedFile = FileDialog.saveFile(parentWindow, ".png");
-        if (savedFile != null) {
-            try {
-                ImageIO.write(getImage(), "PNG", savedFile.getFile());
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
     public BufferedImage getImage() {
         BufferedImage image = new BufferedImage(this.canvasWidth, this.canvasHeight, BufferedImage.TYPE_INT_ARGB);
         Graphics2D graphics2D = image.createGraphics();
@@ -335,6 +323,15 @@ public class CanvasPanel extends JPanel implements MouseWheelListener, MouseMoti
         if (addToStatic) {
             canvasElement.staticElement = staticElement;
         }
+        this.placedElement = true;
+        new Thread(() -> {
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            this.placedElement = false;
+        }).start();
         this.elements.put(layer, canvasElement);
         repaint();
     }
@@ -391,7 +388,7 @@ public class CanvasPanel extends JPanel implements MouseWheelListener, MouseMoti
         repaint();
         this.renderAttachers.add(g -> {
             CanvasElement element = this.elements.get(this.getSelectedLayer());
-            if (rayTraceElement(e.getPoint(), (Graphics2D) g) == null && element != null) {
+            if (rayTraceElement(e.getPoint(), (Graphics2D) g) == null && element != null && !this.placedElement) {
                if (element.staticElement == null || element.staticElement.getProperties().shouldParse()) {
                    element.element.parse(this, Math.round((float) Math.floor(element.offX)), Math.round((float) Math.floor(element.offY)));
                }
@@ -552,6 +549,15 @@ public class CanvasPanel extends JPanel implements MouseWheelListener, MouseMoti
             ((KeyListener) canvasElement.element).keyReleased(e);
             repaint();
         }
+    }
+
+    @Override
+    public void setBackground(Color bg) {
+        if (this.getBackground() != null) {
+            super.setBackground(bg.brighter());
+            return;
+        }
+        super.setBackground(bg);
     }
 
     private interface IRenderAttacher {

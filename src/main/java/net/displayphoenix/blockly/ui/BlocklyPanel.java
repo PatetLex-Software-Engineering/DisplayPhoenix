@@ -18,7 +18,6 @@ import net.displayphoenix.blockly.event.BlocklyEvent;
 import net.displayphoenix.blockly.event.IBlocklyListener;
 import net.displayphoenix.blockly.event.events.*;
 import net.displayphoenix.file.FileDialog;
-import net.displayphoenix.ui.ColorTheme;
 import net.displayphoenix.util.ColorHelper;
 import net.displayphoenix.util.FileHelper;
 import net.displayphoenix.util.ThreadHelper;
@@ -27,6 +26,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Text;
 
 import java.awt.*;
+import java.net.CookieHandler;
 import java.util.*;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -37,13 +37,15 @@ import java.util.concurrent.FutureTask;
  */
 public class BlocklyPanel extends JFXPanel {
 
-    private List<Runnable> runOnLoad = new ArrayList<>();
+    private Map<Runnable, Boolean> runOnLoad = new HashMap<>();
     private boolean isLoaded = false;
     private WebEngine engine;
+    private WebView view;
 
     private List<IBlocklyListener> eventListeners = new ArrayList<>();
 
     private String prevXml;
+    private Category[] categories;
 
     /**
      * Main Blockly Panel, uses WebView and JavaScript bridging to manipulate elements in java
@@ -110,7 +112,6 @@ public class BlocklyPanel extends JFXPanel {
             executeJavaScriptSynchronously("workspace.clearUndo()");
         }
         else {
-            System.out.println("Can't set workspace before loading. Loading to queue.");
             String finalXml = xml;
             queueOnLoad(() -> addBlocks(finalXml));
         }
@@ -136,7 +137,7 @@ public class BlocklyPanel extends JFXPanel {
      * @param runnable  Code to run
      */
     public void queueOnLoad(Runnable runnable) {
-        this.runOnLoad.add(runnable);
+        this.runOnLoad.put(runnable, false);
     }
 
     /**
@@ -146,44 +147,71 @@ public class BlocklyPanel extends JFXPanel {
      * @return
      */
     public BlocklyPanel whitelist(Category... categories) {
+        this.categories = categories;
         ThreadHelper.runOnFxThread(() -> {
             StringBuilder html = new StringBuilder();
             BlocklyHtmlGenerator.appendTopWrapper(html);
             Blockly.appendCategories(html, categories);
             BlocklyHtmlGenerator.appendBottomWrapper(html, Blockly.parseBlocks());
-            loadBlockly(html.toString());
+            reload();
         });
         return this;
     }
 
-    private void loadBlockly(String html) {
-        this.engine.loadContent(html);
+    /**
+     * @return  Categories of BlocklyPanel
+     */
+    public Category[] getCategories() {
+        return categories != null ? categories : Blockly.getBlocklyCategories();
     }
 
-    protected void load() {
+    private void loadBlockly(String html) {
+        this.engine.loadContent(html.replace("@WIDTH", String.valueOf(this.getWidth())).replace("@HEIGHT", String.valueOf(this.getHeight())));
+    }
+
+    /**
+     * Reloads the blockly panel, resizes etc.
+     */
+    public void reload() {
+        StringBuilder html = new StringBuilder();
+        BlocklyHtmlGenerator.appendTopWrapper(html);
+        Blockly.appendCategories(html, getCategories());
+        BlocklyHtmlGenerator.appendBottomWrapper(html, Blockly.parseBlocks());
+        if (this.isLoaded) {
+            this.isLoaded = false;
+            loadBlockly(html.toString());
+        }
+        else {
+            this.runOnLoad.put(new Runnable() {
+                @Override
+                public void run() {
+                    reload();
+                }
+            }, true);
+        }
+    }
+
+    private void load() {
         setOpaque(false);
         ThreadHelper.runOnFxThread(() -> {
-            WebView blockly = new WebView();
-            Scene scene = new Scene(blockly);
+            this.view = new WebView();
+            Scene scene = new Scene(this.view);
 
             scene.setFill(javafx.scene.paint.Color.rgb(Application.getTheme().getColorTheme().getPrimaryColor().getRed(), Application.getTheme().getColorTheme().getPrimaryColor().getGreen(), Application.getTheme().getColorTheme().getPrimaryColor().getBlue()));
             setScene(scene);
 
-            this.engine = blockly.getEngine();
+            this.engine = this.view.getEngine();
 
             StringBuilder html = new StringBuilder();
             BlocklyHtmlGenerator.appendTopWrapper(html);
-            Blockly.appendCategories(html, Blockly.getBlocklyCategories());
+            Blockly.appendCategories(html, getCategories());
             BlocklyHtmlGenerator.appendBottomWrapper(html, Blockly.parseBlocks());
-            loadBlockly(html.toString().replace("@WIDTH", String.valueOf(this.getWidth() - 10)).replace("@HEIGHT", String.valueOf(this.getHeight() - 20)));
+            loadBlockly(html.toString());
 
             //Changing colors
-            ColorTheme theme = Application.getTheme().getColorTheme();
-            Color primary = theme.getPrimaryColor().darker();
-            blockly.getChildrenUnmodifiable().addListener(
-                    (ListChangeListener<Node>) change -> blockly.lookupAll(".scroll-bar")
+            this.view.getChildrenUnmodifiable().addListener(
+                    (ListChangeListener<Node>) change -> view.lookupAll(".scroll-bar")
                             .forEach(bar -> bar.setVisible(false)));
-            ColorTheme finalTheme = theme;
             this.engine.getLoadWorker().stateProperty().addListener((ov, oldState, newState) -> {
                 if (!this.isLoaded && newState == Worker.State.SUCCEEDED && this.engine.getDocument() != null) {
                     this.isLoaded = true;
@@ -195,7 +223,7 @@ public class BlocklyPanel extends JFXPanel {
                             "    overflow: hidden;\n" +
                             "}\n" +
                             ".blocklyText {\n" +
-                            "    font-family: " + Application.getTheme().getFont().getName().toLowerCase() + ";\n" +
+                            "    font-family: " + getFont().getName().toLowerCase() + ";\n" +
                             "}\n" +
                             "#blockly {\n" +
                             "    position: absolute;\n" +
@@ -206,7 +234,7 @@ public class BlocklyPanel extends JFXPanel {
                             "    height: 100%;\n" +
                             "}\n" +
                             ".blocklyMainBackground {\n" +
-                            "    fill: rgb(" + primary.getRed() + ", " + primary.getGreen() + ", " + primary.getBlue() + ") !important;\n" +
+                            "    fill: rgb(" + getBackground().getRed() + ", " + getBackground().getGreen() + ", " + getBackground().getBlue() + ") !important;\n" +
                             "    stroke-width: 0;\n" +
                             "}\n" +
                             "\n" +
@@ -215,32 +243,32 @@ public class BlocklyPanel extends JFXPanel {
                             "}\n" +
                             "\n" +
                             ".blocklyFlyout {\n" +
-                            "    background-color: " + ColorHelper.convertColorToHexadeimal(finalTheme.getSecondaryColor().darker()) + ";\n" +
+                            "    background-color: " + ColorHelper.convertColorToHexadeimal(getForeground()) + ";\n" +
                             "}\n\n" +
                             ".blocklyToolboxDiv {\n" +
-                            "    background-color: " + ColorHelper.convertColorToHexadeimal(finalTheme.getSecondaryColor()) + ";\n" +
+                            "    background-color: " + ColorHelper.convertColorToHexadeimal(getForeground()) + ";\n" +
                             "    color: white;\n" +
                             "}" +
                             ".blocklyScrollbarVertical .blocklyScrollbarHandle {\n" +
-                            "    fill: " + ColorHelper.convertColorToHexadeimal(primary.brighter()) + ";\n" +
+                            "    fill: " + ColorHelper.convertColorToHexadeimal(getBackground().brighter()) + ";\n" +
                             "    rx: 0;\n" +
                             "    ry: 0;\n" +
                             "    width: 10px;\n" +
                             "}\n" +
                             "\n" +
                             ".blocklyScrollbarVertical:hover .blocklyScrollbarHandle {\n" +
-                            "    fill: " + ColorHelper.convertColorToHexadeimal(finalTheme.getAccentColor()) + ";\n" +
+                            "    fill: " + ColorHelper.convertColorToHexadeimal(getForeground()) + ";\n" +
                             "}\n" +
                             "\n" +
                             ".blocklyScrollbarHorizontal .blocklyScrollbarHandle {\n" +
-                            "    fill: " + ColorHelper.convertColorToHexadeimal(primary.brighter()) + ";\n" +
+                            "    fill: " + ColorHelper.convertColorToHexadeimal(getBackground().brighter()) + ";\n" +
                             "    rx: 0;\n" +
                             "    ry: 0;\n" +
                             "    height: 10px;\n" +
                             "}\n" +
                             "\n" +
                             ".blocklyScrollbarHorizontal:hover .blocklyScrollbarHandle {\n" +
-                            "    fill: " + ColorHelper.convertColorToHexadeimal(finalTheme.getAccentColor()) + ";\n" +
+                            "    fill: " + ColorHelper.convertColorToHexadeimal(getForeground()) + ";\n" +
                             "}";
 
                     Text styleContent = this.engine.getDocument().createTextNode(css);
@@ -254,9 +282,22 @@ public class BlocklyPanel extends JFXPanel {
                             "   blocklypanel.fire(event.type, workspace.getBlockById(event.blockId) != null ? workspace.getBlockById(event.blockId).type : '', event.element, event.name, event.oldValue, event.newValue, event.newCoordinate != null ? event.newCoordinate.x : 0, event.newCoordinate != null ? event.newCoordinate.y : 0, event.oldCoordinate != null ? event.oldCoordinate.x : 0, event.oldCoordinate != null ? event.oldCoordinate.y : 0); \n" +
                             "}\n" +
                             "workspace.addChangeListener(onBlocklyEvent);");
-                    for (Runnable runnable : this.runOnLoad) {
-                        ThreadHelper.runOnFxThread(runnable);
-                    }
+
+                    ThreadHelper.runOnFxThread(() -> {
+                        List<Runnable> runnablesToDispose = new ArrayList<>();
+                        for (Runnable runnable : this.runOnLoad.keySet()) {
+                            this.isLoaded = true;
+                            runnable.run();
+                            if (runOnLoad.get(runnable)) {
+                                runnablesToDispose.add(runnable);
+                            }
+                        }
+                        for (Runnable runnable : runnablesToDispose) {
+                            runOnLoad.remove(runnable);
+                        }
+                    });
+
+
                     JSObject window = (JSObject) this.engine.executeScript("window");
                     window.setMember("blocklypanel", this);
                     this.prevXml = getRawWorkspace();
@@ -351,9 +392,27 @@ public class BlocklyPanel extends JFXPanel {
         }
     }
 
+    @Override
+    public void reshape(int x, int y, int w, int h) {
+        super.reshape(x, y, w, h);
+        reload();
+    }
+
+    @Override
+    public void setForeground(Color fg) {
+        super.setForeground(fg);
+        reload();
+    }
+
+    @Override
+    public void setBackground(Color bg) {
+        super.setBackground(bg);
+        reload();
+    }
+
     private Object executeJavaScriptSynchronously(String javaScript) {
         try {
-            if (isLoaded) {
+            if (this.isLoaded) {
                 FutureTask<Object> query = new FutureTask<>(() -> this.engine.executeScript(javaScript));
                 ThreadHelper.runOnFxThread(query);
                 return query.get();

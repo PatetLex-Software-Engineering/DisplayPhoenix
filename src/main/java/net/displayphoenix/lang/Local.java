@@ -4,7 +4,7 @@ package net.displayphoenix.lang;
  * @author TBroski
  */
 public enum Local {
-    EN_US("en_us"), FR_FR("fr_fr");
+    EN_US("en_us"), FR_FR("fr_fr"), ES_ES("es_es"), RU("ru"), IT("it");
 
     private String tag;
 

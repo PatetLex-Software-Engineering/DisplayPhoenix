@@ -5,10 +5,15 @@ import net.displayphoenix.canvasly.ToolPanel;
 import net.displayphoenix.canvasly.interfaces.ISettingComponent;
 
 import javax.swing.*;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public abstract class Tool {
+
+    private static final Map<String, ImageIcon> CACHE = new ConcurrentHashMap<>();
 
     public abstract ImageIcon getIcon();
 
@@ -33,5 +38,18 @@ public abstract class Tool {
         List<Setting> settings = new ArrayList<>();
         settings.add(new FontSetting("canvas.font.setting.text"));
         return settings;
+    }
+
+    protected static ImageIcon getImage(String identifier) {
+        if (!(identifier.endsWith(".png") || identifier.endsWith(".gif")))
+            identifier += ".png";
+        String path = "textures/" + identifier;
+        if (CACHE.get(path) != null)
+            return CACHE.get(path);
+        else {
+            ImageIcon newItem = new ImageIcon(Toolkit.getDefaultToolkit().createImage(ClassLoader.getSystemClassLoader().getResource(path)));
+            CACHE.put(path, newItem);
+            return newItem;
+        }
     }
 }

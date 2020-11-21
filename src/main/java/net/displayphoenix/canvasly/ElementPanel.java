@@ -1,11 +1,8 @@
 package net.displayphoenix.canvasly;
 
-import net.displayphoenix.Application;
 import net.displayphoenix.canvasly.elements.Element;
 import net.displayphoenix.canvasly.elements.Layer;
 import net.displayphoenix.canvasly.elements.StaticElement;
-import net.displayphoenix.util.ComponentHelper;
-import net.displayphoenix.util.PanelHelper;
 
 import javax.swing.*;
 import java.awt.*;
@@ -17,10 +14,9 @@ public class ElementPanel extends JPanel {
 
     public ElementPanel(CanvasPanel canvas, StaticElement... elements) {
         setOpaque(true);
-        setBackground(Application.getTheme().getColorTheme().getPrimaryColor());
         setForeground(canvas.getForeground());
 
-        JList<StaticElement> elementList = ComponentHelper.createJList(new ElementRenderer(), Arrays.asList(elements.clone()));
+        JList<StaticElement> elementList = createJList(new ElementRenderer(), Arrays.asList(elements.clone()));
         elementList.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -34,8 +30,12 @@ public class ElementPanel extends JPanel {
         });
         elementList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         elementList.setOpaque(false);
-        ComponentHelper.addScrollPane(elementList);
-        JPanel elementListPanel = PanelHelper.join(elementList);
+        JScrollPane scrollBar = new JScrollPane(elementList);
+        scrollBar.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        JPanel skup = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        skup.setOpaque(false);
+        skup.add(elementList);
+        JPanel elementListPanel = skup;
         elementListPanel.setBackground(canvas.getBackground());
         elementListPanel.setForeground(canvas.getForeground());
         elementListPanel.setOpaque(false);
@@ -53,6 +53,16 @@ public class ElementPanel extends JPanel {
         g.fillRect(0, 0, getWidth(), getHeight());
     }
 
+    private static <T> JList<T> createJList(ListCellRenderer<T> cellRenderer, Iterable<T> values) {
+        DefaultListModel<T> listModel = new DefaultListModel<>();
+        for (T val : values) {
+            listModel.addElement(val);
+        }
+        JList<T> list = new JList<>(listModel);
+        list.setCellRenderer(cellRenderer);
+        return list;
+    }
+
     private static class ElementRenderer implements ListCellRenderer<StaticElement> {
 
         @Override
@@ -60,7 +70,7 @@ public class ElementPanel extends JPanel {
             ElementComponent elementComponent = new ElementComponent(value);
             elementComponent.setPreferredSize(new Dimension(125, 125));
             elementComponent.setOpaque(isSelected);
-            elementComponent.setBackground(Application.getTheme().getColorTheme().getAccentColor());
+            elementComponent.setBackground(Color.GRAY);
             return elementComponent;
         }
     }

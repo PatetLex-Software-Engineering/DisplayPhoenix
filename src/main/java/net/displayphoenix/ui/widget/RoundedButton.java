@@ -16,7 +16,7 @@ import java.awt.geom.Rectangle2D;
  */
 public class RoundedButton extends JButton {
 
-    private Clipper clipper = new Clipper(this, 0.005F, 1F, 0F).smooth(); //0.005F
+    private Clipper clipper = new Clipper(0.005F, 1F, 0F).smooth(); //0.005F
 
     private ColorTheme colorTheme;
     private Color hoverColor;
@@ -54,12 +54,12 @@ public class RoundedButton extends JButton {
     @Override
     protected void paintComponent(Graphics g) {
         g.setColor(this.borderColor);
-        g.fillRoundRect(0,0,this.getWidth(), this.getHeight(), 15,15);
+        g.fillRoundRect(0,0,this.getWidth(), this.getHeight(), this.getHeight(),this.getHeight());
         g.setColor(this.colorTheme.getSecondaryColor());
-        g.fillRoundRect(this.borderWidth / 2,this.borderWidth / 2, this.getWidth() - this.borderWidth, this.getHeight() - this.borderWidth, 15,15);
+        g.fillRoundRect(this.borderWidth / 2,this.borderWidth / 2, this.getWidth() - this.borderWidth, this.getHeight() - this.borderWidth, this.getHeight(),this.getHeight());
         ((Graphics2D) g).setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, clipper.getCurrentValue()));
         g.setColor(this.hoverColor);
-        g.fillRoundRect(this.borderWidth / 2,this.borderWidth / 2, this.getWidth() - this.borderWidth, this.getHeight() - this.borderWidth, 15,15);
+        g.fillRoundRect(this.borderWidth / 2,this.borderWidth / 2, this.getWidth() - this.borderWidth, this.getHeight() - this.borderWidth, this.getHeight(),this.getHeight());
         ((Graphics2D) g).setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1));
         g.setColor(this.getForeground());
         Rectangle2D bounds = g.getFont().getStringBounds(this.getText(), new FontRenderContext(g.getFont().getTransform(), true, true));
@@ -84,6 +84,9 @@ public class RoundedButton extends JButton {
             public void mouseExited(MouseEvent e) {
                 clipper.decrement();
             }
+        });
+        this.clipper.addListener(() -> {
+            repaint();
         });
     }
 

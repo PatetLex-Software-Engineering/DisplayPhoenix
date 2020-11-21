@@ -6,7 +6,6 @@ import net.displayphoenix.canvasly.elements.impl.FontElement;
 import net.displayphoenix.canvasly.interfaces.ISettingComponent;
 import net.displayphoenix.canvasly.tools.Setting;
 import net.displayphoenix.canvasly.tools.Tool;
-import net.displayphoenix.util.ImageHelper;
 
 import javax.swing.*;
 import java.awt.*;
@@ -17,7 +16,7 @@ public class TextTool extends Tool {
 
     @Override
     public ImageIcon getIcon() {
-        return ImageHelper.getImage("image/text");
+        return getImage("image/text");
     }
 
     @Override

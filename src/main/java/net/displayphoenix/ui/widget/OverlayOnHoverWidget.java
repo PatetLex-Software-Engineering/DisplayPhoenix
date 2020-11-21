@@ -25,7 +25,10 @@ public class OverlayOnHoverWidget extends JButton implements MouseListener {
         this.normalIcon = normalImage.getImage();
         this.overlayColor = overlayColor;
 
-        this.clipper = new Clipper(this, crement, maxTransparency, 0F).smooth(); //0.005F
+        this.clipper = new Clipper(crement, maxTransparency, 0F).smooth(); //0.005F
+        this.clipper.addListener(() -> {
+            repaint();
+        });
         this.addMouseListener(this);
 
         this.setOpaque(false);
@@ -42,7 +45,10 @@ public class OverlayOnHoverWidget extends JButton implements MouseListener {
         this.normalColor = normalColor;
         this.overlayColor = overlayColor;
 
-        this.clipper = new Clipper(this, crement, maxTransparency, 0F).smooth(); //0.005F
+        this.clipper = new Clipper(crement, maxTransparency, 0F).smooth(); //0.005F
+        this.clipper.addListener(() -> {
+            repaint();
+        });
         this.addMouseListener(this);
 
         this.setOpaque(false);

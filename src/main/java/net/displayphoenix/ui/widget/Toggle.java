@@ -14,8 +14,8 @@ import java.awt.event.ActionListener;
  */
 public class Toggle extends JButton {
 
-    private Clipper slideClipper = new Clipper(this, 0.01F, 1F, 0F).smooth(); //0.005F
-    private Clipper colorClipper = new Clipper(this, 0.01F, 1F, 0F).smooth(); //0.005F
+    private Clipper slideClipper = new Clipper(0.01F, 1F, 0F).smooth(); //0.005F
+    private Clipper colorClipper = new Clipper(0.01F, 1F, 0F).smooth(); //0.005F
 
     private ColorTheme colorTheme;
     private Color ballColor;
@@ -50,6 +50,12 @@ public class Toggle extends JButton {
         this.toggledColor = this.colorTheme.getSecondaryColor();
         this.normalColor = this.colorTheme.getAccentColor().darker().darker();
         this.borderWidth = 4;
+        this.slideClipper.addListener(() -> {
+            repaint();
+        });
+        this.colorClipper.addListener(() -> {
+            repaint();
+        });
     }
 
     public Toggle setBallColor(Color color) {

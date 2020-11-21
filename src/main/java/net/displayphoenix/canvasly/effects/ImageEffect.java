@@ -1,7 +1,5 @@
 package net.displayphoenix.canvasly.effects;
 
-import net.displayphoenix.util.ImageHelper;
-
 import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
@@ -33,7 +31,7 @@ public class ImageEffect {
 
         graphics2D.drawImage(this.image, 0, 0, this.image.getWidth(null), this.image.getHeight(null),null);
 
-        Color[][] imagePixels = ImageHelper.getImagePixels(newImage);
+        Color[][] imagePixels = getImagePixels(newImage);
         int x = 0;
         for (Color[] px : imagePixels) {
             int y = 0;
@@ -61,5 +59,17 @@ public class ImageEffect {
 
         this.image = newImage;
         return newImage;
+    }
+
+    private static Color[][] getImagePixels(BufferedImage image) {
+        Color[][] pixels = new Color[image.getWidth()][image.getHeight()];
+
+        for (int x = 0; x < image.getWidth(); x++) {
+            for (int y = 0; y < image.getHeight(); y++) {
+                pixels[x][y] = new Color(image.getRGB(x, y));
+            }
+        }
+
+        return pixels;
     }
 }

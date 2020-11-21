@@ -6,7 +6,6 @@ import net.displayphoenix.canvasly.ToolPanel;
 import net.displayphoenix.canvasly.interfaces.ISettingComponent;
 import net.displayphoenix.canvasly.tools.Setting;
 import net.displayphoenix.canvasly.tools.Tool;
-import net.displayphoenix.util.ImageHelper;
 
 import javax.swing.*;
 import java.util.List;
@@ -14,7 +13,7 @@ import java.util.List;
 public class PickerTool extends Tool {
     @Override
     public ImageIcon getIcon() {
-        return ImageHelper.getImage("image/picker");
+        return getImage("image/picker");
     }
 
     @Override

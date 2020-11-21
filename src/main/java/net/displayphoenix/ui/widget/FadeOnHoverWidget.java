@@ -22,7 +22,10 @@ public class FadeOnHoverWidget extends JButton implements MouseListener {
         this.normalIcon = normalImage.getImage();
         this.hoverIcon = hoverImage.getImage();
 
-        this.clipper = new Clipper(this, crement, 1F, 0F).smooth(); //0.005F
+        this.clipper = new Clipper(crement, 1F, 0F).smooth(); //0.005F
+        this.clipper.addListener(() -> {
+            repaint();
+        });
         this.addMouseListener(this);
 
         this.setOpaque(false);

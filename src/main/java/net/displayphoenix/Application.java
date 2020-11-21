@@ -1,6 +1,11 @@
 package net.displayphoenix;
 
+import com.sun.java.swing.plaf.motif.MotifLookAndFeel;
+import com.sun.java.swing.plaf.windows.WindowsClassicLookAndFeel;
 import net.displayphoenix.exception.AppNotCreatedException;
+import net.displayphoenix.generation.Module;
+import net.displayphoenix.generation.impl.JavaModule;
+import net.displayphoenix.generation.impl.JavaScriptModule;
 import net.displayphoenix.lang.Local;
 import net.displayphoenix.lang.Localizer;
 import net.displayphoenix.ui.Theme;
@@ -10,6 +15,9 @@ import net.displayphoenix.util.ImageHelper;
 import net.displayphoenix.util.PanelHelper;
 
 import javax.swing.*;
+import javax.swing.plaf.ColorUIResource;
+import javax.swing.plaf.metal.DefaultMetalTheme;
+import javax.swing.plaf.metal.MetalLookAndFeel;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.BufferedReader;
@@ -46,6 +54,8 @@ public class Application {
         version = appVersion;
 
         Localizer.create();
+        Module.registerModule(Module.JAVA);
+        Module.registerModule(Module.JAVASCRIPT);
         CREATED = true;
     }
 
@@ -62,11 +72,12 @@ public class Application {
             textField.setEditable(false);
             textField.setPreferredSize(new Dimension(600, 600));
             parentFrame.add(textField);
-        }, 600, 600);
+        }, 600, 600, theme.isResizeable());
     }
 
     /**
      * Opens a window within themed wrapper
+     * All subcomponents are initially wrapped in color theme unless already changed
      *
      * @param title Title of window
      * @param closeAction Close action of window
@@ -75,8 +86,65 @@ public class Application {
      * @param height Height of window
      * @return Returns the frame for additional manipulation
      */
-    public static JFrame openWindow(String title, int closeAction, IOpenWindow windowCreation, int width, int height) {
-        JFrame frame = new JFrame(title);
+    public static JFrame openWindow(String title, int closeAction, IOpenWindow windowCreation, int width, int height, boolean resizeable) {
+        JFrame frame = new JFrame(title) {
+            @Override
+            protected void addImpl(Component comp, Object constraints, int index) {
+                super.addImpl(comp, constraints, index);
+                Color bColor = UIManager.getColor("Label.background");
+                Color fColor = UIManager.getColor("Label.foreground");
+                if (fColor.equals(comp.getForeground())) {
+                    comp.setForeground(theme.getColorTheme().getSecondaryColor());
+                }
+                if (bColor.equals(comp.getBackground())) {
+                    comp.setBackground(theme.getColorTheme().getPrimaryColor());
+                }
+                comp.setFont(theme.getFont());
+                if (comp instanceof Container) {
+                    ((Container) comp).addContainerListener(new ContainerAdapter() {
+                        @Override
+                        public void componentAdded(ContainerEvent e) {
+                            if (fColor.equals(e.getComponent().getForeground())) {
+                                e.getComponent().setForeground(theme.getColorTheme().getSecondaryColor());
+                            }
+                            if (bColor.equals(e.getComponent().getBackground())) {
+                                e.getComponent().setBackground(theme.getColorTheme().getPrimaryColor());
+                            }
+                        }
+                    });
+                    new Object() {
+                        private void setColors(Container container) {
+                            for (Component component : container.getComponents()) {
+                                if (fColor.equals(component.getForeground())) {
+                                    component.setForeground(theme.getColorTheme().getSecondaryColor());
+                                }
+                                if (bColor.equals(component.getBackground())) {
+                                    component.setBackground(theme.getColorTheme().getPrimaryColor());
+                                }
+                                component.setFont(theme.getFont());
+                                if (component instanceof Container) {
+                                    setColors((Container) component);
+                                    ((Container) component).addContainerListener(new ContainerAdapter() {
+                                        @Override
+                                        public void componentAdded(ContainerEvent e) {
+                                            if (fColor.equals(e.getComponent().getForeground())) {
+                                                e.getComponent().setForeground(theme.getColorTheme().getSecondaryColor());
+                                            }
+                                            if (bColor.equals(e.getComponent().getBackground())) {
+                                                e.getComponent().setBackground(theme.getColorTheme().getPrimaryColor());
+                                            }
+                                            if (e.getComponent() instanceof Container) {
+                                                setColors((Container) e.getComponent());
+                                            }
+                                        }
+                                    });
+                                }
+                            }
+                        }
+                    }.setColors((Container) comp);
+                }
+            }
+        };
         frame.setIconImage(icon.getImage());
         frame.setDefaultCloseOperation(closeAction);
         frame.setBounds(0,0, width, height);
@@ -84,59 +152,62 @@ public class Application {
 
         windowCreation.creation(frame);
 
-        frame.setResizable(false);
+        frame.setResizable(resizeable);
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
         return frame;
     }
     public static JFrame openWindow(int closeAction, IOpenWindow windowCreation) {
-        return openWindow(title, closeAction, windowCreation, theme.getWidth(), theme.getHeight());
+        return openWindow(title, closeAction, windowCreation, theme.getWidth(), theme.getHeight(), theme.isResizeable());
     }
     public static JFrame openWindow(String title, IOpenWindow windowCreation) {
-        return openWindow(title, JFrame.EXIT_ON_CLOSE, windowCreation, theme.getWidth(), theme.getHeight());
+        return openWindow(title, JFrame.EXIT_ON_CLOSE, windowCreation, theme.getWidth(), theme.getHeight(), theme.isResizeable());
     }
     public static JFrame openWindow(String title, int closeAction, IOpenWindow windowCreation) {
-        return openWindow(title, closeAction, windowCreation, theme.getWidth(), theme.getHeight());
+        return openWindow(title, closeAction, windowCreation, theme.getWidth(), theme.getHeight(), theme.isResizeable());
     }
     public static JFrame openWindow(int closeAction, IOpenWindow windowCreation, int width, int height) {
-        return openWindow(title, closeAction, windowCreation, width, height);
+        return openWindow(title, closeAction, windowCreation, width, height, theme.isResizeable());
     }
     public static JFrame openWindow(IOpenWindow windowCreation) {
         return openWindow(JFrame.EXIT_ON_CLOSE, windowCreation);
     }
 
-    /**
-     * Opens localization window, containing representing flags of languages
-     *
-     * @param title Title of window
-     * @return Returns opened window
-     */
-    public static JFrame promptLocalChange(String title) {
-        return Application.openWindow(title, JFrame.DISPOSE_ON_CLOSE, parentFrame -> {
-            JPanel enUsFrFr = PanelHelper.join(FlowLayout.CENTER, 30, 0,getLocalWidget(Local.EN_US, parentFrame), getLocalWidget(Local.FR_FR, parentFrame));
-            enUsFrFr.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
-            parentFrame.add(enUsFrFr);
-        }, 400, 600);
-    }
-    public static JFrame promptLocalChange() {
-        return Application.openWindow(title, JFrame.DISPOSE_ON_CLOSE, parentFrame -> {
-            JPanel enUsFrFr = PanelHelper.join(FlowLayout.CENTER, 30, 0,getLocalWidget(Local.EN_US, parentFrame), getLocalWidget(Local.FR_FR, parentFrame));
-            enUsFrFr.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
-            parentFrame.add(enUsFrFr);
-        }, 400, 600);
+    public static JPanel getLocalChangePanel() {
+        Component[] widgets = new Component[Local.values().length];
+        for (int i = 0; i < Local.values().length; i++) {
+            OverlayOnHoverWidget widget = getLocalWidget(Local.values()[i]);
+            widget.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    super.mouseClicked(e);
+                    for (Component component : widgets) {
+                        component.repaint();
+                    }
+                }
+            });
+            widgets[i] = PanelHelper.join(widget);
+        }
+        return PanelHelper.grid(3, widgets);
     }
 
-    private static OverlayOnHoverWidget getLocalWidget(Local local, Window parentFrame) {
-        OverlayOnHoverWidget localOverlay = new OverlayOnHoverWidget(ImageHelper.getImage("lang/" + local.getTag()), theme.getColorTheme().getSecondaryColor(), 0.5F, 0.005F);
+    private static OverlayOnHoverWidget getLocalWidget(Local local) {
+        OverlayOnHoverWidget localOverlay = new OverlayOnHoverWidget(ImageHelper.getImage("lang/" + local.getTag()), theme.getColorTheme().getSecondaryColor(), 0.5F, 0.005F) {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                if (selected_local == local) {
+                    ((Graphics2D) g).setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1));
+                    g.setColor(theme.getColorTheme().getAccentColor());
+                    g.drawRect(0, 0, getWidth() - 1, getHeight() - 1);
+                }
+            }
+        };
         localOverlay.setPreferredSize(new Dimension(100, 50));
         localOverlay.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 selected_local = local;
-                parentFrame.dispose();
-                for (WindowListener listener : parentFrame.getWindowListeners()) {
-                    listener.windowClosing(new WindowEvent(parentFrame, 0));
-                }
             }
         });
         return localOverlay;
@@ -424,5 +495,39 @@ public class Application {
      */
     public interface IOpenWindow {
         void creation(JFrame parentFrame);
+    }
+
+    private static class ApplicationThemedLook extends DefaultMetalTheme {
+/*        public ColorUIResource getWindowTitleInactiveBackground() {
+            return new ColorUIResource(java.awt.Color.orange);
+        }*/
+
+        public ColorUIResource getWindowTitleBackground() {
+            return new ColorUIResource(java.awt.Color.orange);
+        }
+
+        public ColorUIResource getPrimaryControlHighlight() {
+            return new ColorUIResource(java.awt.Color.orange);
+        }
+
+        public ColorUIResource getPrimaryControlDarkShadow() {
+            return new ColorUIResource(java.awt.Color.orange);
+        }
+
+/*        public ColorUIResource getPrimaryControl() {
+            return new ColorUIResource(java.awt.Color.orange);
+        }*/
+
+/*        public ColorUIResource getControlHighlight() {
+            return new ColorUIResource(java.awt.Color.orange);
+        }
+
+        public ColorUIResource getControlDarkShadow() {
+            return new ColorUIResource(java.awt.Color.orange);
+        }
+
+        public ColorUIResource getControl() {
+            return new ColorUIResource(java.awt.Color.orange);
+        }*/
     }
 }

@@ -48,8 +48,12 @@ public class PanelHelper {
         return panel;
     }
 
-    public static JPanel grid(int horizontalGap, int verticalGap, Component... components) {
-        JPanel skup = new JPanel(new GridLayout(1, components.length, horizontalGap, verticalGap));
+    public static JPanel grid(int columns, Component... components) {
+        return grid(0, 0, columns, components);
+    }
+    public static JPanel grid(int horizontalGap, int verticalGap, int columns, Component... components) {
+        //System.out.println(Math.round((float) Math.ceil((float) components.length / (float) rows)));
+        JPanel skup = new JPanel(new GridLayout(Math.round((float) Math.ceil((float) components.length / (float) columns)), columns, horizontalGap, verticalGap));
         skup.setOpaque(false);
         for (Component c : components) {
             skup.add(c);

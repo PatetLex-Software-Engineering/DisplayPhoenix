@@ -1,7 +1,5 @@
 package net.displayphoenix.util;
 
-import com.sun.org.apache.bcel.internal.generic.FLOAD;
-
 import java.awt.*;
 
 /**
@@ -38,7 +36,6 @@ public class ColorHelper {
         float kr = key.getRed();
         float kg = key.getGreen();
         float kb = key.getBlue();
-        //return (r - tolerance <= kr && r + tolerance >= kr) &&  (g - tolerance <= kg && g + tolerance >= kg) && (b - tolerance <= kb && b + tolerance >= kb);
         float raR = r - kr;
         float raG = g - kg;
         float raB = b - kb;

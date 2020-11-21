@@ -3,31 +3,36 @@ package net.displayphoenix.ui.animation;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author TBroski
  */
-public class Clipper implements ActionListener {
+public class Clipper implements Runnable {
+
+    private List<Runnable> runnableListeners = new ArrayList<>();
 
     private float crement;
     private float maxVal;
     private float minVal;
     private boolean isSmooth;
 
-    private JComponent component;
     private Timer timer;
     private float currVal;
 
     private boolean increment;
-    private boolean isRunning;
 
-    public Clipper(JComponent component, float crement, float maxValue, float minValue) {
-        this.timer = new Timer(1, this); //duration
+    public Clipper(float crement, float maxValue, float minValue) {
+        this(crement, maxValue, minValue, minValue);
+    }
+
+    public Clipper(float crement, float maxValue, float minValue, float currValue) {
+        this.timer = new Timer(this); //duration
         this.crement = crement;
-        this.component = component;
         this.maxVal = maxValue;
         this.minVal = minValue;
-        this.currVal = minValue;
+        this.currVal = currValue;
     }
 
     public Clipper smooth() {
@@ -39,7 +44,6 @@ public class Clipper implements ActionListener {
         if (!this.isSmooth)
             this.currVal = minVal;
         this.increment = true;
-        this.isRunning = true;
         this.timer.start();
     }
 
@@ -48,7 +52,6 @@ public class Clipper implements ActionListener {
         if (!this.isSmooth)
             this.currVal = minVal;
         this.increment = true;
-        this.isRunning = true;
         this.timer.start();
     }
 
@@ -56,12 +59,10 @@ public class Clipper implements ActionListener {
         if (!this.isSmooth)
             this.currVal = maxVal;
         this.increment = false;
-        this.isRunning = true;
         this.timer.start();
     }
 
     public void stop() {
-        this.isRunning = false;
         this.timer.stop();
     }
 
@@ -69,20 +70,61 @@ public class Clipper implements ActionListener {
         this.crement = crement;
     }
 
+    public float getCrement() {
+        return this.crement;
+    }
+
     public float getCurrentValue() {
         return currVal;
     }
 
+    public boolean isIncrementing() {
+        return increment;
+    }
+
+    public void addListener(Runnable runnable) {
+        this.runnableListeners.add(runnable);
+    }
+
     @Override
-    public void actionPerformed(ActionEvent e) {
-        if (isRunning) {
-            currVal += increment ? this.crement : -this.crement;
-            if (currVal < minVal || currVal > maxVal) {
-                currVal = increment ? maxVal : minVal;
-                this.stop();
-            }
-            this.component.revalidate();
-            this.component.repaint();
+    public void run() {
+        currVal += increment ? this.crement : -this.crement;
+        if (currVal < minVal || currVal > maxVal) {
+            currVal = increment ? maxVal : minVal;
+            this.stop();
+        }
+        for (Runnable runnable : this.runnableListeners) {
+            runnable.run();
+        }
+    }
+
+    private static class Timer {
+
+        private boolean isRunning;
+        private Runnable listener;
+        private Thread currentThread;
+
+        public Timer(Runnable listener) {
+            this.listener = listener;
+        }
+
+        public void stop() {
+            this.isRunning = false;
+        }
+
+        public void start() {
+            this.isRunning = true;
+            this.currentThread = new Thread(() -> {
+                while (this.isRunning) {
+                    try {
+                        Thread.sleep(10);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    listener.run();
+                }
+            });
+            this.currentThread.start();
         }
     }
 }

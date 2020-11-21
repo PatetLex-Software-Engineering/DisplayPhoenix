@@ -8,10 +8,12 @@ import net.displayphoenix.canvasly.tools.FontSetting;
 import net.displayphoenix.canvasly.tools.IntegerSetting;
 import net.displayphoenix.canvasly.tools.Setting;
 import net.displayphoenix.canvasly.tools.Tool;
+import net.displayphoenix.canvasly.tools.impl.*;
 import net.displayphoenix.lang.Localizer;
 import net.displayphoenix.ui.widget.TextField;
 import net.displayphoenix.ui.widget.color.RGBABrightnessColorWheel;
 import net.displayphoenix.ui.widget.color.ColorWheel;
+import net.displayphoenix.canvasly.util.CanvasHelper;
 import net.displayphoenix.util.ComponentHelper;
 import net.displayphoenix.util.ImageHelper;
 import net.displayphoenix.util.PanelHelper;
@@ -95,11 +97,10 @@ public class ToolPanel extends JPanel {
             public void mousePressed(MouseEvent e) {
                 cachedButton = -1;
                 if (ToolButton.selectedTool != null) {
-                    int x = Math.round(e.getX() - (canvas.getWidth() / 2F));
-                    int y = Math.round(e.getY() - (canvas.getHeight() / 2F));
-                    x = Math.round((float) Math.floor(((x - canvas.getCanvasX()) / canvas.convergeZoom(1)) + (canvas.getCanvasWidth() / 2)));
-                    y = Math.round((float) Math.floor(((y - canvas.getCanvasY()) / canvas.convergeZoom(1)) + (canvas.getCanvasHeight() / 2)));
-                    if ((x >= 0 && x < canvas.getCanvasWidth()) && (y >= 0 && y < canvas.getCanvasHeight())) {
+                    Point pixel = CanvasHelper.getCanvasPixelFromPoint(canvas, e.getX(), e.getY());
+                    int x = pixel.x;
+                    int y = pixel.y;
+                    if (CanvasHelper.isPointInBounds(canvas, x, y)) {
                         if (e.getButton() == MouseEvent.BUTTON1) {
                             cachedButton = e.getButton();
                             ToolButton.selectedTool.onLeftClick(toolkit, canvas, x, y, settingComponents.toArray(new ISettingComponent[settingComponents.size()]));
@@ -112,11 +113,10 @@ public class ToolPanel extends JPanel {
             @Override
             public void mouseDragged(MouseEvent e) {
                 if (cachedButton > 0 && ToolButton.selectedTool != null) {
-                    int x = Math.round(e.getX() - (canvas.getWidth() / 2F));
-                    int y = Math.round(e.getY() - (canvas.getHeight() / 2F));
-                    x = Math.round((float) Math.floor(((x - canvas.getCanvasX()) / canvas.convergeZoom(1)) + (canvas.getCanvasWidth() / 2)));
-                    y = Math.round((float) Math.floor(((y - canvas.getCanvasY()) / canvas.convergeZoom(1)) + (canvas.getCanvasHeight() / 2)));
-                    if ((x >= 0 && x < canvas.getCanvasWidth()) && (y >= 0 && y < canvas.getCanvasHeight())) {
+                    Point pixel = CanvasHelper.getCanvasPixelFromPoint(canvas, e.getX(), e.getY());
+                    int x = pixel.x;
+                    int y = pixel.y;
+                    if (CanvasHelper.isPointInBounds(canvas, x, y)) {
                         if (cachedButton == MouseEvent.BUTTON1) {
                             ToolButton.selectedTool.onLeftClick(toolkit, canvas, x, y, settingComponents.toArray(new ISettingComponent[settingComponents.size()]));
                         }
@@ -136,7 +136,7 @@ public class ToolPanel extends JPanel {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        g.setColor(getForeground());
+        g.setColor(getBackground());
         g.fillRect(0, 0, getWidth(), getHeight());
     }
 
@@ -166,6 +166,10 @@ public class ToolPanel extends JPanel {
         }
         this.settingsPanel.revalidate();
         this.settingsPanel.repaint();
+    }
+
+    public static Tool[] getBasicTools() {
+        return new Tool[] {new PencilTool(), new BucketTool(), new PickerTool(), new EraserTool(), new ImageTool(), new TextTool()};
     }
 
     private static class ToolButton extends JButton implements MouseListener {

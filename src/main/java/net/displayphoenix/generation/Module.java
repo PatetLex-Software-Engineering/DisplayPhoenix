@@ -27,8 +27,10 @@ import java.util.Map;
  */
 public class Module {
 
-    public static final JavaScriptModule JAVASCRIPT = new JavaScriptModule();
-    public static final JavaModule JAVA = new JavaModule();
+    public static final Module JAVA = new JavaModule();
+    public static final Module JAVASCRIPT = new JavaModule();
+
+    private static final List<Module> REGISTERED_MODULES = new ArrayList<>();
 
     private final Map<Bit, String> bitCode = new HashMap<>();
 
@@ -47,12 +49,16 @@ public class Module {
     }
 
     public static Module getModuleFromName(String name) {
-        if (name.equalsIgnoreCase("java")) {
-            return JAVA;
-        } else if (name.equalsIgnoreCase("javascript")) {
-            return JAVASCRIPT;
+        for (Module module : REGISTERED_MODULES) {
+            if (module.getName().equalsIgnoreCase(name)) {
+                return module;
+            }
         }
         return null;
+    }
+
+    public static void registerModule(Module module) {
+        REGISTERED_MODULES.add(module);
     }
 
     public String[] getFlags(String key) {

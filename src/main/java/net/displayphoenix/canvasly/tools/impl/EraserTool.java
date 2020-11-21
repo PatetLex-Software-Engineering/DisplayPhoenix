@@ -5,8 +5,7 @@ import net.displayphoenix.canvasly.ToolPanel;
 import net.displayphoenix.canvasly.interfaces.ISettingComponent;
 import net.displayphoenix.canvasly.tools.Setting;
 import net.displayphoenix.canvasly.tools.Tool;
-import net.displayphoenix.util.CanvasHelper;
-import net.displayphoenix.util.ImageHelper;
+import net.displayphoenix.canvasly.util.CanvasHelper;
 
 import javax.swing.*;
 import java.util.List;
@@ -14,7 +13,7 @@ import java.util.List;
 public class EraserTool extends Tool {
     @Override
     public ImageIcon getIcon() {
-        return ImageHelper.getImage("image/eraser");
+        return getImage("image/eraser");
     }
 
     @Override
