@@ -16,7 +16,7 @@ import java.util.List;
 
 public class CanvasPanel extends JPanel implements MouseWheelListener, MouseMotionListener, MouseListener, KeyListener {
 
-    public static final float ZOOM_SENSITIVITY = 10F;
+    public static final float ZOOM_SENSITIVITY = 1F;
 
     private List<LayerListener> layerListeners = new ArrayList<>();
     private Map<Layer, Pixel[][]> layerToPixels = new HashMap<>();
@@ -454,7 +454,7 @@ public class CanvasPanel extends JPanel implements MouseWheelListener, MouseMoti
                 this.elements.get(this.getSelectedLayer()).offY += Math.round(dy);
             }
             else {
-                for (int i = dx < 0 ? 0 : this.getCanvasWidth() - 1; dx < 0 ? i < this.getCanvasWidth() : i >=0; i += dx < 0 ? 1 : -1) {
+/*                for (int i = dx < 0 ? 0 : this.getCanvasWidth() - 1; dx < 0 ? i < this.getCanvasWidth() : i >=0; i += dx < 0 ? 1 : -1) {
                     for (int j = dy < 0 ? 0 : this.getCanvasHeight() - 1; dy < 0 ? j < this.getCanvasHeight() : j >= 0; j += dy < 0 ? 1 : -1) {
                         if ((Math.round((float) Math.floor(i + dx)) >= 0 && Math.round((float) Math.floor(i + dx)) < this.getCanvasWidth()) && (Math.round((float) Math.floor(j + dy)) >= 0 && Math.round((float) Math.floor(j + dy)) < this.getCanvasHeight())) {
                             this.layerToPixels.get(layer)[Math.round((float) Math.floor(i + dx))][Math.round((float) Math.floor(j + dy))] = this.layerToPixels.get(layer)[i][j];
@@ -471,7 +471,7 @@ public class CanvasPanel extends JPanel implements MouseWheelListener, MouseMoti
                             staticElement.setY(Math.round((float) Math.floor(staticElement.getY() + dy)));
                         }
                     }
-                }
+                }*/
             }
             this.cachedPoint = e.getPoint();
             repaint();

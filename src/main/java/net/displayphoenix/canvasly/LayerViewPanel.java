@@ -4,6 +4,7 @@ import net.displayphoenix.Application;
 import net.displayphoenix.canvasly.elements.Layer;
 import net.displayphoenix.canvasly.interfaces.LayerListener;
 import net.displayphoenix.ui.animation.Clipper;
+import net.displayphoenix.util.ColorHelper;
 import net.displayphoenix.util.ImageHelper;
 import net.displayphoenix.util.ListHelper;
 import net.displayphoenix.util.PanelHelper;
@@ -212,6 +213,18 @@ public class LayerViewPanel extends JPanel implements LayerListener {
         @Override
         public void mouseMoved(MouseEvent e) {
 
+        }
+
+        @Override
+        public void setForeground(Color fg) {
+            if (getBackground() != null) {
+                float difference = ColorHelper.getColorDifference(fg, getBackground());
+                if (difference < 0.5F) {
+                    super.setForeground(fg.brighter().brighter());
+                    return;
+                }
+            }
+            super.setForeground(fg);
         }
     }
 

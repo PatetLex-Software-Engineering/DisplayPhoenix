@@ -2,15 +2,11 @@ package net.displayphoenix.blockly;
 
 import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
-import net.displayphoenix.bitly.Bitly;
-import net.displayphoenix.bitly.BitlyPluginLoader;
-import net.displayphoenix.bitly.elements.Bit;
 import net.displayphoenix.blockly.elements.Block;
 import net.displayphoenix.blockly.elements.Category;
-import net.displayphoenix.blockly.js.BlocklyJS;
 import net.displayphoenix.generation.Module;
 import net.displayphoenix.file.DetailedFile;
-import net.displayphoenix.util.FileHelper;
+import net.displayphoenix.util.BlocklyHelper;
 
 import java.io.*;
 import java.util.*;
@@ -23,85 +19,116 @@ import static net.displayphoenix.generation.Module.JAVASCRIPT;
  */
 public class Blockly {
 
-    public static final Category LOGIC = new Category() {
-        @Override
-        public String getName() {
-            return "Logic";
-        }
-
-        @Override
-        public String getColor() {
-            return "%{BKY_LOGIC_HUE}";
-        }
-    };
-    public static final Category FLOW = new Category() {
-        @Override
-        public String getName() {
-            return "Flow control";
-        }
-
-        @Override
-        public String getColor() {
-            return "%{BKY_PROCEDURES_HUE}";
-        }
-    };
-    public static final Category MATH = new Category() {
-        @Override
-        public String getName() {
-            return "Math";
-        }
-
-        @Override
-        public String getColor() {
-            return "%{BKY_MATH_HUE}";
-        }
-    };
-    public static final Category TEXT = new Category() {
-        @Override
-        public String getName() {
-            return "Text";
-        }
-
-        @Override
-        public String getColor() {
-            return "%{BKY_TEXTS_HUE}";
-        }
-    };
-
     private static final Gson gson = new GsonBuilder().setLenient().setPrettyPrinting().create();
 
     private static final Map<Category, List<Block>> BLOCKS = new HashMap<>();
 
+    /**
+     * Parses JSON string, using Gson
+     *
+     * @see Blockly#registerCategory(Category)
+     *
+     * @param categoryJson  JSON string of category
+     */
+    public static void registerCategory(String type, String categoryJson) {
+        JsonObject categoryObject = gson.fromJson(categoryJson, JsonObject.class);
+        registerCategory(new Category() {
+            @Override
+            public String getType() {
+                return type;
+            }
+
+            @Override
+            public String getName() {
+                return categoryObject.get("name").getAsString();
+            }
+
+            @Override
+            public String getColor() {
+                return categoryObject.get("color").getAsString();
+            }
+        });
+    }
+
+    /**
+     * Parses JSON file, using Gson
+     *
+     * @see Blockly#registerCategory(Category)
+     * @see BlocklyPluginLoader#loadCategoriesFromDirectory(File)
+     *
+     * @param categoryJson  JSON file of category
+     */
+    public static void registerCategory(File categoryJson) {
+        JsonObject categoryObject = null;
+        try {
+            // Parsing block object
+            categoryObject = gson.fromJson(new FileReader(categoryJson), JsonObject.class);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        JsonObject finalCategoryObject = categoryObject;
+        registerCategory(new Category() {
+            @Override
+            public String getType() {
+                return new DetailedFile(categoryJson).getFileName();
+            }
+
+            @Override
+            public String getName() {
+                return finalCategoryObject.get("name").getAsString();
+            }
+
+            @Override
+            public String getColor() {
+                return finalCategoryObject.get("color").getAsString();
+            }
+        });
+    }
+
+    /**
+     * Registers a category with Blockly
+     *
+     * @param category  Category to register
+     */
     public static void registerCategory(Category category) {
-        if (!BLOCKS.containsKey(category)) {
+        if (!BLOCKS.containsKey(category) && getCategoryFromType(category.getType()) == null) {
             BLOCKS.put(category, new ArrayList<>());
         }
     }
+
     /**
-     * Registers a block object, unless it already exists <code>!BLOCKS.get(category).contains(bit)</code>.
-     * Maps block with category
+     * Parses JSON string, using Gson
      *
-     * @see Blockly#registerBlock(File, Category)
-     * @see Blockly#getBlockFromType(String)
+     * @see Blockly#registerBlock(String, JsonObject, Category)
+     *
+     * @param blockJson  JSON string of block
+     */
+    public static void registerBlock(String type, String blockJson) {
+        JsonObject blockObject = gson.fromJson(blockJson, JsonObject.class);
+        Category category = getCategoryFromType(blockObject.get("category").getAsString());
+        registerBlock(type, blockObject, category);
+    }
+
+    /**
+     * Parses JSON file, using Gson
+     *
+     * @see Blockly#registerBlock(String, JsonObject, Category)
      * @see BlocklyPluginLoader#loadBlocksFromDirectory(File)
      *
-     * @param block  Block to register
-     * @param category  Category to map
+     * @param blockJson  JSON file of block
      */
-    public static void registerBlock(Block block, Category category) {
-        // Checking for category and block
-        if (!BLOCKS.containsKey(category)) {
-            BLOCKS.put(category, new ArrayList<>());
-        } else if (BLOCKS.get(category).contains(block)) {
-            return;
+    public static void registerBlock(File blockJson) {
+        JsonObject blockObject = null;
+        try {
+            // Parsing block object
+            blockObject = gson.fromJson(new FileReader(blockJson), JsonObject.class);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
         }
 
-        // Mapping category to block
-        BLOCKS.get(category).add(block);
-
-        // Log
-        if (block.isCustom())
-            System.out.println("[BLOCKLY] Registered block: " + block.getType() + ".");
+        // Registering block
+        Category category = getCategoryFromType(blockObject.get("category").getAsString());
+        registerBlock(new DetailedFile(blockJson).getFileName(), blockObject, category);
     }
 
     /**
@@ -162,8 +189,7 @@ public class Blockly {
 
         // Does block escape syntax?
         if (blockObject.get("escape") != null) {
-            Map<String, Boolean> escape = gson.fromJson(blockObject.get("escape").toString(), new TypeToken<Map<String, Boolean>>() {
-            }.getType());
+            Map<String, Boolean> escape = gson.fromJson(blockObject.get("escape").toString(), new TypeToken<Map<String, Boolean>>() {}.getType());
             for (String module : escape.keySet()) {
                 if (escape.get(module))
                     Module.getModuleFromName(module).escapeSyntax(block);
@@ -175,26 +201,30 @@ public class Blockly {
     }
 
     /**
-     * Parses JSON file, using Gson
-     * 
-     * @see Blockly#registerBlock(File, Category)
-     * @see Blockly#registerBlock(String, JsonObject, Category) 
+     * Registers a block object, unless it already exists <code>!BLOCKS.get(category).contains(bit)</code>.
+     * Maps block with category
+     *
+     * @see Blockly#registerBlock(File)
+     * @see Blockly#getBlockFromType(String)
      * @see BlocklyPluginLoader#loadBlocksFromDirectory(File)
-     * 
-     * @param blockJson  JSON file of block
-     * @param category  Category to register
+     *
+     * @param block  Block to register
+     * @param category  Category to map
      */
-    public static void registerBlock(File blockJson, Category category) {
-        JsonObject blockObject = null;
-        try {
-            // Parsing block object
-            blockObject = gson.fromJson(new FileReader(blockJson), JsonObject.class);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
+    public static void registerBlock(Block block, Category category) {
+        // Checking for category and block
+        if (!BLOCKS.containsKey(category)) {
+            BLOCKS.put(category, new ArrayList<>());
+        } else if (BLOCKS.get(category).contains(block)) {
+            return;
         }
 
-        // Registering block
-        registerBlock(new DetailedFile(blockJson).getFileName(), blockObject, category);
+        // Mapping category to block
+        BLOCKS.get(category).add(block);
+
+        // Log
+        if (block.isCustom())
+            System.out.println("[BLOCKLY] Registered block: " + block.getType() + ".");
     }
 
     /**
@@ -202,13 +232,66 @@ public class Blockly {
      *
      * @return HTML of blocks
      */
-    public static String parseBlocks() {
+    public static String parseBlocksToJsonArray() {
+        return parseBlocksToJsonArray(null);
+    }
+
+    /**
+     * Get html of blocks
+     *
+     * if extensions is null, no runtime options will be added
+     *
+     * @return HTML of blocks
+     */
+    public static String parseBlocksToJsonArray(Map<String, String[][]> extensions) {
         JsonArray array = new JsonArray();
         for (List<Block> blocks : BLOCKS.values()) {
             for (Block block : blocks) {
                 if (block.isCustom()) {
-                    block.getBlocklyJson().add("type", new JsonPrimitive(block.getType()));
-                    array.add(block.getBlocklyJson());
+                    JsonObject blockObject = block.getBlocklyJson().deepCopy();
+                    blockObject.add("type", new JsonPrimitive(block.getType()));
+
+                    // Checking if block has arguments
+                    if (blockObject.get("args0") != null) {
+                        JsonArray inputs = blockObject.get("args0").getAsJsonArray();
+
+                        // Iterating arguments
+                        for (int i = 0; i < inputs.size(); i++) {
+                            JsonObject inputObject = (JsonObject) inputs.get(i);
+
+                            // Checking for runtime extension fields
+                            if (inputObject.get("extend") != null && extensions != null) {
+                                for (String extension : extensions.keySet()) {
+                                    if (extension.equalsIgnoreCase(inputObject.get("extend").getAsString())) {
+
+                                        // Adding new options
+                                        List<String[]> newOptions = new ArrayList<>();
+                                        for (String[] option : extensions.get(extension)) {
+                                            newOptions.add(option);
+                                        }
+                                        if (inputObject.get("options") != null) {
+                                            String[][] options = gson.fromJson(inputObject.get("options"), new TypeToken<String[][]>() {}.getType());
+                                            for (String[] option : options) {
+                                                newOptions.add(option);
+                                            }
+                                            inputObject.remove("options");
+                                        }
+                                        JsonArray options = new JsonArray();
+                                        for (String[] option : newOptions) {
+                                            JsonArray optionArray = new JsonArray();
+                                            for (String element : option) {
+                                                optionArray.add(element);
+                                            }
+                                            options.add(optionArray);
+                                        }
+                                        inputObject.add("options", options);
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    array.add(blockObject);
                 }
             }
         }
@@ -216,10 +299,10 @@ public class Blockly {
     }
 
     /**
-     * Returns html of catgeories
+     * Returns html of categories
      *
      * @param builder  String builder to append
-     * @param categories  Catergories to register
+     * @param categories  Categories to register
      */
     public static void appendCategories(StringBuilder builder, Category... categories) {
         for (Category category : categories) {
@@ -287,7 +370,7 @@ public class Blockly {
      */
     public static Category getCategoryFromType(String type) {
         for (Category category : BLOCKS.keySet()) {
-            if (category.getName().equalsIgnoreCase(type)) {
+            if (category.getType().equalsIgnoreCase(type)) {
                 return category;
             }
         }
@@ -298,8 +381,10 @@ public class Blockly {
      * Register default Flow Control blocks
      */
     public static void queueFlowControl() {
+        registerCategory("flow_control", BlocklyHelper.getCategoryJson("flow_control"));
+        Category flow = getCategoryFromType("flow_control");
         Block ifBlock = new Block("controls_if");
-        Blockly.registerBlock(ifBlock, FLOW);
+        Blockly.registerBlock(ifBlock, flow);
         JAVA.registerBlockCode(ifBlock, "if ($[value%IF0]) {\n$[statement%DO0]\n}");
         JAVA.escapeSyntax(ifBlock);
         JAVA.attachMutator(ifBlock, (mutation, index) -> {
@@ -322,7 +407,7 @@ public class Blockly {
         });
 
         Block repeatBlock = new Block("controls_repeat_ext");
-        Blockly.registerBlock(repeatBlock, FLOW);
+        Blockly.registerBlock(repeatBlock, flow);
         JAVA.registerBlockCode(repeatBlock, "for (int $[increment%repeat] = 0; $[increment%repeat] < $[value%TIMES]; $[increment%repeat]++) {\n$[statement%DO]\n}");
         JAVA.escapeSyntax(repeatBlock);
         JAVASCRIPT.registerBlockCode(repeatBlock, "var $[increment%repeat]; for ($[increment%repeat] = 0; $[increment%repeat] < $[value%TIMES]; $[increment%repeat]++) {\n$[statement%DO]\n}");
@@ -333,8 +418,10 @@ public class Blockly {
      * Register default Logic blocks
      */
     public static void queueLogic() {
+        registerCategory("logic", BlocklyHelper.getCategoryJson("logic"));
+        Category logic = getCategoryFromType("logic");
         Block compareBlock = new Block("logic_compare");
-        Blockly.registerBlock(compareBlock, LOGIC);
+        Blockly.registerBlock(compareBlock, logic);
         JAVA.registerBlockCode(compareBlock, "($[value%A] $[field%OP] $[value%B])");
         JAVA.manipulateField(compareBlock, field -> {
             if (field.getKey().equalsIgnoreCase("OP")) {
@@ -363,14 +450,14 @@ public class Blockly {
         JAVASCRIPT.escapeSyntax(compareBlock);
 
         Block negateBlock = new Block("logic_negate");
-        Blockly.registerBlock(negateBlock, LOGIC);
+        Blockly.registerBlock(negateBlock, logic);
         JAVA.registerBlockCode(negateBlock, "!($[value%BOOL])");
         JAVA.escapeSyntax(negateBlock);
         JAVASCRIPT.registerBlockCode(negateBlock, "!($[value%BOOL])");
         JAVASCRIPT.escapeSyntax(negateBlock);
 
         Block booleanBlock = new Block("logic_boolean");
-        Blockly.registerBlock(booleanBlock, LOGIC);
+        Blockly.registerBlock(booleanBlock, logic);
         JAVA.registerBlockCode(booleanBlock, "$[field%BOOL]");
         JAVA.manipulateField(booleanBlock, field -> field.getValue().toLowerCase());
         JAVA.escapeSyntax(booleanBlock);
@@ -383,14 +470,16 @@ public class Blockly {
      * Register default Math blocks
      */
     public static void queueMath() {
+        registerCategory("math", BlocklyHelper.getCategoryJson("math"));
+        Category math = getCategoryFromType("math");
         Block numberBlock = new Block("math_number");
-        Blockly.registerBlock(numberBlock, MATH);
+        Blockly.registerBlock(numberBlock, math);
         JAVA.registerBlockCode(numberBlock, "$[field%NUM]");
         JAVA.escapeSyntax(numberBlock);
         JAVASCRIPT.registerBlockCode(numberBlock, "$[field%NUM]");
         JAVASCRIPT.escapeSyntax(numberBlock);
 
-        Blockly.registerBlock("math_arithmetic_custom", gson.fromJson(FileHelper.readAllLines(BlocklyJS.getDefaultBlock("math_arithmetic_custom")), JsonObject.class), MATH);
+        Blockly.registerBlock("math_arithmetic_custom", gson.fromJson(BlocklyHelper.getBlockJson("math_arithmetic_custom"), JsonObject.class), math);
         Block arithmeticBlock = Blockly.getBlockFromType("math_arithmetic_custom");
         JAVA.registerBlockCode(arithmeticBlock, "($[value%A] $[field%OP] $[value%B])");
         JAVA.manipulateField(arithmeticBlock, field -> {
@@ -420,20 +509,22 @@ public class Blockly {
      * Register default Text blocks
      */
     public static void queueText() {
+        registerCategory("text", BlocklyHelper.getCategoryJson("text"));
+        Category text = getCategoryFromType("text");
         Block textBlock = new Block("text");
-        Blockly.registerBlock(textBlock, TEXT);
+        Blockly.registerBlock(textBlock, text);
         JAVA.registerBlockCode(textBlock, "\"$[field%TEXT]\"");
         JAVA.escapeSyntax(textBlock);
         JAVASCRIPT.registerBlockCode(textBlock, "'$[field%TEXT]'");
         JAVASCRIPT.escapeSyntax(textBlock);
 
         Block printBlock = new Block("text_print");
-        Blockly.registerBlock(printBlock, TEXT);
+        Blockly.registerBlock(printBlock, text);
         JAVA.registerBlockCode(printBlock, "System.out.println($[value%TEXT])");
         JAVASCRIPT.registerBlockCode(printBlock, "console.log($[value%TEXT])");
 
-        Blockly.registerBlock("string_length", gson.fromJson(FileHelper.readAllLines(BlocklyJS.getDefaultBlock("string_length")), JsonObject.class), TEXT);
-        Blockly.registerBlock("text_arithmetic", gson.fromJson(FileHelper.readAllLines(BlocklyJS.getDefaultBlock("text_arithmetic")), JsonObject.class), TEXT);
-        Blockly.registerBlock("text_substring", gson.fromJson(FileHelper.readAllLines(BlocklyJS.getDefaultBlock("text_substring")), JsonObject.class), TEXT);
+        Blockly.registerBlock("string_length", gson.fromJson(BlocklyHelper.getBlockJson("string_length"), JsonObject.class), text);
+        Blockly.registerBlock("text_arithmetic", gson.fromJson(BlocklyHelper.getBlockJson("text_arithmetic"), JsonObject.class), text);
+        Blockly.registerBlock("text_substring", gson.fromJson(BlocklyHelper.getBlockJson("text_substring"), JsonObject.class), text);
     }
 }

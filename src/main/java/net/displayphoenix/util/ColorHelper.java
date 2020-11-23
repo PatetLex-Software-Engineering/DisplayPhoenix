@@ -52,25 +52,32 @@ public class ColorHelper {
         float v = input.getRed() > input.getBlue() ? input.getRed() : input.getBlue() > input.getGreen() ? input.getBlue() : input.getGreen();
         float r = 255 / v;
         Color color = new Color(Math.round(input.getRed() * r), Math.round(input.getGreen() * r), Math.round(input.getBlue() * r));
-/*        while (color.getRed() < 255 & color.getGreen() < 255 & color.getBlue() < 255) {
-            int red = Math.round(color.getRed() * r);
-            int green = Math.round(color.getGreen() * r);
-            int blue = Math.round(color.getBlue() * r);
-            red = Math.max(red, 255);
-            green = Math.max(green, 255);
-            blue = Math.max(blue, 255);
-            color = new Color(red, green, blue);
-        }*//*
-        System.out.println(color);
-        System.out.println(input);*/
         return color;
     }
 
     public static Color min(Color input) {
-        Color color = input;
-        while (color.getRed() > 0 & color.getGreen() > 0 & color.getBlue() > 0) {
-            color = new Color(color.getRed() - 1, color.getGreen() - 1, color.getBlue() - 1);
-        }
+        float v = input.getRed() < input.getBlue() ? input.getRed() : input.getBlue() < input.getGreen() ? input.getBlue() : input.getGreen();
+        float r = v / 255;
+        Color color = new Color(Math.round(input.getRed() * r), Math.round(input.getGreen() * r), Math.round(input.getBlue() * r));
         return color;
+    }
+
+    public static float getColorDifference(Color color1, Color color2) {
+        float r1 = color1.getRed() > color2.getRed() ? color1.getRed() : color2.getRed();
+        float r2 = color1.getRed() < color2.getRed() ? color1.getRed() : color2.getRed();
+        float g1 = color1.getGreen() > color2.getGreen() ? color1.getGreen() : color2.getGreen();
+        float g2 = color1.getGreen() < color2.getGreen() ? color1.getGreen() : color2.getGreen();
+        float b1 = color1.getBlue() > color2.getBlue() ? color1.getBlue() : color2.getBlue();
+        float b2 = color1.getBlue() < color2.getBlue() ? color1.getBlue() : color2.getBlue();
+        float r = (r1 / r2) - 1F;
+        float g = (g1 / g2) - 1F;
+        float b = (b1 / b2) - 1F;
+        if (r > g && r > b) {
+            return r;
+        }
+        if (g > r && g > b) {
+            return g;
+        }
+        return b;
     }
 }

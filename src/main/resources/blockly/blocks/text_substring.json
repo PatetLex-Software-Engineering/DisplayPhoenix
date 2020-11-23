@@ -19,7 +19,7 @@
   ],
   "inputsInline": true,
   "output": "String",
-  "category": "Text",
+  "category": "text",
   "code": {
     "javascript": "$[value%TEXT].substr($[value%SINDEX], $[value%EINDEX])",
     "java": "$[value%TEXT].substring($[value%SINDEX], $[value%EINDEX])"

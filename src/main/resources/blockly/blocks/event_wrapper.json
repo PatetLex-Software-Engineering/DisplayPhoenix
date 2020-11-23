@@ -14,6 +14,7 @@
     "javascript": "$[statement%EVENT]",
     "java": "$[statement%EVENT]"
   },
+  "category": "flow_control",
   "tooltip": "",
   "helpUrl": ""
 }

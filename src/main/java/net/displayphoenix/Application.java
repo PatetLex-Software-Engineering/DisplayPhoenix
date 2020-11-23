@@ -1,11 +1,7 @@
 package net.displayphoenix;
 
-import com.sun.java.swing.plaf.motif.MotifLookAndFeel;
-import com.sun.java.swing.plaf.windows.WindowsClassicLookAndFeel;
 import net.displayphoenix.exception.AppNotCreatedException;
 import net.displayphoenix.generation.Module;
-import net.displayphoenix.generation.impl.JavaModule;
-import net.displayphoenix.generation.impl.JavaScriptModule;
 import net.displayphoenix.lang.Local;
 import net.displayphoenix.lang.Localizer;
 import net.displayphoenix.ui.Theme;
@@ -17,7 +13,6 @@ import net.displayphoenix.util.PanelHelper;
 import javax.swing.*;
 import javax.swing.plaf.ColorUIResource;
 import javax.swing.plaf.metal.DefaultMetalTheme;
-import javax.swing.plaf.metal.MetalLookAndFeel;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.BufferedReader;
@@ -94,7 +89,7 @@ public class Application {
                 Color bColor = UIManager.getColor("Label.background");
                 Color fColor = UIManager.getColor("Label.foreground");
                 if (fColor.equals(comp.getForeground())) {
-                    comp.setForeground(theme.getColorTheme().getSecondaryColor());
+                    comp.setForeground(comp instanceof JLabel || comp instanceof JButton || comp instanceof JComboBox ? theme.getColorTheme().getTextColor() : theme.getColorTheme().getSecondaryColor());
                 }
                 if (bColor.equals(comp.getBackground())) {
                     comp.setBackground(theme.getColorTheme().getPrimaryColor());
@@ -105,7 +100,7 @@ public class Application {
                         @Override
                         public void componentAdded(ContainerEvent e) {
                             if (fColor.equals(e.getComponent().getForeground())) {
-                                e.getComponent().setForeground(theme.getColorTheme().getSecondaryColor());
+                                e.getComponent().setForeground(e.getComponent() instanceof JLabel || comp instanceof JButton || comp instanceof JComboBox ? theme.getColorTheme().getTextColor() : theme.getColorTheme().getSecondaryColor());
                             }
                             if (bColor.equals(e.getComponent().getBackground())) {
                                 e.getComponent().setBackground(theme.getColorTheme().getPrimaryColor());
@@ -116,7 +111,7 @@ public class Application {
                         private void setColors(Container container) {
                             for (Component component : container.getComponents()) {
                                 if (fColor.equals(component.getForeground())) {
-                                    component.setForeground(theme.getColorTheme().getSecondaryColor());
+                                    component.setForeground(component instanceof JLabel || comp instanceof JButton || comp instanceof JComboBox ? theme.getColorTheme().getTextColor() : theme.getColorTheme().getSecondaryColor());
                                 }
                                 if (bColor.equals(component.getBackground())) {
                                     component.setBackground(theme.getColorTheme().getPrimaryColor());
@@ -128,7 +123,7 @@ public class Application {
                                         @Override
                                         public void componentAdded(ContainerEvent e) {
                                             if (fColor.equals(e.getComponent().getForeground())) {
-                                                e.getComponent().setForeground(theme.getColorTheme().getSecondaryColor());
+                                                e.getComponent().setForeground(e.getComponent() instanceof JLabel || comp instanceof JButton || comp instanceof JComboBox ? theme.getColorTheme().getTextColor() : theme.getColorTheme().getSecondaryColor());
                                             }
                                             if (bColor.equals(e.getComponent().getBackground())) {
                                                 e.getComponent().setBackground(theme.getColorTheme().getPrimaryColor());

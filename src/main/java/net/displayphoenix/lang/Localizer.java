@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import net.displayphoenix.Application;
+import net.displayphoenix.util.StringHelper;
 
 import java.io.*;
 import java.util.HashMap;
@@ -17,8 +18,12 @@ public class Localizer {
     private static Gson gson = new GsonBuilder().setPrettyPrinting().create();
     private static Map<Local, Map<String, String>> TRANSLATED_VALUES_LOCAL = new HashMap<>();
 
-    public static String translate(String key) {
-        return TRANSLATED_VALUES_LOCAL.get(Application.getSelectedLocal()).getOrDefault(key, key);
+    public static String translate(String key, Object... arguments) {
+        String translatedText = TRANSLATED_VALUES_LOCAL.get(Application.getSelectedLocal()).getOrDefault(key, key);
+        for (int i = 1; i < arguments.length; i++) {
+            translatedText = translatedText.replaceAll("%" + i, String.valueOf(arguments[i]));
+        }
+        return translatedText;
     }
 
     public static void create() {

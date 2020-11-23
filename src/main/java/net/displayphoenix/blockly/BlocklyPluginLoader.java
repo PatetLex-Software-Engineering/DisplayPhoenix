@@ -21,7 +21,7 @@ public class BlocklyPluginLoader {
     /**
      * Iterates through all sub-files and registers each as JSON file
      *
-     * @see Blockly#registerBlock(File, Category) 
+     * @see Blockly#registerBlock(File)
      *
      * @param directory  Directory of blocks
      */
@@ -31,13 +31,25 @@ public class BlocklyPluginLoader {
                 loadBlocksFromDirectory(subFile);
             }
             else {
-                try {
-                    DetailedFile detailedFile = new DetailedFile(subFile);
-                    JsonObject blockObject = gson.fromJson(new FileReader(subFile), JsonObject.class);
-                    Blockly.registerBlock(detailedFile.getFile(), Blockly.getCategoryFromType(blockObject.get("category").getAsString()));
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                }
+                Blockly.registerBlock(subFile);
+            }
+        }
+    }
+
+    /**
+     * Iterates through all sub-files and registers each as JSON file
+     *
+     * @see Blockly#registerCategory(Category)
+     *
+     * @param directory  Directory of categories
+     */
+    public static void loadCategoriesFromDirectory(File directory) {
+        for (File subFile : directory.listFiles()) {
+            if (subFile.isDirectory()) {
+                loadBlocksFromDirectory(subFile);
+            }
+            else {
+                Blockly.registerCategory(subFile);
             }
         }
     }

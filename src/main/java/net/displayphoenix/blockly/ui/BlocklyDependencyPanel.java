@@ -35,7 +35,7 @@ public class BlocklyDependencyPanel extends JPanel {
      */
     public BlocklyDependencyPanel() {
         this.setLayout(new BorderLayout());
-        this.blocklyPanel = new BlocklyPanel(Math.round(getParent().getWidth() * 0.8F), getParent().getHeight());
+        this.blocklyPanel = new BlocklyPanel();
         this.dependencyPanel = new JPanel(new BorderLayout());
 
         this.dependencyPanel.setBackground(Application.getTheme().getColorTheme().getSecondaryColor());

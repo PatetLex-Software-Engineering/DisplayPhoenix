@@ -9,7 +9,7 @@
   ],
   "inputsInline": false,
   "output": "Number",
-  "category": "Text",
+  "category": "text",
   "colour": 165,
   "code": {
     "javascript": "$[value%TEXT].length",

@@ -30,13 +30,13 @@ public class FileHelper {
         directory.delete();
     }
 
-    public static String readAllLines(File file) {
-        return readAllLines(file.toURI());
-    }
     public static String readAllLines(URI uri) {
-        try {
+        return readAllLines(new File(uri));
+    }
 
-            BufferedReader reader = new BufferedReader(new FileReader(uri.getPath()));
+    public static String readAllLines(File file) {
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader(file));
 
             StringBuilder output = new StringBuilder();
             String out;

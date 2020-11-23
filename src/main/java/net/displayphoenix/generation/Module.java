@@ -28,7 +28,7 @@ import java.util.Map;
 public class Module {
 
     public static final Module JAVA = new JavaModule();
-    public static final Module JAVASCRIPT = new JavaModule();
+    public static final Module JAVASCRIPT = new JavaScriptModule();
 
     private static final List<Module> REGISTERED_MODULES = new ArrayList<>();
 
@@ -58,7 +58,9 @@ public class Module {
     }
 
     public static void registerModule(Module module) {
-        REGISTERED_MODULES.add(module);
+        if (!REGISTERED_MODULES.contains(module)) {
+            REGISTERED_MODULES.add(module);
+        }
     }
 
     public String[] getFlags(String key) {

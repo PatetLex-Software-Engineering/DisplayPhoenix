@@ -15,6 +15,7 @@ import net.displayphoenix.ui.widget.ProvisionWidget;
 import net.displayphoenix.ui.widget.ResourceWidget;
 import net.displayphoenix.ui.widget.TextField;
 import net.displayphoenix.ui.widget.Toggle;
+import net.displayphoenix.util.BlocklyHelper;
 import net.displayphoenix.util.ComponentHelper;
 import net.displayphoenix.util.ImageHelper;
 import net.displayphoenix.util.PanelHelper;
@@ -160,7 +161,8 @@ public class BitWidget {
                                 } else {
                                     Block event = Blockly.getBlockFromType("event_wrapper");
                                     if (event == null) {
-                                        Blockly.registerBlock(new File(BlocklyJS.getDefaultBlock("event_wrapper")), Blockly.FLOW);
+                                        Blockly.registerCategory("flow_control", BlocklyHelper.getCategoryJson("flow_control"));
+                                        Blockly.registerBlock(new File(BlocklyJS.getDefaultBlock("event_wrapper")));
                                         event = Blockly.getBlockFromType("event_wrapper");
                                         event.persist();
                                         event.hide();

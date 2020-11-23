@@ -17,13 +17,13 @@ public class ImageElement extends Element {
 
     @Override
     public void parse(CanvasPanel canvas, int offsetX, int offsetY) {
-        Image newImage = resize(this.image, Math.round(this.image.getWidth(canvas) * this.getScaleFactor()), Math.round(this.image.getHeight(canvas) * this.getScaleFactor()));
+        BufferedImage newImage = resize(this.image, Math.round(this.image.getWidth(canvas) * this.getScaleFactor()), Math.round(this.image.getHeight(canvas) * this.getScaleFactor()));
         for (int i = 0; i < newImage.getWidth(canvas); i++) {
             for (int j = 0; j < newImage.getHeight(canvas); j++) {
                 if ((offsetX + i >= 0 && offsetX + i < canvas.getCanvasWidth()) && (offsetY + j >= 0 && offsetY + j < canvas.getCanvasHeight())) {
-                    Color rgb = new Color(((BufferedImage) newImage).getRGB(i, j));
-                    int alpha = (((BufferedImage) newImage).getRGB(i, j) >> 24) & 0xff;
-                    rgb = new Color(rgb.getRed(), rgb.getBlue(), rgb.getGreen(), alpha);
+                    Color rgb = new Color(newImage.getRGB(i, j));
+                    int alpha = (newImage.getRGB(i, j) >> 24) & 0xff;
+                    rgb = new Color(rgb.getRed(), rgb.getGreen(), rgb.getBlue(), alpha);
                     canvas.setPixel(offsetX + i, offsetY + j, alpha > 0 ? new Pixel(rgb) : null);
                 }
             }
@@ -45,7 +45,7 @@ public class ImageElement extends Element {
         return this.image.getHeight(canvas);
     }
 
-    private static Image resize(Image image, int width, int height) {
+    private static BufferedImage resize(Image image, int width, int height) {
         BufferedImage buf = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
 
         float imgRatio = (float) image.getHeight(null) / (float) image.getWidth(null);
@@ -57,13 +57,13 @@ public class ImageElement extends Element {
             w = (int) ((float) height / imgRatio);
         } else {
             w = width;
-            h = (int) ((float) height * imgRatio);
+            h = (int) ((float) width * imgRatio);
         }
 
         x = (width - w) / 2;
         y = (height - h) / 2;
 
-        buf.getGraphics().drawImage(image, x, y, w, h, null);
+        buf.createGraphics().drawImage(image, x, y, w, h, null);
         return buf;
     }
 }

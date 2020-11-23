@@ -10,6 +10,7 @@ import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import net.displayphoenix.Application;
 import net.displayphoenix.blockly.Blockly;
+import net.displayphoenix.blockly.elements.workspace.Field;
 import net.displayphoenix.blockly.gen.BlocklyHtmlGenerator;
 import net.displayphoenix.blockly.gen.BlocklyXmlParser;
 import net.displayphoenix.blockly.elements.Category;
@@ -26,7 +27,6 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Text;
 
 import java.awt.*;
-import java.net.CookieHandler;
 import java.util.*;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -38,6 +38,7 @@ import java.util.concurrent.FutureTask;
 public class BlocklyPanel extends JFXPanel {
 
     private Map<Runnable, Boolean> runOnLoad = new HashMap<>();
+    private Map<String, String[][]> fieldExtensions = new HashMap<>();
     private boolean isLoaded = false;
     private WebEngine engine;
     private WebView view;
@@ -53,18 +54,6 @@ public class BlocklyPanel extends JFXPanel {
      * @see BlocklyDependencyPanel
      */
     public BlocklyPanel() {
-        load();
-    }
-
-    /**
-     * Allows to specify blockly panel size
-     *
-     * @param width  Width of panel
-     * @param height  Height of panel
-     */
-    public BlocklyPanel(int width, int height) {
-        this.setBounds(0, 0, width, height);
-        this.setPreferredSize(new Dimension(width, height));
         load();
     }
 
@@ -152,7 +141,7 @@ public class BlocklyPanel extends JFXPanel {
             StringBuilder html = new StringBuilder();
             BlocklyHtmlGenerator.appendTopWrapper(html);
             Blockly.appendCategories(html, categories);
-            BlocklyHtmlGenerator.appendBottomWrapper(html, Blockly.parseBlocks());
+            BlocklyHtmlGenerator.appendBottomWrapper(html, Blockly.parseBlocksToJsonArray());
             reload();
         });
         return this;
@@ -176,7 +165,7 @@ public class BlocklyPanel extends JFXPanel {
         StringBuilder html = new StringBuilder();
         BlocklyHtmlGenerator.appendTopWrapper(html);
         Blockly.appendCategories(html, getCategories());
-        BlocklyHtmlGenerator.appendBottomWrapper(html, Blockly.parseBlocks());
+        BlocklyHtmlGenerator.appendBottomWrapper(html, Blockly.parseBlocksToJsonArray(this.fieldExtensions));
         if (this.isLoaded) {
             this.isLoaded = false;
             loadBlockly(html.toString());
@@ -205,7 +194,7 @@ public class BlocklyPanel extends JFXPanel {
             StringBuilder html = new StringBuilder();
             BlocklyHtmlGenerator.appendTopWrapper(html);
             Blockly.appendCategories(html, getCategories());
-            BlocklyHtmlGenerator.appendBottomWrapper(html, Blockly.parseBlocks());
+            BlocklyHtmlGenerator.appendBottomWrapper(html, Blockly.parseBlocksToJsonArray(this.fieldExtensions));
             loadBlockly(html.toString());
 
             //Changing colors
@@ -304,6 +293,33 @@ public class BlocklyPanel extends JFXPanel {
                 }
             });
         });
+    }
+
+    /**
+     * Adds options to blockly inputs, specifically the field_dropdown type
+     *
+     * For example, if a block input has the type "field_dropdown" and the identifier
+     * <code>"extend": "places"</code>
+     * The parameter extensionKey is a String value of "places"
+     * The parameter optionsToAdd is a Field array (key, value) of
+     * {("Chicago", "CHICAGO"), ("New York", "NEW_YORK")}
+     * Then the CHICAGO and NEW_YORK option will be added to the block field_dropdown input
+     *
+     *
+     * @param extensionKey  The key identifier for blocks
+     * @param optionsToAdd  All the options to add to the block input options
+     */
+    public void addFieldExtensions(String extensionKey, Field... optionsToAdd) {
+        if (!this.fieldExtensions.containsKey(extensionKey)) {
+            String[][] options = new String[optionsToAdd.length][2];
+            for (int i = 0; i < optionsToAdd.length; i++) {
+                options[i] = new String[] {optionsToAdd[i].getKey(), optionsToAdd[i].getValue()};
+            }
+            this.fieldExtensions.put(extensionKey, options);
+            if (this.isLoaded) {
+                reload();
+            }
+        }
     }
 
     /**
