@@ -1,0 +1,13 @@
+{
+  "blockly.category.flow_control.text": "Contrôle de flux",
+  "blockly.category.logic.text": "Logique",
+  "blockly.category.math.text": "Math",
+  "blockly.category.text.text": "Texte",
+
+  "blockly.block.string_length.text": "Longueur de %1",
+  "blockly.block.event_wrapper.text": "Lors de l'événement %1 %2",
+  "blockly.block.text_substring.text": "Récupère la sous-chaîne de %1 de l'index %2 vers l'index %3",
+  "blockly.block.print_text.text": "imprimer %1",
+  "blockly.block.repeat.text": "répéter %1 fois %2 faire %3",
+  "blockly.block.negate_logic.text": "pas %1"
+}

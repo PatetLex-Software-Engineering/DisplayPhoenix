@@ -252,6 +252,16 @@ public class BlocklyPanel extends JFXPanel {
                         runnable.run();
                     }
 
+                    this.engine.executeScript("var MCR_BLCKLY_PREF = { "
+                            + "'comments' : " + false + ","
+                            + "'renderer' : '" + "thrasos" + "',"
+                            + "'collapse' : " + true + ","
+                            + "'trashcan' : " + true + ","
+                            + "'maxScale' : " + 400/100.0 + ","
+                            + "'minScale' : " + 40/100.0 + ","
+                            + "'scaleSpeed' : " + 105/100.0 + ","
+                            + " };");
+
                     JSObject window = (JSObject) this.engine.executeScript("window");
                     window.setMember("blocklypanel", this);
                     this.prevXml = getRawWorkspace();
@@ -405,7 +415,7 @@ public class BlocklyPanel extends JFXPanel {
     }
 
     protected String getCss() {
-        return "body {\n" +
+/*        return "body {\n" +
                 "    margin: 0;\n" +
                 "    padding: 0;\n" +
                 "    background: transparent;\n" +
@@ -413,12 +423,15 @@ public class BlocklyPanel extends JFXPanel {
                 "}\n" +
                 ".blocklyText {\n" +
                 "    font-family: " + getFont().getName().toLowerCase() + ";\n" +
+                "}" +
+                ".blocklyTreeLabel {\n" +
+                "  color: " + ColorHelper.convertColorToHexadeimal(Application.getTheme().getColorTheme().getTextColor()) + ";\n" +
                 "}\n" +
                 "#blockly {\n" +
                 "    position: absolute;\n" +
                 "    background: transparent;\n" +
-                "    top: 0;\n" +
-                "    left: 0;\n" +
+                "    top: 30;\n" +
+                "    left: 30;\n" +
                 "    width: 100%;\n" +
                 "    height: 100%;\n" +
                 "}\n" +
@@ -458,6 +471,190 @@ public class BlocklyPanel extends JFXPanel {
                 "\n" +
                 ".blocklyScrollbarHorizontal:hover .blocklyScrollbarHandle {\n" +
                 "    fill: " + ColorHelper.convertColorToHexadeimal(getForeground()) + ";\n" +
+                "}";*/
+        return "* {\n" +
+                "    font-family: " + getFont().getFontName().toLowerCase() + ";\n" +
+                "}\n" +
+                "\n" +
+                "::-webkit-scrollbar {\n" +
+                "    width: 7px;\n" +
+                "}\n" +
+                "\n" +
+                "body {\n" +
+                "    margin: 0;\n" +
+                "    padding: 0;\n" +
+                "    background: transparent;\n" +
+                "    overflow: hidden;\n" +
+                "}\n" +
+                "\n" +
+                "#toolbox {\n" +
+                "    display: none;\n" +
+                "}\n" +
+                "\n" +
+                "#area {\n" +
+                "    width: 100vw;\n" +
+                "    height: 100vh;\n" +
+                "    background: transparent;\n" +
+                "}\n" +
+                "\n" +
+                "#blockly {\n" +
+                "    position: absolute;\n" +
+                "    background: transparent;\n" +
+                "    top: 0;\n" +
+                "    left: 0;\n" +
+                "    width: 100%;\n" +
+                "    height: 100%;\n" +
+                "}\n" +
+                "\n" +
+                ".blocklySvg {\n" +
+                "    background-color: transparent !important;\n" +
+                "}\n" +
+                "\n" +
+                ".blocklyTreeLabel {\n" +
+                "    font-family: " + getFont().getFontName().toLowerCase() + ";\n" +
+                "    font-size: " + getFont().getSize() + "px;\n" +
+                "}\n" +
+                "\n" +
+                ".blocklyText {\n" +
+                "    font-family: " + getFont().getFontName().toLowerCase() + ";\n" +
+                "}\n" +
+                "\n" +
+                ".blocklyMainBackground {\n" +
+                "    stroke-width: 0;\n" +
+                "}\n" +
+                "\n" +
+                ".blocklyFlyoutBackground {\n" +
+                "    fill-opacity: 0;\n" +
+                "}\n" +
+                "\n" +
+                ".blocklyScrollbarVertical .blocklyScrollbarHandle {\n" +
+                "    rx: 0;\n" +
+                "    ry: 0;\n" +
+                "    width: 7px;\n" +
+                "}\n" +
+                "\n" +
+                ".blocklyScrollbarHorizontal .blocklyScrollbarHandle {\n" +
+                "    rx: 0;\n" +
+                "    ry: 0;\n" +
+                "    height: 7px;\n" +
+                "}\n" +
+                "\n" +
+                "\n" +
+                ".whlab > .blocklyFlyoutLabelText {\n" +
+                "    font-family: sans-serif;\n" +
+                "    font-size: 14px;\n" +
+                "}\n" +
+                "\n" +
+                ".small-text {\n" +
+                "    font-size: 12px;\n" +
+                "}\n" +
+                "\n" +
+                ".blocklyWidgetDiv .goog-menu {\n" +
+                "    border-radius: 0;\n" +
+                "}\n" +
+                "\n" +
+                ".condition-label {\n" +
+                "    font-size: 13px !important;\n" +
+                "}\n" +
+                "\n" +
+                ".blocklyDropDownContent {\n" +
+                "    position: relative;\n" +
+                "}\n" + // Theming
+                "::-webkit-scrollbar-track {\n" +
+                "    background: " + ColorHelper.convertColorToHexadeimal(getBackground()) + ";\n" +
+                "}\n" +
+                "\n" +
+                "::-webkit-scrollbar-thumb {\n" +
+                "    background: " + ColorHelper.convertColorToHexadeimal(getBackground().brighter()) + ";\n" +
+                "}\n" +
+                "\n" +
+                "::-webkit-scrollbar-thumb:hover {\n" +
+                "    background: " + ColorHelper.convertColorToHexadeimal(getBackground().brighter().brighter()) + ";\n" +
+                "}\n" +
+                "\n" +
+                ".blocklyMainBackground {\n" +
+                "    fill: rgba(" + getBackground().getRed() + ", " + getBackground().getGreen() + ", " + getBackground().getBlue() + ", 0.66) !important;\n" +
+                "}\n" +
+                "\n" +
+                ".blocklyToolboxDiv {\n" +
+                "    background-color: " + ColorHelper.convertColorToHexadeimal(getForeground()) + ";\n" +
+                "    color: " + ColorHelper.convertColorToHexadeimal(Application.getTheme().getColorTheme().getTextColor()) + ";\n" +
+                "}\n" +
+                "\n" +
+                ".blocklyTreeRow:not(.blocklyTreeSelected):hover {\n" +
+                "    background-color: " + ColorHelper.convertColorToHexadeimal(Application.getTheme().getColorTheme().getAccentColor()) + " !important;\n" +
+                "    color: " + ColorHelper.convertColorToHexadeimal(Application.getTheme().getColorTheme().getTextColor()) + " !important;\n" +
+                "}\n" +
+                "\n" +
+                ".blocklyTreeSeparator {\n" +
+                "    border-bottom: solid " + ColorHelper.convertColorToHexadeimal(getForeground()) + " 1px;\n" +
+                "}\n" +
+                "\n" +
+                ".blocklyFlyout {\n" +
+                "    background-color: " + ColorHelper.convertColorToHexadeimal(getForeground()) + "c2;\n" +
+                "}\n" +
+                "\n" +
+                ".blocklyScrollbarVertical .blocklyScrollbarHandle {\n" +
+                "    fill: " + ColorHelper.convertColorToHexadeimal(getBackground()) + ";\n" +
+                "}\n" +
+                "\n" +
+                ".blocklyScrollbarVertical:hover .blocklyScrollbarHandle {\n" +
+                "    fill: " + ColorHelper.convertColorToHexadeimal(getBackground().brighter()) + ";\n" +
+                "}\n" +
+                "\n" +
+                ".blocklyScrollbarHorizontal .blocklyScrollbarHandle {\n" +
+                "    fill: " + ColorHelper.convertColorToHexadeimal(getBackground()) + ";\n" +
+                "}\n" +
+                "\n" +
+                ".blocklyScrollbarHorizontal:hover .blocklyScrollbarHandle {\n" +
+                "    fill: " + ColorHelper.convertColorToHexadeimal(getBackground().brighter()) + ";\n" +
+                "}\n" +
+                "\n" +
+                ".whlab > .blocklyFlyoutLabelText {\n" +
+                "    fill: " + ColorHelper.convertColorToHexadeimal(Application.getTheme().getColorTheme().getTextColor()) + ";\n" +
+                "}\n" +
+                "\n" +
+                ".blocklyDropDownDiv {\n" +
+                "    background: " + ColorHelper.convertColorToHexadeimal(getBackground()) + " !important;\n" +
+                "    border-color: " + ColorHelper.convertColorToHexadeimal(Application.getTheme().getColorTheme().getAccentColor()) + " !important;\n" +
+                "}\n" +
+                "\n" +
+                ".blocklyDropDownDiv .goog-menuitem-content {\n" +
+                "    color: " + ColorHelper.convertColorToHexadeimal(Application.getTheme().getColorTheme().getTextColor()) + " !important;\n" +
+                "}\n" +
+                "\n" +
+                ".blocklyTooltipDiv {\n" +
+                "    background-color: " + ColorHelper.convertColorToHexadeimal(getForeground()) + ";\n" +
+                "    color: " + ColorHelper.convertColorToHexadeimal(Application.getTheme().getColorTheme().getTextColor()) + ";\n" +
+                "}\n" +
+                "\n" +
+                ".blocklyWidgetDiv .goog-menu {\n" +
+                "    background: " + ColorHelper.convertColorToHexadeimal(getForeground()) + " !important;\n" +
+                "    border-color: " + ColorHelper.convertColorToHexadeimal(getBackground()) + " !important;\n" +
+                "}\n" +
+                "\n" +
+                ".blocklyWidgetDiv .goog-menuitem-content {\n" +
+                "    color: " + ColorHelper.convertColorToHexadeimal(Application.getTheme().getColorTheme().getTextColor()) + ";\n" +
+                "}\n" +
+                "\n" +
+                ".blocklyCommentTextarea {\n" +
+                "    background: " + ColorHelper.convertColorToHexadeimal(getForeground()) + ";\n" +
+                "    color: " + ColorHelper.convertColorToHexadeimal(Application.getTheme().getColorTheme().getTextColor()) + ";\n" +
+                "}\n" +
+                "\n" +
+                ".blocklyMutatorBackground {\n" +
+                "    fill: " + ColorHelper.convertColorToHexadeimal(getForeground()) + ";\n" +
+                "    stroke-width: 0;\n" +
+                "}\n" +
+                "\n" +
+                ".blocklySelected > .blocklyPath {\n" +
+                "    stroke: " + ColorHelper.convertColorToHexadeimal(Application.getTheme().getColorTheme().getAccentColor()) + " !important;\n" +
+                "    stroke-width: 3px !important;\n" +
+                "}\n" +
+                "\n" +
+                ".blocklyHtmlTextAreaInput {\n" +
+                "    background: " + ColorHelper.convertColorToHexadeimal(getForeground()) + ";\n" +
+                "    color: white;\n" +
                 "}";
     }
 }

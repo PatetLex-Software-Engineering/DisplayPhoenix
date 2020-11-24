@@ -1,0 +1,13 @@
+{
+  "blockly.category.flow_control.text": "Controllo del flusso",
+  "blockly.category.logic.text": "Logic",
+  "blockly.category.math.text": "Math",
+  "blockly.category.text.text": "Testo",
+
+  "blockly.block.string_length.text": "Lunghezza di %1",
+  "blockly.block.event_wrapper.text": "All'evento %1 %2",
+  "blockly.block.text_substring.text": "Ottieni la sottostringa di %1 dall'indice %2 all'indice %3",
+  "blockly.block.print_text.text": "stampa %1",
+  "blockly.block.repeat.text": "ripeti %1 volte %2 fai %3",
+  "blockly.block.negate_logic.text": "non %1"
+}

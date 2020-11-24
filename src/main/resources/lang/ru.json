@@ -1,0 +1,13 @@
+{
+  "blockly.category.flow_control.text": "Управление потоком",
+  "blockly.category.logic.text": "Логика",
+  "blockly.category.math.text": "Математика",
+  "blockly.category.text.text": "Текст",
+
+  "blockly.block.string_length.text": "Длина %1",
+  "blockly.block.event_wrapper.text": "По событию %1 %2",
+  "blockly.block.text_substring.text": "Получить подстроку %1 из индекса %2 в индекс %3",
+  "blockly.block.print_text.text": "pаспечатать %1",
+  "blockly.block.repeat.text": "повторить %1 раз %2 сделать %3",
+  "blockly.block.negate_logic.text": "не %1"
+}

@@ -32,12 +32,12 @@ public class BlocklyJS {
     }
 
     /**
-     * Returns URI of a blockly lang
+     * Returns en translations
      * @return
      */
-    public static URI getBlocklyLang(String lang) {
+    public static URI getLangEN() {
         try {
-            return new BlocklyJS().getClass().getResource("msg/" + lang + ".js").toURI();
+            return new BlocklyJS().getClass().getResource("en.js").toURI();
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }

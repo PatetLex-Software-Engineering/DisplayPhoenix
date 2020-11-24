@@ -6,6 +6,7 @@ import net.displayphoenix.blockly.elements.Block;
 import net.displayphoenix.blockly.elements.Category;
 import net.displayphoenix.generation.Module;
 import net.displayphoenix.file.DetailedFile;
+import net.displayphoenix.lang.Localizer;
 import net.displayphoenix.util.BlocklyHelper;
 
 import java.io.*;
@@ -39,11 +40,6 @@ public class Blockly {
             }
 
             @Override
-            public String getName() {
-                return categoryObject.get("name").getAsString();
-            }
-
-            @Override
             public String getColor() {
                 return categoryObject.get("color").getAsString();
             }
@@ -71,11 +67,6 @@ public class Blockly {
             @Override
             public String getType() {
                 return new DetailedFile(categoryJson).getFileName();
-            }
-
-            @Override
-            public String getName() {
-                return finalCategoryObject.get("name").getAsString();
             }
 
             @Override
@@ -323,6 +314,11 @@ public class Blockly {
                 if (block.isCustom()) {
                     JsonObject blockObject = block.getBlocklyJson().deepCopy();
                     blockObject.add("type", new JsonPrimitive(block.getType()));
+                    String translatedText = Localizer.translate("blockly.block." + block.getType() + ".text");
+                    if (!translatedText.equalsIgnoreCase("blockly.block." + block.getType() + ".text")) {
+                        blockObject.remove("message0");
+                        blockObject.add("message0", new JsonPrimitive(translatedText));
+                    }
 
                     // Checking if block has arguments
                     if (blockObject.get("args0") != null) {
@@ -379,7 +375,7 @@ public class Blockly {
      */
     public static void appendCategories(StringBuilder builder, Category... categories) {
         for (Category category : categories) {
-            builder.append("    <category name=\"" + category.getName() + "\" colour=\"" + category.getColor() + "\"> \n");
+            builder.append("    <category name=\"" + Localizer.translate("blockly.category." + category.getType() + ".text") + "\" colour=\"" + category.getColor() + "\"> \n");
             for (Block block : BLOCKS.get(category)) {
                 if (!block.isHidden()) {
                     builder.append("        <block type=\"" + block.getType() + "\"> \n");
@@ -479,12 +475,7 @@ public class Blockly {
             return null;
         });
 
-        Block repeatBlock = new Block("controls_repeat_ext");
-        Blockly.registerBlock(repeatBlock, flow);
-        JAVA.registerBlockCode(repeatBlock, "for (int $[increment%repeat] = 0; $[increment%repeat] < $[value%TIMES]; $[increment%repeat]++) {\n$[statement%DO]\n}");
-        JAVA.escapeSyntax(repeatBlock);
-        JAVASCRIPT.registerBlockCode(repeatBlock, "var $[increment%repeat]; for ($[increment%repeat] = 0; $[increment%repeat] < $[value%TIMES]; $[increment%repeat]++) {\n$[statement%DO]\n}");
-        JAVASCRIPT.escapeSyntax(repeatBlock);
+        Blockly.registerBlock("repeat", gson.fromJson(BlocklyHelper.getBlockJson("repeat"), JsonObject.class), flow);
     }
 
     /**
@@ -522,12 +513,7 @@ public class Blockly {
         });
         JAVASCRIPT.escapeSyntax(compareBlock);
 
-        Block negateBlock = new Block("logic_negate");
-        Blockly.registerBlock(negateBlock, logic);
-        JAVA.registerBlockCode(negateBlock, "!($[value%BOOL])");
-        JAVA.escapeSyntax(negateBlock);
-        JAVASCRIPT.registerBlockCode(negateBlock, "!($[value%BOOL])");
-        JAVASCRIPT.escapeSyntax(negateBlock);
+        Blockly.registerBlock("negate_logic", gson.fromJson(BlocklyHelper.getBlockJson("negate_logic"), JsonObject.class), logic);
 
         Block booleanBlock = new Block("logic_boolean");
         Blockly.registerBlock(booleanBlock, logic);
@@ -591,11 +577,7 @@ public class Blockly {
         JAVASCRIPT.registerBlockCode(textBlock, "'$[field%TEXT]'");
         JAVASCRIPT.escapeSyntax(textBlock);
 
-        Block printBlock = new Block("text_print");
-        Blockly.registerBlock(printBlock, text);
-        JAVA.registerBlockCode(printBlock, "System.out.println($[value%TEXT])");
-        JAVASCRIPT.registerBlockCode(printBlock, "console.log($[value%TEXT])");
-
+        Blockly.registerBlock("print_text", gson.fromJson(BlocklyHelper.getBlockJson("print_text"), JsonObject.class), text);
         Blockly.registerBlock("string_length", gson.fromJson(BlocklyHelper.getBlockJson("string_length"), JsonObject.class), text);
         Blockly.registerBlock("text_arithmetic", gson.fromJson(BlocklyHelper.getBlockJson("text_arithmetic"), JsonObject.class), text);
         Blockly.registerBlock("text_substring", gson.fromJson(BlocklyHelper.getBlockJson("text_substring"), JsonObject.class), text);

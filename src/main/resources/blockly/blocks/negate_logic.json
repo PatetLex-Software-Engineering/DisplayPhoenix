@@ -1,0 +1,24 @@
+{
+  "message0": "not %1",
+  "args0": [
+    {
+      "type": "input_value",
+      "name": "BOOL",
+      "check": "Boolean"
+    }
+  ],
+  "inputsInline": false,
+  "output": "Boolean",
+  "category": "logic",
+  "code": {
+    "java": "!($[value%BOOL])",
+    "javascript": "!($[value%BOOL])"
+  },
+  "escape": {
+    "java": true,
+    "javascript": true
+  },
+  "colour": 210,
+  "tooltip": "",
+  "helpUrl": ""
+}

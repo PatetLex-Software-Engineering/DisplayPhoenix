@@ -20,16 +20,8 @@ public interface BlocklyHtmlGenerator {
                 "    <title>Blockly</title>\n" +
                 "    <script src=\"" + BlocklyJS.getBlocklyCompressed() + "\"></script>\n" +
                 "    <script src=\"" + BlocklyJS.getBlocksCompressed() + "\"></script>\n" +
-                "    <script src=\"" + BlocklyJS.getBlocklyLang("en") + "\"></script>\n" +
+                "    <script src=\"" + BlocklyJS.getLangEN() + "\"></script>\n" +
                 "    <style>\n" +
-                "    body {\n" +
-                "      background-color: #fff;\n" +
-                "      font-family: sans-serif;\n" +
-                "    }\n" +
-                "    h1 {\n" +
-                "      font-weight: normal;\n" +
-                "      font-size: 140%;\n" +
-                "    }\n" +
                 "  </style>\n" +
                 "</head>\n" +
                 "<body>\n" +
