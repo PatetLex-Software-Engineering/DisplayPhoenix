@@ -145,17 +145,29 @@ public class Blockly {
         Block block = new Block(name, blockObject.get("init") != null ? blockObject.get("init").getAsString() : null, blockObject);
 
         // Adding dependencies (if applicable)
-        block.depend(blockObject.get("depend") != null ? blockObject.get("depend").getAsString() : null);
+        if (blockObject.get("dependencies") != null) {
+            JsonArray dependenciesArray = blockObject.get("dependencies").getAsJsonArray();
+            String[] dependencies = new String[dependenciesArray.size()];
+            for (int i = 0; i < dependenciesArray.size(); i++) {
+                dependencies[i] = dependenciesArray.get(i).getAsString();
+            }
+            block.setLocalDependencies(dependencies);
+        }
+
+        // Adding statement dependencies (if applicable)
+        if (blockObject.get("statement_dependencies") != null) {
+            String[] dependencies = gson.fromJson(blockObject.get("statement_dependencies"), new TypeToken<String[]>() {}.getType());
+            block.addStatementDependencies(dependencies);
+        }
 
         // Adding provisions (if applicable)
-        block.provide(blockObject.get("provide") != null ? blockObject.get("provide").getAsString() : null);
-
-        // Adding field provisions (if applicable)
-        if (blockObject.get("fieldProvides") != null) {
-            Map<String, Map<String, String[]>> fieldProvides = gson.fromJson(blockObject.get("fieldProvides").toString(), new TypeToken<Map<String, Map<String, String[]>>>() {}.getType());
-            for (String fieldKey : fieldProvides.keySet()) {
-                block.fieldProvide(fieldKey, fieldProvides.get(fieldKey));
+        if (blockObject.get("provisions") != null) {
+            JsonArray provisionsArray = blockObject.get("provisions").getAsJsonArray();
+            String[] provisions = new String[provisionsArray.size()];
+            for (int i = 0; i < provisionsArray.size(); i++) {
+                provisions[i] = provisionsArray.get(i).getAsString();
             }
+            block.setLocalProvisions(provisions);
         }
 
         // Registering code
@@ -167,8 +179,8 @@ public class Blockly {
         }
 
         // Adding field manipulators (if applicable)
-        if (blockObject.get("fieldManipulator") != null) {
-            Map<String, Map<String, Map<String, String>>> fieldManipulator = gson.fromJson(blockObject.get("fieldManipulator").toString(), new TypeToken<Map<String, Map<String, Map<String, String>>>>() {
+        if (blockObject.get("field_manipulator") != null) {
+            Map<String, Map<String, Map<String, String>>> fieldManipulator = gson.fromJson(blockObject.get("field_manipulator").toString(), new TypeToken<Map<String, Map<String, Map<String, String>>>>() {
             }.getType());
             for (String moduleKey : fieldManipulator.keySet()) {
                 Module.getModuleFromName(moduleKey).manipulateField(block, field -> {
@@ -189,10 +201,45 @@ public class Blockly {
 
         // Does block escape syntax?
         if (blockObject.get("escape") != null) {
+
+            // Escaping modules marked
             Map<String, Boolean> escape = gson.fromJson(blockObject.get("escape").toString(), new TypeToken<Map<String, Boolean>>() {}.getType());
             for (String module : escape.keySet()) {
                 if (escape.get(module))
                     Module.getModuleFromName(module).escapeSyntax(block);
+            }
+        }
+
+        // Does block have args?
+        if (blockObject.get("args0") != null) {
+            JsonArray inputs = blockObject.get("args0").getAsJsonArray();
+
+            // Iterating inputs
+            for (int i = 0; i < inputs.size(); i++) {
+                JsonObject inputObject = (JsonObject) inputs.get(i);
+
+                if (inputObject.get("type") != null) {
+
+                    // Is arg a field dropdown?
+                    if (inputObject.get("type").getAsString().equalsIgnoreCase("field_dropdown")) {
+                        if (inputObject.get("dependencies") != null) {
+                            Map<String, String[]> dependencies = gson.fromJson(inputObject.get("dependencies"), new TypeToken<Map<String, String[]>>() {}.getType());
+                            block.addFieldDependencies(inputObject.get("name").getAsString(), dependencies);
+                        }
+                        if (inputObject.get("provisions") != null) {
+                            Map<String, String[]> provisions = gson.fromJson(inputObject.get("provisions"), new TypeToken<Map<String, String[]>>() {}.getType());
+                            block.addFieldProvisions(inputObject.get("name").getAsString(), provisions);
+                        }
+                    }
+
+                    // Is arg a statement?
+                    else if (inputObject.get("type").getAsString().equalsIgnoreCase("input_statement")) {
+                        if (inputObject.get("provisions") != null) {
+                            String[] provisions = gson.fromJson(inputObject.get("provisions"), new TypeToken<String[]>() {}.getType());
+                            block.addStatementProvisions(inputObject.get("name").getAsString(), provisions);
+                        }
+                    }
+                }
             }
         }
 
@@ -225,6 +272,32 @@ public class Blockly {
         // Log
         if (block.isCustom())
             System.out.println("[BLOCKLY] Registered block: " + block.getType() + ".");
+    }
+
+    /**
+     * Unregisters a block from Blocky
+     *
+     * @param type  Block type to remove
+     */
+    public static void unregisterBlock(String type) {
+        Category categoryToRemoveFrom = null;
+        Block blockToRemoveFrom = null;
+        for (Category category : BLOCKS.keySet()) {
+            boolean flag = false;
+            for (Block block : BLOCKS.get(category)) {
+                if (block.getType().equalsIgnoreCase(type)) {
+                    categoryToRemoveFrom = category;
+                    blockToRemoveFrom = block;
+                    flag = true;
+                    break;
+                }
+            }
+            if (flag)
+                break;
+        }
+        if (blockToRemoveFrom != null) {
+            BLOCKS.get(categoryToRemoveFrom).remove(blockToRemoveFrom);
+        }
     }
 
     /**

@@ -94,7 +94,7 @@ public class Application {
                 if (bColor.equals(comp.getBackground())) {
                     comp.setBackground(theme.getColorTheme().getPrimaryColor());
                 }
-                comp.setFont(theme.getFont());
+                comp.setFont(comp.getFont() != null ? theme.getFont().deriveFont(comp.getFont().getSize()) : theme.getFont());
                 if (comp instanceof Container) {
                     ((Container) comp).addContainerListener(new ContainerAdapter() {
                         @Override
@@ -116,7 +116,7 @@ public class Application {
                                 if (bColor.equals(component.getBackground())) {
                                     component.setBackground(theme.getColorTheme().getPrimaryColor());
                                 }
-                                component.setFont(theme.getFont());
+                                component.setFont(component.getFont() != null ? theme.getFont().deriveFont(component.getFont().getSize()) : theme.getFont());
                                 if (component instanceof Container) {
                                     setColors((Container) component);
                                     ((Container) component).addContainerListener(new ContainerAdapter() {

@@ -1,9 +1,14 @@
 package net.displayphoenix.blockly.elements;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.google.gson.reflect.TypeToken;
 import net.displayphoenix.blockly.Blockly;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -13,12 +18,15 @@ public class Block {
 
     private JsonObject blocklyJson;
 
-    private Map<String, Map<String, String[]>> fieldProvides = new HashMap<>();
     private boolean isDefault;
     private boolean isHidden;
     private boolean doesPersist;
-    private String dependType;
-    private String provideType;
+    private String[] localDependencies;
+    private String[] statementDependencies;
+    private Map<String, Map<String, String[]>> fieldDependencies;
+    private String[] localProvisions;
+    private Map<String, String[]> statementProvisions;
+    private Map<String, Map<String, String[]>> fieldProvisions;
 
     private String type;
     private String init;
@@ -68,32 +76,62 @@ public class Block {
     }
 
     /**
-     * Sets dependency of block
-     * @param type  Dependency
+     * Sets local provisions of block
+     *
+     * @param provisions  Provisions array
      * @return
      */
-    public Block depend(String type) {
-        this.dependType = type;
-        return this;
+    public void setLocalProvisions(String[] provisions) {
+        this.localProvisions = provisions;
     }
 
     /**
-     * Sets provision of block
-     * @param type  Provision
-     * @return
+     * Adds statement provisions
+     *
+     * @param statementKey  Statement key
+     * @param provisions  Provisions array
      */
-    public Block provide(String type) {
-        this.provideType = type;
-        return this;
+    public void addStatementProvisions(String statementKey, String[] provisions) {
+        this.statementProvisions.put(statementKey, provisions);
     }
 
     /**
-     * Add field provisions
+     * Adds field provisions
+     *
      * @param fieldKey  Field key
-     * @param valToType  Field value to provision type
+     * @param fieldValueToProvisions  Field value to provisions
      */
-    public void fieldProvide(String fieldKey, Map<String, String[]> valToType) {
-        this.fieldProvides.put(fieldKey, valToType);
+    public void addFieldProvisions(String fieldKey, Map<String, String[]> fieldValueToProvisions) {
+        this.fieldProvisions.put(fieldKey, fieldValueToProvisions);
+    }
+
+    /**
+     * Sets local dependencies of block
+     *
+     * @param dependencies  Dependencies array
+     * @return
+     */
+    public void setLocalDependencies(String[] dependencies) {
+        this.localDependencies = dependencies;
+    }
+
+    /**
+     * Adds statement dependencies
+     *
+     * @param dependencies  Dependencies array
+     */
+    public void addStatementDependencies(String[] dependencies) {
+        this.statementDependencies = dependencies;
+    }
+
+    /**
+     * Adds field dependencies
+     *
+     * @param fieldKey  Field key
+     * @param fieldValueToDependencies  Field value to dependencies
+     */
+    public void addFieldDependencies(String fieldKey, Map<String, String[]> fieldValueToDependencies) {
+        this.fieldDependencies.put(fieldKey, fieldValueToDependencies);
     }
 
     public boolean isCustom() {
@@ -108,20 +146,32 @@ public class Block {
         return doesPersist;
     }
 
-    public String getDependency() {
-        return dependType;
-    }
-
     public String getType() {
         return type;
     }
 
-    public String getProvision() {
-        return this.provideType;
+    public String[] getLocalProvisions() {
+        return this.localProvisions;
     }
 
-    public Map<String, String[]> getProvisionsFromField(String fieldKey) {
-        return this.fieldProvides.get(fieldKey);
+    public String[] getLocalDependencies() {
+        return this.localDependencies;
+    }
+
+    public String[] getStatementProvisions(String statementKey) {
+        return this.statementProvisions.get(statementKey);
+    }
+
+    public String[] getStatementDependencies() {
+        return this.statementDependencies;
+    }
+
+    public Map<String, String[]> getFieldProvisions(String fieldKey) {
+        return this.fieldProvisions.get(fieldKey);
+    }
+
+    public Map<String, String[]> getFieldDependencies(String fieldKey) {
+        return this.fieldDependencies.get(fieldKey);
     }
 
     /**

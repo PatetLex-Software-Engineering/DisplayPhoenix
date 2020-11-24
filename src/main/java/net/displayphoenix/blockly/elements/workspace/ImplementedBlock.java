@@ -18,6 +18,8 @@ public class ImplementedBlock {
     private int x;
     private int y;
     private Field[] fields;
+    private boolean isDeletable;
+    private boolean isMovable;
 
     private Map<String, List<ImplementedBlock>> innerBlocks = new HashMap<>();
     private Map<String, List<ImplementedBlock>> valueBlocks = new HashMap<>();
@@ -30,12 +32,16 @@ public class ImplementedBlock {
      * @param block  Block
      * @param x  X position
      * @param y  Y position
+     * @param isDeletable  Is block deletable
+     * @param isMovable  Is block movable
      * @param fields  Fields of block
      */
-    public ImplementedBlock(Block block, int x, int y, Field... fields) {
+    public ImplementedBlock(Block block, int x, int y, boolean isDeletable, boolean isMovable, Field... fields) {
         this.type = block;
         this.x = x;
         this.y = y;
+        this.isDeletable = isDeletable;
+        this.isMovable = isMovable;
         this.fields = fields;
     }
 
@@ -88,6 +94,14 @@ public class ImplementedBlock {
 
     public int getY() {
         return y;
+    }
+
+    public boolean isDeletable() {
+        return isDeletable;
+    }
+
+    public boolean isMovable() {
+        return isMovable;
     }
 
     public Field[] getFields() {

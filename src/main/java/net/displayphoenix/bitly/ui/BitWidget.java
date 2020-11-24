@@ -167,7 +167,7 @@ public class BitWidget {
                                         event.persist();
                                         event.hide();
                                     }
-                                    dependencyPanel.getBlocklyPanel().addBlocks(new ImplementedBlock(event, 50, 50));
+                                    dependencyPanel.getBlocklyPanel().addBlocks(new ImplementedBlock(event, 50, 50, true, true));
                                 }
                                 parentFrame.addWindowListener(new WindowAdapter() {
                                     @Override

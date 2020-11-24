@@ -102,11 +102,52 @@ public class BlocklyDependencyPanel extends JPanel {
                 dependencies.remove(provision);
             }
         }
+
+        for (ImplementedBlock implementedBlock : getBlocklyPanel().getWorkspace()) {
+            List<String> blockDependencies = new Object() {
+                public List<String> getBlockStatementDependencies(ImplementedBlock implementedBlock, List<String> statementProvisions) {
+                    List<String> blockDependencies = new ArrayList<>();
+                    for (String statement : implementedBlock.getStatementBlocks().keySet()) {
+                        for (String provision : implementedBlock.getBlock().getStatementProvisions(statement)) {
+                            statementProvisions.add(provision);
+                        }
+                        for (ImplementedBlock statementBlock : implementedBlock.getStatementBlocks().get(statement)) {
+                            for (String dependency : getBlockStatementDependencies(statementBlock, statementProvisions)) {
+                                blockDependencies.add(dependency);
+                            }
+                        }
+                    }
+                    for (String value : implementedBlock.getValueBlocks().keySet()) {
+                        for (ImplementedBlock valueBlock : implementedBlock.getValueBlocks().get(value)) {
+                            for (String dependency : getBlockStatementDependencies(valueBlock, statementProvisions)) {
+                                blockDependencies.add(dependency);
+                            }
+                        }
+                    }
+                    if (implementedBlock.isDeletable() && implementedBlock.isMovable() && implementedBlock.getBlock().getStatementDependencies() != null) {
+                        for (String dependency : implementedBlock.getBlock().getStatementDependencies()) {
+                            if (!statementProvisions.contains(dependency)) {
+                                blockDependencies.add(dependency);
+                            }
+                        }
+                    }
+                    blockDependencies = ListHelper.removeDuplicates(blockDependencies);
+                    return blockDependencies;
+                }
+            }.getBlockStatementDependencies(implementedBlock, new ArrayList<>());
+            for (String blockDependency : blockDependencies) {
+                dependencies.add(blockDependency);
+            }
+        }
+
+        dependencies = ListHelper.removeDuplicates(dependencies);
         return dependencies;
     }
 
     /**
-     * @return All unsatisfied dependencies
+     * @see BlocklyDependencyPanel#getUnsatisfiedDependencies()
+     *
+     * @return All dependencies
      */
     public List<String> getDependencies() {
         List<String> dependencies = new ArrayList<>();
@@ -200,8 +241,21 @@ public class BlocklyDependencyPanel extends JPanel {
 
     private List<String> getDependenciesFromBlock(ImplementedBlock implementedBlock) {
         List<String> dependencies = new ArrayList<>();
-        if (implementedBlock.getBlock().getDependency() != null && !dependencies.contains(implementedBlock.getBlock().getDependency())) {
-            dependencies.add(implementedBlock.getBlock().getDependency());
+        if (implementedBlock.getBlock().getLocalDependencies() != null) {
+            for (String dependency : implementedBlock.getBlock().getLocalDependencies()) {
+                if (!dependencies.contains(dependency)) {
+                    dependencies.add(dependency);
+                }
+            }
+        }
+        for (Field field : implementedBlock.getFields()) {
+            if (implementedBlock.getBlock().getFieldDependencies(field.getKey()) != null && implementedBlock.getBlock().getFieldDependencies(field.getKey()).get(field.getValue()) != null) {
+                for (String dependency : implementedBlock.getBlock().getFieldDependencies(field.getKey()).get(field.getValue())) {
+                    if (!dependencies.contains(dependency)) {
+                        dependencies.add(dependency);
+                    }
+                }
+            }
         }
         for (String statement : implementedBlock.getStatementBlocks().keySet()) {
             for (ImplementedBlock statementBlock : implementedBlock.getStatementBlocks().get(statement)) {
@@ -225,12 +279,16 @@ public class BlocklyDependencyPanel extends JPanel {
     }
     private List<String> getProvisionsFromBlock(ImplementedBlock implementedBlock) {
         List<String> provisions = new ArrayList<>();
-        if (implementedBlock.getBlock().getProvision() != null && !provisions.contains(implementedBlock.getBlock().getProvision())) {
-            provisions.add(implementedBlock.getBlock().getProvision());
+        if (implementedBlock.getBlock().getLocalProvisions() != null) {
+            for (String provision : implementedBlock.getBlock().getLocalProvisions()) {
+                if (!provisions.contains(provision)) {
+                    provisions.add(provision);
+                }
+            }
         }
         for (Field field : implementedBlock.getFields()) {
-            if (implementedBlock.getBlock().getProvisionsFromField(field.getKey()) != null && implementedBlock.getBlock().getProvisionsFromField(field.getKey()).get(field.getValue()) != null) {
-                for (String provision : implementedBlock.getBlock().getProvisionsFromField(field.getKey()).get(field.getValue())) {
+            if (implementedBlock.getBlock().getFieldProvisions(field.getKey()) != null && implementedBlock.getBlock().getFieldProvisions(field.getKey()).get(field.getValue()) != null) {
+                for (String provision : implementedBlock.getBlock().getFieldProvisions(field.getKey()).get(field.getValue())) {
                     if (!provisions.contains(provision)) {
                         provisions.add(provision);
                     }

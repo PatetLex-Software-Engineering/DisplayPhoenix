@@ -124,6 +124,8 @@ public interface BlocklyXmlParser {
         // Get x and y
         int x = ImplementedBlock.INNER_BLOCK;
         int y = ImplementedBlock.INNER_BLOCK;
+        boolean deletable = true;
+        boolean movable = true;
 
         // Iterating each node attribute
         for (int ia = 0; ia < block.getAttributes().getLength(); ia++) {
@@ -142,6 +144,16 @@ public interface BlocklyXmlParser {
             // Setting type if found
             else if (attribute.getNodeName().equalsIgnoreCase("type")) {
                 type = attribute.getTextContent();
+            }
+
+            // Setting deletable if found
+            else if (attribute.getNodeName().equalsIgnoreCase("deletable")) {
+                deletable = Boolean.parseBoolean(attribute.getTextContent());
+            }
+
+            // Setting movable if found
+            else if (attribute.getNodeName().equalsIgnoreCase("movable")) {
+                movable = Boolean.parseBoolean(attribute.getTextContent());
             }
         }
 
@@ -236,7 +248,7 @@ public interface BlocklyXmlParser {
         Field[] fieldsArray = new Field[fields.size()];
         fieldsArray = fields.toArray(fieldsArray);
 
-        ImplementedBlock validBlock = new ImplementedBlock(Blockly.getBlockFromType(type), x, y, fieldsArray);
+        ImplementedBlock validBlock = new ImplementedBlock(Blockly.getBlockFromType(type), x, y, deletable, movable, fieldsArray);
         for (String key : innerBlockMap.keySet()) {
             for (ImplementedBlock innerBlock : innerBlockMap.get(key)) {
                 validBlock.addStatementBlock(key, innerBlock);
@@ -266,7 +278,7 @@ public interface BlocklyXmlParser {
 
         // Appending top wrapper
         if (block.getX() >= 0) {
-            blockBuilder.append("<block type=\"" + block.getBlock().getType() + "\" deletable=\"" + !block.getBlock().doesPersist() + "\" x=\"" + block.getX() + "\" y=\"" + block.getY() + "\">");
+            blockBuilder.append("<block type=\"" + block.getBlock().getType() + "\" deletable=\"" + (block.getBlock().doesPersist() ? false : block.isDeletable()) + "\" movable=\"" + block.isMovable() + "\" x=\"" + block.getX() + "\" y=\"" + block.getY() + "\">");
         }
         else {
             blockBuilder.append("<block type=\"" + block.getBlock().getType() + "\">");

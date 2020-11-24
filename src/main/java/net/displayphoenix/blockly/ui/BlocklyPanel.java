@@ -37,7 +37,7 @@ import java.util.concurrent.FutureTask;
  */
 public class BlocklyPanel extends JFXPanel {
 
-    private Map<Runnable, Boolean> runOnLoad = new HashMap<>();
+    private List<Runnable> runOnLoad = new ArrayList<>();
     private Map<String, String[][]> fieldExtensions = new HashMap<>();
     private boolean isLoaded = false;
     private WebEngine engine;
@@ -126,11 +126,13 @@ public class BlocklyPanel extends JFXPanel {
      * @param runnable  Code to run
      */
     public void queueOnLoad(Runnable runnable) {
-        this.runOnLoad.put(runnable, false);
+        this.runOnLoad.add(runnable);
     }
 
     /**
      * Whitelist categories to show in BlocklyPanel
+     *
+     * if categories is null, no categories will show
      *
      * @param categories  Categories to show
      * @return
@@ -140,7 +142,40 @@ public class BlocklyPanel extends JFXPanel {
         ThreadHelper.runOnFxThread(() -> {
             StringBuilder html = new StringBuilder();
             BlocklyHtmlGenerator.appendTopWrapper(html);
-            Blockly.appendCategories(html, categories);
+            if (categories != null)
+                Blockly.appendCategories(html, categories);
+            BlocklyHtmlGenerator.appendBottomWrapper(html, Blockly.parseBlocksToJsonArray());
+            reload();
+        });
+        return this;
+    }
+
+    /**
+     * Blacklist categories to show in BlocklyPanel
+     *
+     * @exception NullPointerException  if categories is null
+     *
+     * @param categories  Categories to blacklist
+     * @return
+     */
+    public BlocklyPanel blacklist(Category... categories) {
+        this.categories = categories;
+        ThreadHelper.runOnFxThread(() -> {
+            StringBuilder html = new StringBuilder();
+            BlocklyHtmlGenerator.appendTopWrapper(html);
+            Category[] registeredCategories = Blockly.getBlocklyCategories();
+            Category[] categoriesToAdd = new Category[registeredCategories.length - categories.length];
+            int i = 0;
+            for (Category registeredCategory : registeredCategories) {
+                for (Category blacklistedCategory : categories) {
+                    if (registeredCategory.equals(blacklistedCategory)) {
+                        continue;
+                    }
+                }
+                categoriesToAdd[i] = registeredCategory;
+                i++;
+            }
+            Blockly.appendCategories(html, categoriesToAdd);
             BlocklyHtmlGenerator.appendBottomWrapper(html, Blockly.parseBlocksToJsonArray());
             reload();
         });
@@ -155,7 +190,9 @@ public class BlocklyPanel extends JFXPanel {
     }
 
     private void loadBlockly(String html) {
-        this.engine.loadContent(html.replace("@WIDTH", String.valueOf(this.getWidth())).replace("@HEIGHT", String.valueOf(this.getHeight())));
+        ThreadHelper.runOnFxThread(() -> {
+            this.engine.loadContent(html.replace("@WIDTH", String.valueOf(this.getWidth())).replace("@HEIGHT", String.valueOf(this.getHeight())));
+        });
     }
 
     /**
@@ -169,14 +206,6 @@ public class BlocklyPanel extends JFXPanel {
         if (this.isLoaded) {
             this.isLoaded = false;
             loadBlockly(html.toString());
-        }
-        else {
-            this.runOnLoad.put(new Runnable() {
-                @Override
-                public void run() {
-                    reload();
-                }
-            }, true);
         }
     }
 
@@ -205,60 +234,7 @@ public class BlocklyPanel extends JFXPanel {
                 if (!this.isLoaded && newState == Worker.State.SUCCEEDED && this.engine.getDocument() != null) {
                     this.isLoaded = true;
                     Element styleNode = this.engine.getDocument().createElement("style");
-                    String css = "body {\n" +
-                            "    margin: 0;\n" +
-                            "    padding: 0;\n" +
-                            "    background: transparent;\n" +
-                            "    overflow: hidden;\n" +
-                            "}\n" +
-                            ".blocklyText {\n" +
-                            "    font-family: " + getFont().getName().toLowerCase() + ";\n" +
-                            "}\n" +
-                            "#blockly {\n" +
-                            "    position: absolute;\n" +
-                            "    background: transparent;\n" +
-                            "    top: 0;\n" +
-                            "    left: 0;\n" +
-                            "    width: 100%;\n" +
-                            "    height: 100%;\n" +
-                            "}\n" +
-                            ".blocklyMainBackground {\n" +
-                            "    fill: rgb(" + getBackground().getRed() + ", " + getBackground().getGreen() + ", " + getBackground().getBlue() + ") !important;\n" +
-                            "    stroke-width: 0;\n" +
-                            "}\n" +
-                            "\n" +
-                            ".blocklyFlyoutBackground {\n" +
-                            "    fill-opacity: 0;\n" +
-                            "}\n" +
-                            "\n" +
-                            ".blocklyFlyout {\n" +
-                            "    background-color: " + ColorHelper.convertColorToHexadeimal(getForeground()) + ";\n" +
-                            "}\n\n" +
-                            ".blocklyToolboxDiv {\n" +
-                            "    background-color: " + ColorHelper.convertColorToHexadeimal(getForeground()) + ";\n" +
-                            "    color: white;\n" +
-                            "}" +
-                            ".blocklyScrollbarVertical .blocklyScrollbarHandle {\n" +
-                            "    fill: " + ColorHelper.convertColorToHexadeimal(getBackground().brighter()) + ";\n" +
-                            "    rx: 0;\n" +
-                            "    ry: 0;\n" +
-                            "    width: 10px;\n" +
-                            "}\n" +
-                            "\n" +
-                            ".blocklyScrollbarVertical:hover .blocklyScrollbarHandle {\n" +
-                            "    fill: " + ColorHelper.convertColorToHexadeimal(getForeground()) + ";\n" +
-                            "}\n" +
-                            "\n" +
-                            ".blocklyScrollbarHorizontal .blocklyScrollbarHandle {\n" +
-                            "    fill: " + ColorHelper.convertColorToHexadeimal(getBackground().brighter()) + ";\n" +
-                            "    rx: 0;\n" +
-                            "    ry: 0;\n" +
-                            "    height: 10px;\n" +
-                            "}\n" +
-                            "\n" +
-                            ".blocklyScrollbarHorizontal:hover .blocklyScrollbarHandle {\n" +
-                            "    fill: " + ColorHelper.convertColorToHexadeimal(getForeground()) + ";\n" +
-                            "}";
+                    String css = getCss();
 
                     Text styleContent = this.engine.getDocument().createTextNode(css);
                     styleNode.appendChild(styleContent);
@@ -272,20 +248,9 @@ public class BlocklyPanel extends JFXPanel {
                             "}\n" +
                             "workspace.addChangeListener(onBlocklyEvent);");
 
-                    ThreadHelper.runOnFxThread(() -> {
-                        List<Runnable> runnablesToDispose = new ArrayList<>();
-                        for (Runnable runnable : this.runOnLoad.keySet()) {
-                            this.isLoaded = true;
-                            runnable.run();
-                            if (runOnLoad.get(runnable)) {
-                                runnablesToDispose.add(runnable);
-                            }
-                        }
-                        for (Runnable runnable : runnablesToDispose) {
-                            runOnLoad.remove(runnable);
-                        }
-                    });
-
+                    for (Runnable runnable : this.runOnLoad) {
+                        runnable.run();
+                    }
 
                     JSObject window = (JSObject) this.engine.executeScript("window");
                     window.setMember("blocklypanel", this);
@@ -316,9 +281,7 @@ public class BlocklyPanel extends JFXPanel {
                 options[i] = new String[] {optionsToAdd[i].getKey(), optionsToAdd[i].getValue()};
             }
             this.fieldExtensions.put(extensionKey, options);
-            if (this.isLoaded) {
-                reload();
-            }
+            reload();
         }
     }
 
@@ -411,7 +374,9 @@ public class BlocklyPanel extends JFXPanel {
     @Override
     public void reshape(int x, int y, int w, int h) {
         super.reshape(x, y, w, h);
-        reload();
+        if (w != getWidth() || h != getHeight() || x != getX() || y != getY()) {
+            reload();
+        }
     }
 
     @Override
@@ -437,5 +402,62 @@ public class BlocklyPanel extends JFXPanel {
             e.printStackTrace();
         }
         return null;
+    }
+
+    protected String getCss() {
+        return "body {\n" +
+                "    margin: 0;\n" +
+                "    padding: 0;\n" +
+                "    background: transparent;\n" +
+                "    overflow: hidden;\n" +
+                "}\n" +
+                ".blocklyText {\n" +
+                "    font-family: " + getFont().getName().toLowerCase() + ";\n" +
+                "}\n" +
+                "#blockly {\n" +
+                "    position: absolute;\n" +
+                "    background: transparent;\n" +
+                "    top: 0;\n" +
+                "    left: 0;\n" +
+                "    width: 100%;\n" +
+                "    height: 100%;\n" +
+                "}\n" +
+                ".blocklyMainBackground {\n" +
+                "    fill: rgb(" + getBackground().getRed() + ", " + getBackground().getGreen() + ", " + getBackground().getBlue() + ") !important;\n" +
+                "    stroke-width: 0;\n" +
+                "}\n" +
+                "\n" +
+                ".blocklyFlyoutBackground {\n" +
+                "    fill-opacity: 0;\n" +
+                "}\n" +
+                "\n" +
+                ".blocklyFlyout {\n" +
+                "    background-color: " + ColorHelper.convertColorToHexadeimal(getForeground()) + ";\n" +
+                "}\n\n" +
+                ".blocklyToolboxDiv {\n" +
+                "    background-color: " + ColorHelper.convertColorToHexadeimal(getForeground()) + ";\n" +
+                "    color: white;\n" +
+                "}" +
+                ".blocklyScrollbarVertical .blocklyScrollbarHandle {\n" +
+                "    fill: " + ColorHelper.convertColorToHexadeimal(getBackground().brighter()) + ";\n" +
+                "    rx: 0;\n" +
+                "    ry: 0;\n" +
+                "    width: 10px;\n" +
+                "}\n" +
+                "\n" +
+                ".blocklyScrollbarVertical:hover .blocklyScrollbarHandle {\n" +
+                "    fill: " + ColorHelper.convertColorToHexadeimal(getForeground()) + ";\n" +
+                "}\n" +
+                "\n" +
+                ".blocklyScrollbarHorizontal .blocklyScrollbarHandle {\n" +
+                "    fill: " + ColorHelper.convertColorToHexadeimal(getBackground().brighter()) + ";\n" +
+                "    rx: 0;\n" +
+                "    ry: 0;\n" +
+                "    height: 10px;\n" +
+                "}\n" +
+                "\n" +
+                ".blocklyScrollbarHorizontal:hover .blocklyScrollbarHandle {\n" +
+                "    fill: " + ColorHelper.convertColorToHexadeimal(getForeground()) + ";\n" +
+                "}";
     }
 }
