@@ -5,6 +5,8 @@ import net.displayphoenix.canvasly.effects.ImageEffect;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.net.MalformedURLException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -18,7 +20,7 @@ public class ImageHelper {
     public static ImageIcon getImage(String identifier) {
         if (!(identifier.endsWith(".png") || identifier.endsWith(".gif")))
             identifier += ".png";
-        return fromPath("textures/" + identifier);
+        return fromResource("textures/" + identifier);
     }
 
     public static ImageIcon resize(ImageIcon image, int width, int height) {
@@ -74,11 +76,26 @@ public class ImageHelper {
         return new ImageEffect(image).rotate(angle);
     }
 
-    public static ImageIcon fromPath(String path) {
+    private static ImageIcon fromResource(String path) {
         if (CACHE.get(path) != null)
             return CACHE.get(path);
         else {
             ImageIcon newItem = new ImageIcon(Toolkit.getDefaultToolkit().createImage(ClassLoader.getSystemClassLoader().getResource(path)));
+            CACHE.put(path, newItem);
+            return newItem;
+        }
+    }
+
+    public static ImageIcon fromPath(String path) {
+        if (CACHE.get(path) != null)
+            return CACHE.get(path);
+        else {
+            ImageIcon newItem = null;
+            try {
+                newItem = new ImageIcon(Toolkit.getDefaultToolkit().createImage(new File(path).toURI().toURL()));
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            }
             CACHE.put(path, newItem);
             return newItem;
         }

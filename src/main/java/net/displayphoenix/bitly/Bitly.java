@@ -8,7 +8,9 @@ import net.displayphoenix.bitly.elements.Bit;
 import net.displayphoenix.bitly.ui.BitWidget;
 import net.displayphoenix.file.DetailedFile;
 import net.displayphoenix.generation.Module;
+import net.displayphoenix.util.ImageHelper;
 
+import javax.swing.*;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -85,11 +87,22 @@ public class Bitly {
      */
     public static void registerBit(File bitFile) {
         try {
+            // Wrapping file
+            DetailedFile detailedBitFile = new DetailedFile(bitFile);
+
             // Obtaining JSON object
             JsonObject bitObject = gson.fromJson(new FileReader(bitFile), JsonObject.class);
 
+            ImageIcon bitIcon = null;
+            if (bitObject.get("icon") != null) {
+                bitIcon = ImageHelper.fromPath(bitObject.get("icon").getAsString());
+            }
+            else {
+                bitIcon = ImageHelper.fromPath(bitFile.getParentFile().getPath() + "/" + detailedBitFile.getFileName() + ".png");
+            }
+
             // Creating Bit object
-            Bit bit = new Bit(new DetailedFile(bitFile).getFileName(), bitObject.get("plugin") != null ? bitObject.get("plugin").getAsString() : null, bitObject.get("pluginFlag") != null ? bitObject.get("pluginFlag").getAsString() : null, gson.fromJson(bitObject.get("widgets").toString(), new TypeToken<List<BitWidget[]>>(){}.getType()));
+            Bit bit = new Bit(detailedBitFile.getFileName(), bitObject.get("plugin") != null ? bitObject.get("plugin").getAsString() : null, bitObject.get("pluginFlag") != null ? bitObject.get("pluginFlag").getAsString() : null, bitIcon, gson.fromJson(bitObject.get("widgets").toString(), new TypeToken<List<BitWidget[]>>(){}.getType()));
 
             // Registering Bit object
             registerBit(bit);
