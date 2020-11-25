@@ -35,17 +35,6 @@ import java.io.InputStreamReader;
  */
 public class Application {
 
-    public static void main(String[] args) {
-        Theme theme = new Theme(new ColorTheme(new Color(38, 38, 38), new Color(192, 226, 113), new Color(255, 255, 255), Color.GRAY), WidgetStyle.POPPING, new Font(Font.MONOSPACED, Font.PLAIN, 14));
-        Application.create("sda", ImageHelper.getImage("blunt_warning"), theme, "kdsa");
-
-        Blockly.queueText();
-
-        Bitly.registerBit(new File("src/main/resources/bitly/test.json"));
-        Application.openWindow(parentFrame -> {
-            parentFrame.add(Bitly.getBitFromType("test").open());
-        });
-    }
     private static final int BUTTON_WIDTH = 100;
     private static final int BUTTON_HEIGHT = 20;
 
