@@ -98,7 +98,7 @@ public class Bitly {
                 bitIcon = ImageHelper.fromPath(bitObject.get("icon").getAsString());
             }
             else {
-                bitIcon = ImageHelper.fromPath(bitFile.getParentFile().getPath() + "/" + detailedBitFile.getFileName() + ".png");
+                bitIcon = ImageHelper.fromPath(bitFile.getParentFile().getPath() + "/icons/" + detailedBitFile.getFileName() + ".png");
             }
 
             // Creating Bit object
