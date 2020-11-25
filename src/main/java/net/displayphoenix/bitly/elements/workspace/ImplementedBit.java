@@ -61,6 +61,23 @@ public class ImplementedBit {
         return this.widgetToRawComponent.get(widget);
     }
 
+    /**
+     * Get value of specific bit
+     *
+     * @param flag  Flag of bit widget
+     * @return
+     */
+    public Object getValueOfWidget(String flag) {
+        for (BitWidget[] page : this.bit.getBits()) {
+            for (BitWidget widget : page) {
+                if (widget.getFlag().equalsIgnoreCase(flag)) {
+                    return widget.getValue(getRawComponent(widget));
+                }
+            }
+        }
+        return null;
+    }
+
     public java.util.List<Component> getPageComponents(BitArgument[] arguments) {
         return getPageComponents(this.currentPage, arguments);
     }
