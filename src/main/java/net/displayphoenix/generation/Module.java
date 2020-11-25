@@ -1,6 +1,7 @@
 package net.displayphoenix.generation;
 
 import net.displayphoenix.bitly.elements.Bit;
+import net.displayphoenix.bitly.elements.workspace.ImplementedBit;
 import net.displayphoenix.bitly.ui.BitWidget;
 import net.displayphoenix.blockly.elements.Block;
 import net.displayphoenix.blockly.elements.IMutator;
@@ -117,11 +118,11 @@ public class Module {
         this.blockMutators.put(block, mutator);
     }
 
-    public String getCodeFromBit(Bit bit) {
+    public String getCodeFromBit(ImplementedBit bit) {
         String code = this.bitCode.get(bit);
         String[] plugins = StringHelper.substringsBetween(code, getFlags("plugin")[0], getFlags("plugin")[1]);
         String[] bits = StringHelper.substringsBetween(code, getFlags("bit")[0], getFlags("bit")[1]);
-        for (BitWidget[] page : bit.getBits()) {
+        for (BitWidget[] page : bit.getBit().getBits()) {
             for (BitWidget widget : page) {
                 for (String input : bits) {
                     if (input.equalsIgnoreCase(widget.getFlag())) {
@@ -137,8 +138,8 @@ public class Module {
         if (plugins != null) {
             for (String input : plugins) {
                 String val = " ";
-                for (Bit pluginBit : bit.getPlugins()) {
-                    if (input.equalsIgnoreCase(pluginBit.getPluginFlag())) {
+                for (ImplementedBit pluginBit : bit.getImplementedPlugins()) {
+                    if (input.equalsIgnoreCase(pluginBit.getBit().getPluginFlag())) {
                         String bitVal = getCodeFromBit(pluginBit);
                         if (bitVal == null)
                             bitVal = "";
@@ -226,15 +227,15 @@ public class Module {
         return blockSyntax.contains(block.getBlock()) ? code : addSyntax(code);
     }
 
-    private String getValueOfWidget(Bit bit, BitWidget widget) {
+    private String getValueOfWidget(ImplementedBit bit, BitWidget widget) {
         switch (widget.getStyle()) {
             case TOGGLE:
-                return Boolean.toString(((Toggle) bit.getWidgetComponentMap().get(widget)[1]).isToggled());
+                return Boolean.toString(((Toggle) bit.getRawComponent(widget)).isToggled());
             case TEXT:
             case NUMBER:
-                return ((TextField) bit.getWidgetComponentMap().get(widget)[1]).getText();
+                return ((TextField) bit.getRawComponent(widget)).getText();
             case BLOCKLY:
-                ProvisionWidget provisionWidget = ((ProvisionWidget) bit.getWidgetComponentMap().get(widget)[1]);
+                ProvisionWidget provisionWidget = ((ProvisionWidget) bit.getRawComponent(widget));
                 if (provisionWidget.getXml() == null)
                     return null;
                 ImplementedBlock[] implementedBlocks = BlocklyXmlParser.fromWorkspaceXml(provisionWidget.getXml());
@@ -245,7 +246,7 @@ public class Module {
                 }
                 break;
             case RESOURCE:
-                return ((ResourceWidget) bit.getWidgetComponentMap().get(widget)[1]).getFile().getFile().getPath();
+                return ((ResourceWidget) bit.getRawComponent(widget)).getFile().getFile().getPath();
         }
         return null;
     }

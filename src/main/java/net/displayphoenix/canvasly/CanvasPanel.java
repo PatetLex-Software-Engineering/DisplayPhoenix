@@ -349,9 +349,11 @@ public class CanvasPanel extends JPanel implements MouseWheelListener, MouseMoti
         return new CanvasSave(this.getLayers(), this.getStaticElements());
     }
 
-    public void setCanvas(Map<Layer, Pixel[][]> pixels, Map<Layer, List<StaticElement>> staticElements) {
-/*        this.layerToPixels = pixels;
-        this.staticElements = staticElements;*/
+    public CanvasPanel setCanvas(CanvasSave save) {
+        return setCanvas(save.getPixels(), save.getStaticElements());
+    }
+
+    public CanvasPanel setCanvas(Map<Layer, Pixel[][]> pixels, Map<Layer, List<StaticElement>> staticElements) {
         this.layerToPixels.clear();
         this.staticElements.clear();
         for (Layer layer : pixels.keySet()) {
@@ -372,6 +374,7 @@ public class CanvasPanel extends JPanel implements MouseWheelListener, MouseMoti
             }
         }
         repaint();
+        return this;
     }
 
     private CanvasElement rayTraceElement(Point point, Graphics2D graphics) {

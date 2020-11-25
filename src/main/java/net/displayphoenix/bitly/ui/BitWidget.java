@@ -77,8 +77,7 @@ public class BitWidget {
 
     /**
      * Returns code flag of widget
-     * 
-     * @see net.displayphoenix.generation.Module#getCodeFromBit(Bit)
+     *
      *
      * @return  Flag of bit
      */
@@ -272,7 +271,7 @@ public class BitWidget {
     /**
      * Sets the value of a widget to argument
      *
-     * @see Bit#open(BitArgument...)
+     * @see Bit#get(BitArgument...)
      * 
      * @param component Component to set
      * @param argument Argument to set to
@@ -299,6 +298,31 @@ public class BitWidget {
                 break;
         }
         component.repaint();
+    }
+
+    /**
+     * Returns the value of a component
+     *
+     *
+     * @param component Component to check
+     */
+    public Object getValue(Component component) {
+
+        // Switch for each style
+        switch (style) {
+            case TOGGLE:
+                return ((Toggle) component).isToggled();
+            case TEXT:
+            case NUMBER:
+                return ((TextField) component).getText();
+            case BLOCKLY:
+                return ((ProvisionWidget) component).getXml();
+            case RESOURCE:
+                return ((ResourceWidget) component).getFile().getFile().getPath();
+            case CANVAS:
+                return ((CanvasWidget) component).getSave();
+        }
+        return null;
     }
 
     /**

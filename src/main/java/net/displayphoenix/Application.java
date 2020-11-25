@@ -1,21 +1,13 @@
 package net.displayphoenix;
 
-import net.displayphoenix.bitly.Bitly;
-import net.displayphoenix.blockly.Blockly;
-import net.displayphoenix.blockly.ui.BlocklyDependencyPanel;
-import net.displayphoenix.blockly.ui.BlocklyPanel;
-import net.displayphoenix.canvasly.CanvasPanel;
 import net.displayphoenix.canvasly.tools.Tool;
 import net.displayphoenix.canvasly.tools.impl.*;
-import net.displayphoenix.enums.WidgetStyle;
 import net.displayphoenix.exception.AppNotCreatedException;
 import net.displayphoenix.generation.Module;
 import net.displayphoenix.lang.Local;
 import net.displayphoenix.lang.Localizer;
-import net.displayphoenix.ui.ColorTheme;
 import net.displayphoenix.ui.Theme;
 import net.displayphoenix.ui.widget.OverlayOnHoverWidget;
-import net.displayphoenix.ui.widget.ProvisionWidget;
 import net.displayphoenix.ui.widget.RoundedButton;
 import net.displayphoenix.util.ImageHelper;
 import net.displayphoenix.util.PanelHelper;
@@ -26,7 +18,6 @@ import javax.swing.plaf.metal.DefaultMetalTheme;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
