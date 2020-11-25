@@ -1,6 +1,7 @@
 package net.displayphoenix.canvasly;
 
 
+import net.displayphoenix.canvasly.elements.CanvasSave;
 import net.displayphoenix.canvasly.elements.Element;
 import net.displayphoenix.canvasly.elements.Layer;
 import net.displayphoenix.canvasly.elements.StaticElement;
@@ -342,6 +343,35 @@ public class CanvasPanel extends JPanel implements MouseWheelListener, MouseMoti
 
     public void addStaticElement(Layer layer, Element element, int offX, int offY, StaticElement.Properties properties) {
         addStaticElement(layer, new StaticElement(element, offX,  offY, properties));
+    }
+
+    public CanvasSave getSave() {
+        return new CanvasSave(this.getLayers(), this.getStaticElements());
+    }
+
+    public void setCanvas(Map<Layer, Pixel[][]> pixels, Map<Layer, List<StaticElement>> staticElements) {
+/*        this.layerToPixels = pixels;
+        this.staticElements = staticElements;*/
+        this.layerToPixels.clear();
+        this.staticElements.clear();
+        for (Layer layer : pixels.keySet()) {
+            addLayer(layer);
+            for (int i = 0; i < pixels.get(layer).length; i++) {
+                for (int j = 0; j < pixels.get(layer)[i].length; j++) {
+                    this.layerToPixels.get(layer)[i][j] = pixels.get(layer)[i][j];
+                }
+            }
+        }
+        for (LayerListener layerListener : this.layerListeners) {
+            layerListener.onLayerSet(pixels.keySet());
+        }
+        for (Layer layer : staticElements.keySet()) {
+            this.staticElements.put(layer, new ArrayList<>());
+            for (StaticElement staticElement : staticElements.get(layer)) {
+                this.staticElements.get(layer).add(staticElement);
+            }
+        }
+        repaint();
     }
 
     private CanvasElement rayTraceElement(Point point, Graphics2D graphics) {

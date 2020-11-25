@@ -26,20 +26,16 @@ public class BlocklyDependencyPanel extends JPanel {
     private Map<String, Integer> colorCache = new HashMap<>();
     private List<String> addedProvisions = new ArrayList<>();
     private BlocklyPanel blocklyPanel;
-    private JPanel dependencyPanel;
 
     /**
      * BlocklyPanel with dependencies and provisions
      *
      * @see BlocklyPanel
      */
-    public BlocklyDependencyPanel() {
-        this.setLayout(new BorderLayout());
-        this.blocklyPanel = new BlocklyPanel();
-        this.dependencyPanel = new JPanel(new BorderLayout());
-
-        this.dependencyPanel.setBackground(Application.getTheme().getColorTheme().getSecondaryColor());
-        this.dependencyPanel.setOpaque(true);
+    public BlocklyDependencyPanel(BlocklyPanel blockly) {
+        this.blocklyPanel = blockly;
+        this.setBackground(Application.getTheme().getColorTheme().getSecondaryColor());
+        this.setOpaque(true);
         this.blocklyPanel.addBlocklyEventListener(new IBlocklyListener() {
             @Override
             public void onBlocklyEvent(BlocklyEvent event) {
@@ -49,19 +45,14 @@ public class BlocklyDependencyPanel extends JPanel {
         this.blocklyPanel.queueOnLoad(() -> {
             updateDependencies();
         });
-
-        this.add(PanelHelper.westAndCenterElements(this.blocklyPanel, this.dependencyPanel));
     }
 
-    /**
-     * @return BlocklyPanel of panel
-     */
     public BlocklyPanel getBlocklyPanel() {
         return blocklyPanel;
     }
 
     private void updateDependencies() {
-        this.dependencyPanel.removeAll();
+        this.removeAll();
 
         JLabel dependencyLabel = new JLabel(Localizer.translate("blockly.dependency.text"));
         ComponentHelper.themeComponent(dependencyLabel);
@@ -77,12 +68,12 @@ public class BlocklyDependencyPanel extends JPanel {
         providePanel.setBorder(BorderFactory.createEmptyBorder(15, 0, 25, 0));
         JPanel provisionList = getProvisionsPanel();
 
-        this.dependencyPanel.add("North", PanelHelper.northAndCenterElements(providePanel, provisionList));
+        this.add("North", PanelHelper.northAndCenterElements(providePanel, provisionList));
         JPanel dependPanelWithBorder = PanelHelper.northAndCenterElements(dependPanel, dependencyList);
         dependPanelWithBorder.setBorder(BorderFactory.createEmptyBorder(0, 0, 30, 0));
-        this.dependencyPanel.add("South", dependPanelWithBorder);
-        this.dependencyPanel.revalidate();
-        this.dependencyPanel.repaint();
+        this.add("South", dependPanelWithBorder);
+        this.revalidate();
+        this.repaint();
     }
 
     /**

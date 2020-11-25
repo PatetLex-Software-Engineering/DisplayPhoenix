@@ -21,6 +21,11 @@ public class ImageTool extends Tool {
     private static File previousDirectory = new File(System.getProperty("user.home"));
 
     @Override
+    public String getName() {
+        return "image";
+    }
+
+    @Override
     public ImageIcon getIcon() {
         return getImage("image/image");
     }

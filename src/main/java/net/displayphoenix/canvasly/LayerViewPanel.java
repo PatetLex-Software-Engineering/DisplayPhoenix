@@ -15,6 +15,7 @@ import java.awt.event.*;
 import java.awt.geom.AffineTransform;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public class LayerViewPanel extends JPanel implements LayerListener {
 
@@ -66,7 +67,7 @@ public class LayerViewPanel extends JPanel implements LayerListener {
         this.layerPanel.removeAll();
         this.layerPanel.setLayout(new GridLayout(6, 1));
         int i = 0;
-        for (Layer layer : layers) {
+        for (Layer layer : this.layers) {
             if (i < 6) {
                 LayerWidget layerWidget = new LayerWidget(this, layer);
                 layerWidget.setPreferredSize(new Dimension(150, 75));
@@ -112,6 +113,15 @@ public class LayerViewPanel extends JPanel implements LayerListener {
         repaint();
     }
 
+    @Override
+    public void onLayerSet(Set<Layer> layers) {
+        this.layers.clear();
+        for (Layer layer : layers) {
+            this.layers.add(layer);
+        }
+        loadLayerPanel();
+    }
+
     private static class LayerWidget extends JPanel implements MouseListener, MouseMotionListener {
 
         private Clipper clipper =  new Clipper(0.02F, 0.6F, 0F).smooth();
@@ -134,36 +144,42 @@ public class LayerViewPanel extends JPanel implements LayerListener {
         @Override
         protected void paintComponent(Graphics g) {
             super.paintComponent(g);
-            g.setColor(this.layerView.getCanvas().getBackground());
-            g.fillRect(0, 0, getWidth(), getHeight());
-            float cw = getWidth() / 2F;
-            float ch = getHeight() / 2F;
-            g.setColor(getForeground());
-            g.drawString(String.valueOf(this.layer.getIndex()), 0, (int) (getHeight() - g.getFontMetrics().getStringBounds(String.valueOf(this.layer.getIndex()), g).getHeight()));
-            if (this.layerView.getCanvas().getSelectedLayer() == this.layer) {
-                g.setColor(getForeground());
-                g.fillRect(0, 0, 3, getHeight());
-                g.fillRect(0, 0, getWidth(), 3);
-                g.fillRect(getWidth() - 3, 0, 3, getHeight());
-                g.fillRect(0, getHeight() - 3, getWidth(), 3);
-            }
-            ((Graphics2D) g).scale((float) getWidth() / (float) this.layerView.getCanvas().getWidth(), (float) getHeight() / (float) this.layerView.getCanvas().getHeight());
-            ((Graphics2D) g).translate(cw / (float) getWidth() / (float) this.layerView.getCanvas().getWidth(), ch / (float) getHeight() / (float) this.layerView.getCanvas().getHeight());
-            for (Pixel[] x : this.layerView.getCanvas().getLayers().get(this.layer)) {
-                for (Pixel y : x) {
-                    if (y != null) {
-                        y.draw(g);
-                    }
-                    g.translate(0, 1);
+            if (this.layerView.getCanvas().getLayers() != null) {
+                if (this.layerView.getCanvas().getLayers().get(this.layer) == null) {
+                    this.layer = this.layerView.getCanvas().getSelectedLayer();
+                    return;
                 }
-                g.translate(1, -this.layerView.getCanvas().getCanvasHeight());
-            }
-            ((Graphics2D) g).setTransform(new AffineTransform());
-            Graphics2D g2d = (Graphics2D) g;
-            if (this.clipper.getCurrentValue() != 0) {
-                g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, this.clipper.getCurrentValue()));
-                g2d.setColor(getForeground());
-                g2d.fillRect(0, 0, getWidth(), getHeight());
+                g.setColor(this.layerView.getCanvas().getBackground());
+                g.fillRect(0, 0, getWidth(), getHeight());
+                float cw = getWidth() / 2F;
+                float ch = getHeight() / 2F;
+                g.setColor(getForeground());
+                g.drawString(String.valueOf(this.layer.getIndex()), 0, (int) (getHeight() - g.getFontMetrics().getStringBounds(String.valueOf(this.layer.getIndex()), g).getHeight()));
+                if (this.layerView.getCanvas().getSelectedLayer() == this.layer) {
+                    g.setColor(getForeground());
+                    g.fillRect(0, 0, 3, getHeight());
+                    g.fillRect(0, 0, getWidth(), 3);
+                    g.fillRect(getWidth() - 3, 0, 3, getHeight());
+                    g.fillRect(0, getHeight() - 3, getWidth(), 3);
+                }
+                ((Graphics2D) g).scale((float) getWidth() / (float) this.layerView.getCanvas().getWidth(), (float) getHeight() / (float) this.layerView.getCanvas().getHeight());
+                ((Graphics2D) g).translate(cw / (float) getWidth() / (float) this.layerView.getCanvas().getWidth(), ch / (float) getHeight() / (float) this.layerView.getCanvas().getHeight());
+                for (Pixel[] x : this.layerView.getCanvas().getLayers().get(this.layer)) {
+                    for (Pixel y : x) {
+                        if (y != null) {
+                            y.draw(g);
+                        }
+                        g.translate(0, 1);
+                    }
+                    g.translate(1, -this.layerView.getCanvas().getCanvasHeight());
+                }
+                ((Graphics2D) g).setTransform(new AffineTransform());
+                Graphics2D g2d = (Graphics2D) g;
+                if (this.clipper.getCurrentValue() != 0) {
+                    g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, this.clipper.getCurrentValue()));
+                    g2d.setColor(getForeground());
+                    g2d.fillRect(0, 0, getWidth(), getHeight());
+                }
             }
         }
 

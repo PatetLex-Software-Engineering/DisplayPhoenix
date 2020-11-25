@@ -15,6 +15,11 @@ import java.util.List;
 public class TextTool extends Tool {
 
     @Override
+    public String getName() {
+        return "text";
+    }
+
+    @Override
     public ImageIcon getIcon() {
         return getImage("image/text");
     }

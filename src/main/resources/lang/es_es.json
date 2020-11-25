@@ -1,4 +1,6 @@
 {
+  "widget.provisions_on_right_click.text": "Consulte las disposiciones sobre el clic derecho",
+
   "blockly.category.flow_control.text": "Control de flujo",
   "blockly.category.logic.text": "Lógica",
   "blockly.category.math.text": "Matemáticas",

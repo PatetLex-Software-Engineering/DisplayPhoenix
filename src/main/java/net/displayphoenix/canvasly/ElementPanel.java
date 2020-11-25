@@ -6,8 +6,7 @@ import net.displayphoenix.canvasly.elements.StaticElement;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 import java.util.Arrays;
 
 public class ElementPanel extends JPanel {
@@ -88,9 +87,14 @@ public class ElementPanel extends JPanel {
         @Override
         protected void paintComponent(Graphics g) {
             super.paintComponent(g);
+            float r = (float) getWidth() / (float) this.element.getWidth(this.canvasToDraw, g);
+            if (this.element.getHeight(this.canvasToDraw, g) > this.element.getWidth(this.canvasToDraw, g)) {
+                r = (float) getHeight() / (float) this.element.getHeight(this.canvasToDraw, g);
+            }
             this.canvasToDraw.setPreferredSize(new Dimension(this.element.getWidth(this.canvasToDraw, g), this.element.getHeight(this.canvasToDraw, g)));
             ((Graphics2D) g).translate(getWidth() / 2F, getHeight() / 2F);
-            ((Graphics2D) g).translate(-this.element.getWidth(this.canvasToDraw, g) / 2F, -this.element.getHeight(this.canvasToDraw, g) / 2F);
+            ((Graphics2D) g).translate(-(this.element.getWidth(this.canvasToDraw, g) * r) / 2F, -(this.element.getHeight(this.canvasToDraw, g) * r) / 2F);
+            ((Graphics2D) g).scale(r, r);
             this.element.draw(this.canvasToDraw, g);
         }
     }

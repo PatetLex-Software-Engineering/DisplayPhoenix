@@ -43,17 +43,4 @@ public class BlocklyJS {
         }
         return null;
     }
-
-    /**
-     * Returns URI of default block
-     * @return
-     */
-    public static URI getDefaultBlock(String type) {
-        try {
-            return new BlocklyJS().getClass().getResource("blocks/" + type + ".json").toURI();
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
 }

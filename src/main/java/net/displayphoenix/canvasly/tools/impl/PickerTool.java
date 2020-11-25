@@ -11,6 +11,12 @@ import javax.swing.*;
 import java.util.List;
 
 public class PickerTool extends Tool {
+
+    @Override
+    public String getName() {
+        return "picker";
+    }
+
     @Override
     public ImageIcon getIcon() {
         return getImage("image/picker");

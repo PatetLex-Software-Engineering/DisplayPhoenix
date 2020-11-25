@@ -14,6 +14,11 @@ import java.util.List;
 public class BucketTool extends Tool {
 
     @Override
+    public String getName() {
+        return "bucket";
+    }
+
+    @Override
     public ImageIcon getIcon() {
         return getImage("image/bucket");
     }

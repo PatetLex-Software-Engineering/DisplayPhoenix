@@ -11,6 +11,12 @@ import javax.swing.*;
 import java.util.List;
 
 public class EraserTool extends Tool {
+
+    @Override
+    public String getName() {
+        return "eraser";
+    }
+
     @Override
     public ImageIcon getIcon() {
         return getImage("image/eraser");

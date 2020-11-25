@@ -10,7 +10,7 @@ public class BitArgument {
     /**
      * Object holder of flag and value
      *
-     * @see net.displayphoenix.bitly.elements.Bit#open(Window, BitArgument...)
+     * @see net.displayphoenix.bitly.elements.Bit#open(BitArgument...)
      * 
      * @param flag  Code flag of widget, identifier
      * @param value  Value to set
@@ -26,6 +26,13 @@ public class BitArgument {
      */
     public String getFlag() {
         return flag;
+    }
+
+    /**
+     * @return  Raw value
+     */
+    public Object get() {
+        return this.value;
     }
 
     /**

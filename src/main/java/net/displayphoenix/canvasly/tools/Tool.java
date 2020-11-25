@@ -13,8 +13,11 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public abstract class Tool {
 
+    public static final List<Tool> REGISTERED_TOOLS = new ArrayList<>();
+
     private static final Map<String, ImageIcon> CACHE = new ConcurrentHashMap<>();
 
+    public abstract String getName();
     public abstract ImageIcon getIcon();
 
     public abstract void onLeftClick(ToolPanel toolkit, CanvasPanel canvas, int x, int y, ISettingComponent[] settingComponents);

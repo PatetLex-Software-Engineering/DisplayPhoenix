@@ -14,6 +14,11 @@ import java.util.List;
 public class PencilTool extends Tool {
 
     @Override
+    public String getName() {
+        return "pencil";
+    }
+
+    @Override
     public ImageIcon getIcon() {
         return getImage("image/pencil");
     }

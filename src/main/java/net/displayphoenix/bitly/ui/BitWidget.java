@@ -6,15 +6,23 @@ import net.displayphoenix.bitly.enums.BitWidgetStyle;
 import net.displayphoenix.blockly.Blockly;
 import net.displayphoenix.blockly.elements.Block;
 import net.displayphoenix.blockly.elements.workspace.ImplementedBlock;
-import net.displayphoenix.blockly.js.BlocklyJS;
 import net.displayphoenix.blockly.ui.BlocklyDependencyPanel;
+import net.displayphoenix.blockly.ui.BlocklyPanel;
+import net.displayphoenix.canvasly.CanvasPanel;
+import net.displayphoenix.canvasly.ElementPanel;
+import net.displayphoenix.canvasly.LayerViewPanel;
+import net.displayphoenix.canvasly.ToolPanel;
+import net.displayphoenix.canvasly.elements.CanvasSave;
+import net.displayphoenix.canvasly.elements.Element;
+import net.displayphoenix.canvasly.elements.StaticElement;
+import net.displayphoenix.canvasly.elements.impl.FontElement;
+import net.displayphoenix.canvasly.elements.impl.ImageElement;
+import net.displayphoenix.canvasly.tools.Tool;
 import net.displayphoenix.file.DetailedFile;
 import net.displayphoenix.file.FileDialog;
 import net.displayphoenix.lang.Localizer;
-import net.displayphoenix.ui.widget.ProvisionWidget;
-import net.displayphoenix.ui.widget.ResourceWidget;
+import net.displayphoenix.ui.widget.*;
 import net.displayphoenix.ui.widget.TextField;
-import net.displayphoenix.ui.widget.Toggle;
 import net.displayphoenix.util.BlocklyHelper;
 import net.displayphoenix.util.ComponentHelper;
 import net.displayphoenix.util.ImageHelper;
@@ -25,11 +33,13 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 public class BitWidget {
 
     private BitWidgetStyle style;
-    private String translationKey;
+    private transient String translationKey;
     private String flag;
     private String helpUrl;
     private String[] provisions;
@@ -37,9 +47,8 @@ public class BitWidget {
     private String path;
     private int width;
     private int height;
-
-
-    private Object value;
+    private String[] tools;
+    private List<CanvasElement> canvasElements;
 
     /**
      * Main component of Bitly, used as widgets for main panel
@@ -48,11 +57,10 @@ public class BitWidget {
      *
      * @param style  Style of widget
      * @param flag  Flag for code
-     * @param translationKey  Translation key for Bit comment
      */
-    public BitWidget(BitWidgetStyle style, String flag, String translationKey) {
+    public BitWidget(BitWidgetStyle style, String flag) {
         this.style = style;
-        this.translationKey = translationKey;
+        this.translationKey = "bitly.widget." + flag.toLowerCase() + ".text";
         this.flag = flag;
     }
 
@@ -111,21 +119,6 @@ public class BitWidget {
                 return new Component[] {PanelHelper.northAndCenterElements(PanelHelper.join(label), PanelHelper.join(toggle)), toggle};
             case TEXT:
                 TextField textField = new TextField();
-                textField.addKeyListener(new KeyAdapter() {
-                    @Override
-                    public void keyTyped(KeyEvent e) {
-                        char c = e.getKeyChar();
-                        boolean flag = false;
-                        try {
-                            Float.parseFloat(Character.toString(c));
-                        } catch (NumberFormatException ex) {
-                            ex.printStackTrace();
-                            flag = true;
-                        }
-                        if (!flag)
-                            e.consume();
-                    }
-                });
                 textField.setPreferredSize(new Dimension(150, 75));
                 ComponentHelper.deriveFont(textField, 25);
                 textField.setHorizontalAlignment(SwingConstants.CENTER);
@@ -136,9 +129,14 @@ public class BitWidget {
                     @Override
                     public void keyTyped(KeyEvent e) {
                         char c = e.getKeyChar();
-                        if ((c < '0' || c > '9') && (c != KeyEvent.VK_BACK_SPACE) && (c != '.')) {
-                            e.consume();
+                        boolean flag = false;
+                        try {
+                            Double.parseDouble(Character.toString(c));
+                        } catch (NumberFormatException ex) {
+                            flag = true;
                         }
+                        if (flag)
+                            e.consume();
                     }
                 });
                 numField.setPreferredSize(new Dimension(150, 75));
@@ -150,11 +148,14 @@ public class BitWidget {
                 provisionWidget.addMouseListener(new MouseAdapter() {
                     @Override
                     public void mouseClicked(MouseEvent e) {
-                        if (e.getButton() == MouseEvent.BUTTON1) {
+                        if (e.getButton() == MouseEvent.BUTTON1 && e.getClickCount() == 2) {
                             Application.openWindow(JFrame.DISPOSE_ON_CLOSE, parentFrame -> {
-                                BlocklyDependencyPanel dependencyPanel = new BlocklyDependencyPanel();
-                                for (String provision : provisions) {
-                                    dependencyPanel.addProvision(provision);
+                                BlocklyPanel blockly = new BlocklyPanel();
+                                BlocklyDependencyPanel dependencyPanel = new BlocklyDependencyPanel(blockly);
+                                if (provisions != null) {
+                                    for (String provision : provisions) {
+                                        dependencyPanel.addProvision(provision);
+                                    }
                                 }
                                 if (provisionWidget.getXml() != null) {
                                     dependencyPanel.getBlocklyPanel().addBlocks(provisionWidget.getXml());
@@ -162,7 +163,7 @@ public class BitWidget {
                                     Block event = Blockly.getBlockFromType("event_wrapper");
                                     if (event == null) {
                                         Blockly.registerCategory("flow_control", BlocklyHelper.getCategoryJson("flow_control"));
-                                        Blockly.registerBlock(new File(BlocklyJS.getDefaultBlock("event_wrapper")));
+                                        Blockly.registerBlock("event_wrapper", BlocklyHelper.getBlockJson("event_wrapper"));
                                         event = Blockly.getBlockFromType("event_wrapper");
                                         event.persist();
                                         event.hide();
@@ -175,7 +176,9 @@ public class BitWidget {
                                         provisionWidget.setXml(dependencyPanel.getBlocklyPanel().getRawWorkspace());
                                     }
                                 });
-                                parentFrame.add(dependencyPanel);
+                                parentFrame.add(PanelHelper.westAndCenterElements(blockly, dependencyPanel));
+                                blockly.setPreferredSize(new Dimension(Math.round(parentFrame.getWidth() * 0.8F), parentFrame.getHeight()));
+                                dependencyPanel.setPreferredSize(new Dimension(Math.round(parentFrame.getWidth() * 0.2F), parentFrame.getHeight()));
                             });
                         }
                     }
@@ -196,7 +199,72 @@ public class BitWidget {
             case IMAGE:
                 JLabel label1 = new JLabel(ImageHelper.resize(ImageHelper.fromPath(this.path), this.width > 0 ? this.width : 150, this.height > 0 ? this.height : 150));
                 label1.setPreferredSize(new Dimension(this.width > 0 ? this.width : 150, this.height > 0 ? this.height : 150));
-                return new Component[] {PanelHelper.northAndCenterElements(PanelHelper.join(label1), PanelHelper.join(label1)), label1};
+                return new Component[] {PanelHelper.northAndCenterElements(PanelHelper.join(label), PanelHelper.join(label1)), label1};
+            case CANVAS:
+                CanvasWidget canvasWidget = new CanvasWidget();
+                canvasWidget.setToolTipText(this.width + " x " + this.height);
+                List<Tool> canvasTools = new ArrayList<>();
+                for (Tool tool : Tool.REGISTERED_TOOLS) {
+                    for (String toolName : this.tools) {
+                        if (tool.getName().equalsIgnoreCase(toolName)) {
+                            canvasTools.add(tool);
+                            break;
+                        }
+                    }
+                }
+                canvasWidget.addMouseListener(new MouseAdapter() {
+                    @Override
+                    public void mouseClicked(MouseEvent e) {
+                        super.mouseClicked(e);
+                        if (e.getButton() == MouseEvent.BUTTON1 && e.getClickCount() == 2) {
+                            Application.openWindow(JFrame.DISPOSE_ON_CLOSE, parentFrame -> {
+                                CanvasPanel canvas = new CanvasPanel(width, height);
+                                canvas.setPreferredSize(new Dimension(parentFrame.getWidth() - (canvasElements != null ? 600 : 400), parentFrame.getHeight()));
+                                ToolPanel toolkit = new ToolPanel(canvas, canvasTools.toArray(new Tool[canvasTools.size()]));
+                                toolkit.setPreferredSize(new Dimension(200, parentFrame.getHeight()));
+                                LayerViewPanel layerView = new LayerViewPanel(canvas);
+                                layerView.setPreferredSize(new Dimension(200, parentFrame.getHeight()));
+                                if (canvasWidget.getSave() != null) {
+                                    canvas.setCanvas(canvasWidget.getSave().getPixels(), canvasWidget.getSave().getStaticElements());
+                                }
+                                parentFrame.addWindowListener(new WindowAdapter() {
+                                    @Override
+                                    public void windowClosing(WindowEvent e) {
+                                        super.windowClosing(e);
+                                        canvasWidget.setSave(canvas.getSave());
+                                    }
+                                });
+                                if (canvasElements != null) {
+                                    List<StaticElement> staticElements = new ArrayList<>();
+                                    for (CanvasElement canvasElement : canvasElements) {
+                                        Element element = null;
+                                        if (canvasElement.type.equalsIgnoreCase("image")) {
+                                            element = new ImageElement(ImageHelper.getImage(canvasElement.defaultValue).getImage());
+                                        } else if (canvasElement.type.equalsIgnoreCase("text")) {
+                                            element = new FontElement(canvasElement.defaultValue, new Color(canvasElement.r, canvasElement.g, canvasElement.b, canvasElement.a), 1);
+                                        }
+                                        element.setScaleFactor(canvasElement.scale);
+                                        StaticElement.Properties properties = new StaticElement.Properties();
+                                        if (canvasElement.parse) {
+                                            properties.setParse();
+                                        }
+                                        if (canvasElement.overlay) {
+                                            properties.setOverlay();
+                                        }
+                                        staticElements.add(new StaticElement(element, 0, 0, properties));
+                                    }
+                                    ElementPanel elementPanel = new ElementPanel(canvas, staticElements.toArray(new StaticElement[staticElements.size()]));
+                                    elementPanel.setPreferredSize(new Dimension(200, parentFrame.getHeight()));
+                                    parentFrame.add(PanelHelper.westAndCenterElements(PanelHelper.westAndCenterElements(elementPanel, toolkit), PanelHelper.westAndCenterElements(canvas, layerView)));
+                                    return;
+                                }
+                                parentFrame.add(PanelHelper.westAndCenterElements(PanelHelper.westAndCenterElements(toolkit, canvas), layerView));
+                            });
+                        }
+                    }
+                });
+                canvasWidget.setPreferredSize(new Dimension(150, 150));
+                return new Component[] {PanelHelper.northAndCenterElements(PanelHelper.join(label), PanelHelper.join(canvasWidget)), canvasWidget};
         }
         return null;
     }
@@ -204,7 +272,7 @@ public class BitWidget {
     /**
      * Sets the value of a widget to argument
      *
-     * @see Bit#open(Window, BitArgument...) 
+     * @see Bit#open(BitArgument...)
      * 
      * @param component Component to set
      * @param argument Argument to set to
@@ -226,6 +294,9 @@ public class BitWidget {
             case RESOURCE:
                 ((ResourceWidget) component).setFile(new DetailedFile(new File(argument.getAsString())));
                 break;
+            case CANVAS:
+                ((CanvasWidget) component).setSave((CanvasSave) argument.get());
+                break;
         }
         component.repaint();
     }
@@ -239,5 +310,19 @@ public class BitWidget {
      */
     public Website getHelpWebsite() {
         return this.helpUrl != null ? new Website(this.helpUrl) : null;
+    }
+
+    private static class CanvasElement {
+
+        public String type;
+        public String defaultValue;
+        public int scale = 1;
+        public int r;
+        public int g;
+        public int b;
+        public int a = 255;
+        public boolean parse;
+        public boolean overlay;
+
     }
 }

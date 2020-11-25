@@ -1,4 +1,6 @@
 {
+  "widget.provisions_on_right_click.text": "См. положения при щелчке правой кнопкой мыши",
+
   "blockly.category.flow_control.text": "Управление потоком",
   "blockly.category.logic.text": "Логика",
   "blockly.category.math.text": "Математика",

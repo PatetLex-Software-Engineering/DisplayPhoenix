@@ -7,5 +7,5 @@ package net.displayphoenix.bitly.enums;
  *
  */
 public enum BitWidgetStyle {
-    TOGGLE, TEXT, NUMBER, BLOCKLY, RESOURCE, IMAGE
+    TOGGLE, TEXT, NUMBER, BLOCKLY, RESOURCE, IMAGE, CANVAS
 }

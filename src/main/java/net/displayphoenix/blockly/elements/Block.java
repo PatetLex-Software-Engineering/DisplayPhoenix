@@ -1,14 +1,9 @@
 package net.displayphoenix.blockly.elements;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import com.google.gson.reflect.TypeToken;
 import net.displayphoenix.blockly.Blockly;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -23,10 +18,10 @@ public class Block {
     private boolean doesPersist;
     private String[] localDependencies;
     private String[] statementDependencies;
-    private Map<String, Map<String, String[]>> fieldDependencies;
+    private Map<String, Map<String, String[]>> fieldDependencies = new HashMap<>();
     private String[] localProvisions;
-    private Map<String, String[]> statementProvisions;
-    private Map<String, Map<String, String[]>> fieldProvisions;
+    private Map<String, String[]> statementProvisions = new HashMap<>();
+    private Map<String, Map<String, String[]>> fieldProvisions = new HashMap<>();
 
     private String type;
     private String init;

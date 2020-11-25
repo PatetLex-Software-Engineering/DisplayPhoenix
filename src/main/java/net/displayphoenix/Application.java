@@ -1,11 +1,21 @@
 package net.displayphoenix;
 
+import net.displayphoenix.bitly.Bitly;
+import net.displayphoenix.blockly.Blockly;
+import net.displayphoenix.blockly.ui.BlocklyDependencyPanel;
+import net.displayphoenix.blockly.ui.BlocklyPanel;
+import net.displayphoenix.canvasly.CanvasPanel;
+import net.displayphoenix.canvasly.tools.Tool;
+import net.displayphoenix.canvasly.tools.impl.*;
+import net.displayphoenix.enums.WidgetStyle;
 import net.displayphoenix.exception.AppNotCreatedException;
 import net.displayphoenix.generation.Module;
 import net.displayphoenix.lang.Local;
 import net.displayphoenix.lang.Localizer;
+import net.displayphoenix.ui.ColorTheme;
 import net.displayphoenix.ui.Theme;
 import net.displayphoenix.ui.widget.OverlayOnHoverWidget;
+import net.displayphoenix.ui.widget.ProvisionWidget;
 import net.displayphoenix.ui.widget.RoundedButton;
 import net.displayphoenix.util.ImageHelper;
 import net.displayphoenix.util.PanelHelper;
@@ -16,6 +26,7 @@ import javax.swing.plaf.metal.DefaultMetalTheme;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
@@ -24,6 +35,17 @@ import java.io.InputStreamReader;
  */
 public class Application {
 
+    public static void main(String[] args) {
+        Theme theme = new Theme(new ColorTheme(new Color(38, 38, 38), new Color(192, 226, 113), new Color(255, 255, 255), Color.GRAY), WidgetStyle.POPPING, new Font(Font.MONOSPACED, Font.PLAIN, 14));
+        Application.create("sda", ImageHelper.getImage("blunt_warning"), theme, "kdsa");
+
+        Blockly.queueText();
+
+        Bitly.registerBit(new File("src/main/resources/bitly/test.json"));
+        Application.openWindow(parentFrame -> {
+            parentFrame.add(Bitly.getBitFromType("test").open());
+        });
+    }
     private static final int BUTTON_WIDTH = 100;
     private static final int BUTTON_HEIGHT = 20;
 
@@ -51,6 +73,12 @@ public class Application {
         Localizer.create();
         Module.registerModule(Module.JAVA);
         Module.registerModule(Module.JAVASCRIPT);
+        Tool.REGISTERED_TOOLS.add(new BucketTool());
+        Tool.REGISTERED_TOOLS.add(new EraserTool());
+        Tool.REGISTERED_TOOLS.add(new ImageTool());
+        Tool.REGISTERED_TOOLS.add(new PencilTool());
+        Tool.REGISTERED_TOOLS.add(new PickerTool());
+        Tool.REGISTERED_TOOLS.add(new TextTool());
         CREATED = true;
     }
 
@@ -86,34 +114,40 @@ public class Application {
             @Override
             protected void addImpl(Component comp, Object constraints, int index) {
                 super.addImpl(comp, constraints, index);
-                Color bColor = UIManager.getColor("Label.background");
-                Color fColor = UIManager.getColor("Label.foreground");
-                if (fColor.equals(comp.getForeground())) {
+                Color lBColor = UIManager.getColor("Label.background");
+                Color lFColor = UIManager.getColor("Label.foreground");
+                Color bBColor = UIManager.getColor("Button.background");
+                Color bFColor = UIManager.getColor("Button.foreground");
+                if (lFColor.equals(comp.getForeground()) || bFColor.equals(comp.getForeground())) {
                     comp.setForeground(comp instanceof JLabel || comp instanceof JButton || comp instanceof JComboBox ? theme.getColorTheme().getTextColor() : theme.getColorTheme().getSecondaryColor());
                 }
-                if (bColor.equals(comp.getBackground())) {
+                if (lBColor.equals(comp.getBackground()) || bBColor.equals(comp.getBackground())) {
                     comp.setBackground(theme.getColorTheme().getPrimaryColor());
                 }
                 comp.setFont(comp.getFont() != null ? theme.getFont().deriveFont(comp.getFont().getSize()) : theme.getFont());
                 if (comp instanceof Container) {
-                    ((Container) comp).addContainerListener(new ContainerAdapter() {
-                        @Override
-                        public void componentAdded(ContainerEvent e) {
-                            if (fColor.equals(e.getComponent().getForeground())) {
-                                e.getComponent().setForeground(e.getComponent() instanceof JLabel || comp instanceof JButton || comp instanceof JComboBox ? theme.getColorTheme().getTextColor() : theme.getColorTheme().getSecondaryColor());
+                    try {
+                        ((Container) comp).addContainerListener(new ContainerAdapter() {
+                            @Override
+                            public void componentAdded(ContainerEvent e) {
+                                if (lFColor.equals(e.getComponent().getForeground()) || bFColor.equals(e.getComponent().getForeground())) {
+                                    e.getComponent().setForeground(e.getComponent() instanceof JLabel || e.getComponent() instanceof JButton || e.getComponent() instanceof JComboBox ? theme.getColorTheme().getTextColor() : theme.getColorTheme().getSecondaryColor());
+                                }
+                                if (lBColor.equals(e.getComponent().getBackground()) || bBColor.equals(e.getComponent().getBackground())) {
+                                    e.getComponent().setBackground(theme.getColorTheme().getPrimaryColor());
+                                }
                             }
-                            if (bColor.equals(e.getComponent().getBackground())) {
-                                e.getComponent().setBackground(theme.getColorTheme().getPrimaryColor());
-                            }
-                        }
-                    });
+                        });
+                    } catch (NoClassDefFoundError error) {
+                        error.printStackTrace();
+                    }
                     new Object() {
                         private void setColors(Container container) {
                             for (Component component : container.getComponents()) {
-                                if (fColor.equals(component.getForeground())) {
-                                    component.setForeground(component instanceof JLabel || comp instanceof JButton || comp instanceof JComboBox ? theme.getColorTheme().getTextColor() : theme.getColorTheme().getSecondaryColor());
+                                if (lFColor.equals(component.getForeground()) || bFColor.equals(component.getForeground())) {
+                                    component.setForeground(component instanceof JLabel || component instanceof JButton || component instanceof JComboBox ? theme.getColorTheme().getTextColor() : theme.getColorTheme().getSecondaryColor());
                                 }
-                                if (bColor.equals(component.getBackground())) {
+                                if (lBColor.equals(component.getBackground()) || bBColor.equals(component.getBackground())) {
                                     component.setBackground(theme.getColorTheme().getPrimaryColor());
                                 }
                                 component.setFont(component.getFont() != null ? theme.getFont().deriveFont(component.getFont().getSize()) : theme.getFont());
@@ -122,10 +156,10 @@ public class Application {
                                     ((Container) component).addContainerListener(new ContainerAdapter() {
                                         @Override
                                         public void componentAdded(ContainerEvent e) {
-                                            if (fColor.equals(e.getComponent().getForeground())) {
+                                            if (lFColor.equals(e.getComponent().getForeground())) {
                                                 e.getComponent().setForeground(e.getComponent() instanceof JLabel || comp instanceof JButton || comp instanceof JComboBox ? theme.getColorTheme().getTextColor() : theme.getColorTheme().getSecondaryColor());
                                             }
-                                            if (bColor.equals(e.getComponent().getBackground())) {
+                                            if (lBColor.equals(e.getComponent().getBackground())) {
                                                 e.getComponent().setBackground(theme.getColorTheme().getPrimaryColor());
                                             }
                                             if (e.getComponent() instanceof Container) {
