@@ -3,6 +3,7 @@ package net.displayphoenix.bitly.elements;
 import net.displayphoenix.bitly.elements.workspace.ImplementedBit;
 import net.displayphoenix.bitly.ui.BitArgument;
 import net.displayphoenix.bitly.ui.BitWidget;
+import net.displayphoenix.util.ImageHelper;
 import net.displayphoenix.util.PanelHelper;
 
 import javax.swing.*;
@@ -14,7 +15,7 @@ public class Bit {
 
     private List<Bit> plugins = new ArrayList<>();
     private List<BitWidget[]> widgets;
-    private ImageIcon icon;
+    private String iconPath;
     private String plugin;
     private String pluginFlag;
     private String type;
@@ -25,12 +26,12 @@ public class Bit {
      * @param type  Type name of bit, identifier
      * @param plugin  Name of bit to insert
      * @param pluginFlag  Flag of code input
-     * @param icon  Icon of bit
+     * @param iconPath  Path of bit's icon
      * @param widgets  All widgets within bit
      */
-    public Bit(String type, String plugin, String pluginFlag, ImageIcon icon, List<BitWidget[]> widgets) {
+    public Bit(String type, String plugin, String pluginFlag, String iconPath, List<BitWidget[]> widgets) {
         this.widgets = widgets;
-        this.icon = icon;
+        this.iconPath = iconPath;
         this.pluginFlag = pluginFlag;
         this.type = type;
         this.plugin = plugin;
@@ -68,7 +69,7 @@ public class Bit {
      * @return  Icon of bit
      */
     public ImageIcon getIcon() {
-        return icon;
+        return ImageHelper.fromPath(this.iconPath);
     }
 
     /**

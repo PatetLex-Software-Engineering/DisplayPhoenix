@@ -2,8 +2,6 @@ package net.displayphoenix.canvasly.elements;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonObject;
-import com.google.gson.reflect.TypeToken;
 import net.displayphoenix.canvasly.Pixel;
 
 import java.util.ArrayList;
@@ -15,20 +13,62 @@ public class CanvasSave {
 
     private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
-    private Map<Layer, Pixel[][]> pixels;
-    private Map<Layer, List<StaticElement>> staticElements;
+    private List<String> hiddenLayers;
+    private Map<String, Pixel[][]> pixels;
+    private Map<String, List<StaticElement>> staticElements;
 
     public CanvasSave(Map<Layer, Pixel[][]> pixels, Map<Layer, List<StaticElement>> staticElements) {
-        this.pixels = pixels;
-        this.staticElements = staticElements;
+        this.pixels = new HashMap<>();
+        this.staticElements = new HashMap<>();
+        this.hiddenLayers = new ArrayList<>();
+        for (Layer layer : pixels.keySet()) {
+            String layerString = convertLayer(layer);
+            if (layer.isHidden())
+                this.hiddenLayers.add(layerString);
+            this.pixels.put(layerString, new Pixel[pixels.get(layer).length][pixels.get(layer)[0].length]);
+            for (int i = 0; i < pixels.get(layer).length; i++) {
+                for (int j = 0; j < pixels.get(layer)[0].length; j++) {
+                    this.pixels.get(layerString)[i][j] = pixels.get(layer)[i][j];
+                }
+            }
+        }
+        for (Layer layer : staticElements.keySet()) {
+            String layerString = convertLayer(layer);
+            this.staticElements.put(layerString, new ArrayList<>());
+            for (StaticElement staticElement : staticElements.get(layer)) {
+                this.staticElements.get(layerString).add(staticElement);
+            }
+        }
     }
 
     public Map<Layer, Pixel[][]> getPixels() {
-        return pixels;
+        Map<Layer, Pixel[][]> newPixels = new HashMap<>();
+        for (String layerString : this.pixels.keySet()) {
+            Layer layer = convertString(layerString);
+            if (this.hiddenLayers.contains(layerString))
+                layer.setHidden(true);
+            newPixels.put(layer, new Pixel[this.pixels.get(layerString).length][this.pixels.get(layerString)[0].length]);
+            for (int i = 0; i < this.pixels.get(layerString).length; i++) {
+                for (int j = 0; j < this.pixels.get(layerString)[0].length; j++) {
+                    newPixels.get(layer)[i][j] = this.pixels.get(layerString)[i][j];
+                }
+            }
+        }
+        return newPixels;
     }
 
     public Map<Layer, List<StaticElement>> getStaticElements() {
-        return staticElements;
+        Map<Layer, List<StaticElement>> newElements = new HashMap<>();
+        for (String layerString : this.staticElements.keySet()) {
+            Layer layer = convertString(layerString);
+            if (this.hiddenLayers.contains(layerString))
+                layer.setHidden(true);
+            newElements.put(layer, new ArrayList<>());
+            for (StaticElement staticElement : this.staticElements.get(layerString)) {
+                newElements.get(layer).add(staticElement);
+            }
+        }
+        return newElements;
     }
 
     public String toSave() {
@@ -37,50 +77,18 @@ public class CanvasSave {
 
     @Override
     public String toString() {
-        JsonObject object = new JsonObject();
-        Map<String, String[][]> pixelsJson = new HashMap<>();
-        Map<String, String[]> elementsJson = new HashMap<>();
-        for (Layer layer : this.pixels.keySet()) {
-            String layerJson = gson.toJson(layer);
-            pixelsJson.put(layerJson, new String[this.pixels.get(layer).length][this.pixels.get(layer)[0].length]);
-            for (int i = 0; i < this.pixels.get(layer).length; i++) {
-                for (int j = 0; j < this.pixels.get(layer)[0].length; j++) {
-                    pixelsJson.get(layerJson)[i][j] = this.pixels.get(layer)[i][j] != null ? gson.toJson(this.pixels.get(layer)[i][j]) : null;
-                }
-            }
-        }
-        for (Layer layer : this.staticElements.keySet()) {
-            elementsJson.put(gson.toJson(layer), new String[this.staticElements.get(layer).size()]);
-            for (int i = 0; i < this.staticElements.get(layer).size(); i++) {
-                elementsJson.get(layer)[i] = gson.toJson(this.staticElements.get(layer).get(i));
-            }
-        }
-        object.add("pixels", gson.fromJson(gson.toJson(pixelsJson), JsonObject.class));
-        object.add("elements", gson.fromJson(gson.toJson(elementsJson), JsonObject.class));
-        return gson.toJson(object);
+        return gson.toJson(this);
+    }
+
+    private String convertLayer(Layer layer) {
+        return String.valueOf(layer.getIndex());
+    }
+
+    private Layer convertString(String string) {
+        return new Layer(Integer.parseInt(string));
     }
 
     public static CanvasSave fromSave(String string) {
-        JsonObject object = gson.fromJson(string, JsonObject.class);
-        Map<String, String[][]> pixelsSave = gson.fromJson(object.get("pixels"), new TypeToken<Map<String, String[][]>>() {}.getType());
-        Map<String, String[]> elements = gson.fromJson(object.get("elements"), new TypeToken<Map<String, String[]>>() {}.getType());
-        Map<Layer, Pixel[][]> newPixels = new HashMap<>();
-        for (String layerJson : pixelsSave.keySet()) {
-            Layer layer = gson.fromJson(layerJson, Layer.class);
-            newPixels.put(layer, new Pixel[pixelsSave.get(layerJson).length][pixelsSave.get(layerJson)[0].length]);
-            for (int i = 0; i < pixelsSave.get(layerJson).length; i++) {
-                for (int j = 0; j < pixelsSave.get(layerJson)[0].length; j++) {
-                    newPixels.get(layer)[i][j] = gson.fromJson(pixelsSave.get(layerJson)[i][j], Pixel.class);
-                }
-            }
-        }
-        Map<Layer, List<StaticElement>> newElements = new HashMap<>();
-        for (String layer : elements.keySet()) {
-            newElements.put(gson.fromJson(layer, Layer.class), new ArrayList<>());
-            for (String element : elements.get(layer)) {
-                newElements.get(layer).add(gson.fromJson(element, StaticElement.class));
-            }
-        }
-        return new CanvasSave(newPixels, newElements);
+        return gson.fromJson(string, CanvasSave.class);
     }
 }

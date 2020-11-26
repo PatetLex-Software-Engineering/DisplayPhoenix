@@ -1,11 +1,15 @@
 package net.displayphoenix;
 
+import net.displayphoenix.bitly.Bitly;
+import net.displayphoenix.bitly.elements.BitSave;
 import net.displayphoenix.canvasly.tools.Tool;
 import net.displayphoenix.canvasly.tools.impl.*;
+import net.displayphoenix.enums.WidgetStyle;
 import net.displayphoenix.exception.AppNotCreatedException;
 import net.displayphoenix.generation.Module;
 import net.displayphoenix.lang.Local;
 import net.displayphoenix.lang.Localizer;
+import net.displayphoenix.ui.ColorTheme;
 import net.displayphoenix.ui.Theme;
 import net.displayphoenix.ui.widget.OverlayOnHoverWidget;
 import net.displayphoenix.ui.widget.RoundedButton;
@@ -18,6 +22,7 @@ import javax.swing.plaf.metal.DefaultMetalTheme;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
@@ -26,6 +31,29 @@ import java.io.InputStreamReader;
  */
 public class Application {
 
+    public static void main(String[] args) {
+        Theme theme = new Theme(new ColorTheme(new Color(38, 38, 38), new Color(192, 226, 113), new Color(255, 255, 255), Color.GRAY), WidgetStyle.POPPING, new Font(Font.MONOSPACED, Font.PLAIN, 14));
+        Application.create("sda", ImageHelper.getImage("blunt_warning"), theme, "kdsa");
+
+        Bitly.registerBit(new File("src/main/resources/test.json"));
+        final BitSave[] bitSave = {Bitly.getBitFromType("test").get()};
+        new Object() {
+            public void open() {
+                Application.openWindow(parentFrame -> {
+                    JButton lapse = new JButton("Lapse");
+                    lapse.addActionListener(new ActionListener() {
+                        @Override
+                        public void actionPerformed (ActionEvent e){
+                            parentFrame.dispose();
+                            bitSave[0] = BitSave.fromSave(bitSave[0].toSave());
+                            open();
+                        }
+                    });
+                    parentFrame.add(PanelHelper.northAndCenterElements(PanelHelper.join(lapse), bitSave[0].getBitPanel()));
+                });
+            }
+        }.open();
+    }
     private static final int BUTTON_WIDTH = 100;
     private static final int BUTTON_HEIGHT = 20;
 

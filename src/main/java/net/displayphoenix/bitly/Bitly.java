@@ -93,24 +93,26 @@ public class Bitly {
             // Obtaining JSON object
             JsonObject bitObject = gson.fromJson(new FileReader(bitFile), JsonObject.class);
 
-            ImageIcon bitIcon = null;
+            String iconPath = null;
             if (bitObject.get("icon") != null) {
-                bitIcon = ImageHelper.fromPath(bitObject.get("icon").getAsString());
+                iconPath = bitObject.get("icon").getAsString();
             }
             else if (new File(bitFile.getParentFile().getPath() + "/icons/" + detailedBitFile.getFileName() + ".png").exists()) {
-                bitIcon = ImageHelper.fromPath(bitFile.getParentFile().getPath() + "/icons/" + detailedBitFile.getFileName() + ".png");
+                iconPath = bitFile.getParentFile().getPath() + "/icons/" + detailedBitFile.getFileName() + ".png";
             }
 
             // Creating Bit object
-            Bit bit = new Bit(detailedBitFile.getFileName(), bitObject.get("plugin") != null ? bitObject.get("plugin").getAsString() : null, bitObject.get("pluginFlag") != null ? bitObject.get("pluginFlag").getAsString() : null, bitIcon, gson.fromJson(bitObject.get("widgets").toString(), new TypeToken<List<BitWidget[]>>(){}.getType()));
+            Bit bit = new Bit(detailedBitFile.getFileName(), bitObject.get("plugin") != null ? bitObject.get("plugin").getAsString() : null, bitObject.get("pluginFlag") != null ? bitObject.get("pluginFlag").getAsString() : null, iconPath, gson.fromJson(bitObject.get("widgets").toString(), new TypeToken<List<BitWidget[]>>(){}.getType()));
 
             // Registering Bit object
             registerBit(bit);
 
             // Registering code
-            Map<String, String> moduleToCode = gson.fromJson(bitObject.get("code").toString(), new TypeToken<Map<String, String>>(){}.getType());
-            for (String module : moduleToCode.keySet()) {
-                Module.getModuleFromName(module).registerBitCode(bit, moduleToCode.get(module));
+            if (bitObject.get("code") != null) {
+                Map<String, String> moduleToCode = gson.fromJson(bitObject.get("code").toString(), new TypeToken<Map<String, String>>() {}.getType());
+                for (String module : moduleToCode.keySet()) {
+                    Module.getModuleFromName(module).registerBitCode(bit, moduleToCode.get(module));
+                }
             }
             System.out.println("[BITLY] Registered bit: " + detailedBitFile.getFileName() + ".");
         } catch (FileNotFoundException e) {

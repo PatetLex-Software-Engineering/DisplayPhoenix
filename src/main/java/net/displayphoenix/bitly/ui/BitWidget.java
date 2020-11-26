@@ -1,5 +1,8 @@
 package net.displayphoenix.bitly.ui;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.internal.LinkedTreeMap;
 import net.displayphoenix.Application;
 import net.displayphoenix.bitly.elements.Bit;
 import net.displayphoenix.bitly.enums.BitWidgetStyle;
@@ -37,6 +40,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class BitWidget {
+
+    private static transient final Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
     private BitWidgetStyle style;
     private String flag;
@@ -142,7 +147,7 @@ public class BitWidget {
                 numField.setHorizontalAlignment(SwingConstants.CENTER);
                 return new Component[] {PanelHelper.northAndCenterElements(PanelHelper.join(label), PanelHelper.join(numField)), numField};
             case BLOCKLY:
-                ProvisionWidget provisionWidget = new ProvisionWidget(this.provisions);
+                ProvisionWidget provisionWidget = new ProvisionWidget(this.provisions, headBlock != null ? headBlock : "event_wrapper");
                 provisionWidget.addMouseListener(new MouseAdapter() {
                     @Override
                     public void mouseClicked(MouseEvent e) {
@@ -293,7 +298,11 @@ public class BitWidget {
                 ((ResourceWidget) component).setFile(new DetailedFile(new File(argument.getAsString())));
                 break;
             case CANVAS:
-                ((CanvasWidget) component).setSave((CanvasSave) argument.get());
+                Object arg = argument.get();
+                if (arg instanceof LinkedTreeMap) {
+                    arg = gson.fromJson(gson.toJson(arg), CanvasSave.class);
+                }
+                ((CanvasWidget) component).setSave((CanvasSave) arg);
                 break;
         }
         component.repaint();

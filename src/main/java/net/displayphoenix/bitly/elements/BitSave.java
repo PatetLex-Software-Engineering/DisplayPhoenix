@@ -47,10 +47,10 @@ public class BitSave {
     @Override
     public String toString() {
         JsonObject object = new JsonObject();
-        Map<String, String> widgetToValue = new HashMap<>();
+        Map<String, Object> widgetToValue = new HashMap<>();
         for (BitWidget[] page : this.implementedBit.getBit().getBits()) {
             for (BitWidget widget : page) {
-                widgetToValue.put(gson.toJson(widget), gson.toJson(widget.getValue(this.implementedBit.getRawComponent(widget))));
+                widgetToValue.put(widget.getFlag(), widget.getValue(this.implementedBit.getRawComponent(widget)));
             }
         }
         object.add("widgets", gson.fromJson(gson.toJson(widgetToValue), JsonObject.class));
@@ -64,8 +64,7 @@ public class BitSave {
         Bit bit = gson.fromJson(object.get("bit"), Bit.class);
         List<BitArgument> arguments = new ArrayList<>();
         for (String widgetJson : widgetToValue.keySet()) {
-            BitWidget widget = gson.fromJson(widgetJson, BitWidget.class);
-            arguments.add(new BitArgument(widget.getFlag(), widgetToValue.get(widget)));
+            arguments.add(new BitArgument(widgetJson, widgetToValue.get(widgetJson)));
         }
         return bit.get(arguments.toArray(new BitArgument[arguments.size()]));
     }

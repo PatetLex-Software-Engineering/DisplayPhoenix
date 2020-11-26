@@ -19,10 +19,12 @@ public class ProvisionWidget extends JButton {
     private static Random rand = new Random();
     private Map<String, Integer> colorCache = new HashMap<>();
     private String[] provisions;
+    private String headBlock;
 
     private String xml;
 
-    public ProvisionWidget(String[] provisions) {
+    public ProvisionWidget(String[] provisions, String headBlock) {
+        this.headBlock = headBlock;
         setContentAreaFilled(false);
         setBorderPainted(false);
         setCursor(new Cursor(Cursor.HAND_CURSOR));
@@ -65,6 +67,10 @@ public class ProvisionWidget extends JButton {
 
     public String getXml() {
         return xml;
+    }
+
+    public String getHeadBlock() {
+        return headBlock;
     }
 
     public void setXml(String xml) {

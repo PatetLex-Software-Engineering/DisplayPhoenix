@@ -240,7 +240,7 @@ public class Module {
                     return null;
                 ImplementedBlock[] implementedBlocks = BlocklyXmlParser.fromWorkspaceXml(provisionWidget.getXml());
                 for (ImplementedBlock implementedBlock : implementedBlocks) {
-                    if (implementedBlock.getBlock().getType().equalsIgnoreCase("event_wrapper")) {
+                    if (implementedBlock.getBlock().getType().equalsIgnoreCase(provisionWidget.getHeadBlock())) {
                         return this.getCodeFromBlock(implementedBlock);
                     }
                 }

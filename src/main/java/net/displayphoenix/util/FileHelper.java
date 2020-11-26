@@ -1,5 +1,7 @@
 package net.displayphoenix.util;
 
+import net.displayphoenix.interfaces.FileIteration;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -19,9 +21,21 @@ import java.util.Set;
  * @author TBroski
  */
 public class FileHelper {
+
+    public static void forEachSubFile(File directory, FileIteration iterator) {
+        for (File subFile : directory.listFiles()) {
+            if (subFile.isDirectory()) {
+                forEachSubFile(directory, iterator);
+            }
+            else {
+                iterator.iterate(subFile);
+            }
+        }
+    }
+
     public static void deleteFolder(File directory) {
         for (File subFile : directory.listFiles()) {
-            if(subFile.isDirectory()) {
+            if (subFile.isDirectory()) {
                 deleteFolder(subFile);
             }
             else {

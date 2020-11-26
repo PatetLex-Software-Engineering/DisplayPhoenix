@@ -4,7 +4,6 @@ public class Layer {
 
     private int index;
     private boolean hidden;
-    private boolean lock;
 
     public Layer(int index) {
         this.index = index;
@@ -18,10 +17,6 @@ public class Layer {
         this.hidden = hidden;
     }
 
-    public void setLocked(boolean locked) {
-        this.lock = locked;
-    }
-
     public int getIndex() {
         return index;
     }
@@ -30,7 +25,4 @@ public class Layer {
         return hidden;
     }
 
-    public boolean isLocked() {
-        return lock;
-    }
 }
