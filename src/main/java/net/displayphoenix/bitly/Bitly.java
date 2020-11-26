@@ -97,7 +97,7 @@ public class Bitly {
             if (bitObject.get("icon") != null) {
                 bitIcon = ImageHelper.fromPath(bitObject.get("icon").getAsString());
             }
-            else {
+            else if (new File(bitFile.getParentFile().getPath() + "/icons/" + detailedBitFile.getFileName() + ".png").exists()) {
                 bitIcon = ImageHelper.fromPath(bitFile.getParentFile().getPath() + "/icons/" + detailedBitFile.getFileName() + ".png");
             }
 
@@ -112,6 +112,7 @@ public class Bitly {
             for (String module : moduleToCode.keySet()) {
                 Module.getModuleFromName(module).registerBitCode(bit, moduleToCode.get(module));
             }
+            System.out.println("[BITLY] Registered bit: " + detailedBitFile.getFileName() + ".");
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }

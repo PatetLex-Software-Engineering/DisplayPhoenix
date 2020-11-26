@@ -45,6 +45,7 @@ public class BitWidget {
     private String[] provisions;
     private String[] extensions;
     private String path;
+    private String headBlock;
     private int width;
     private int height;
     private String[] tools;
@@ -159,7 +160,7 @@ public class BitWidget {
                                 if (provisionWidget.getXml() != null) {
                                     dependencyPanel.getBlocklyPanel().addBlocks(provisionWidget.getXml());
                                 } else {
-                                    Block event = Blockly.getBlockFromType("event_wrapper");
+                                    Block event = Blockly.getBlockFromType(headBlock != null ? headBlock : "event_wrapper");
                                     if (event == null) {
                                         Blockly.registerCategory("flow_control", BlocklyHelper.getCategoryJson("flow_control"));
                                         Blockly.registerBlock("event_wrapper", BlocklyHelper.getBlockJson("event_wrapper"));
@@ -167,7 +168,7 @@ public class BitWidget {
                                         event.persist();
                                         event.hide();
                                     }
-                                    dependencyPanel.getBlocklyPanel().addBlocks(new ImplementedBlock(event, 50, 50, true, true));
+                                    dependencyPanel.getBlocklyPanel().addBlocks(new ImplementedBlock(event, 50, 50, false, true));
                                 }
                                 parentFrame.addWindowListener(new WindowAdapter() {
                                     @Override

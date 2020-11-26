@@ -31,7 +31,11 @@ public class BlocklyPluginLoader {
                 loadBlocksFromDirectory(subFile);
             }
             else {
-                Blockly.registerBlock(subFile);
+                // Check if file is a JSON
+                if (new DetailedFile(subFile).getFileExtension().equalsIgnoreCase("json")) {
+                    // Register JSON file
+                    Blockly.registerBlock(subFile);
+                }
             }
         }
     }

@@ -119,7 +119,7 @@ public class Module {
     }
 
     public String getCodeFromBit(ImplementedBit bit) {
-        String code = this.bitCode.get(bit);
+        String code = this.bitCode.get(bit.getBit());
         String[] plugins = StringHelper.substringsBetween(code, getFlags("plugin")[0], getFlags("plugin")[1]);
         String[] bits = StringHelper.substringsBetween(code, getFlags("bit")[0], getFlags("bit")[1]);
         for (BitWidget[] page : bit.getBit().getBits()) {

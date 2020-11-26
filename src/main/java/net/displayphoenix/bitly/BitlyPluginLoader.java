@@ -1,5 +1,7 @@
 package net.displayphoenix.bitly;
 
+import net.displayphoenix.file.DetailedFile;
+
 import java.io.File;
 public class BitlyPluginLoader {
 
@@ -21,9 +23,11 @@ public class BitlyPluginLoader {
                 loadBitsFromDirectory(subFile);
             }
             else {
-
-                // Register JSON object
-                Bitly.registerBit(subFile);
+                // Check if the file is a JSON
+                if (new DetailedFile(subFile).getFileExtension().equalsIgnoreCase("json")) {
+                    // Register JSON file
+                    Bitly.registerBit(subFile);
+                }
             }
         }
     }
