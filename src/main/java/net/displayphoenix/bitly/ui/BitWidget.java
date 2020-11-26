@@ -39,7 +39,6 @@ import java.util.List;
 public class BitWidget {
 
     private BitWidgetStyle style;
-    private transient String translationKey;
     private String flag;
     private String helpUrl;
     private String[] provisions;
@@ -61,7 +60,6 @@ public class BitWidget {
      */
     public BitWidget(BitWidgetStyle style, String flag) {
         this.style = style;
-        this.translationKey = "bitly.widget." + flag.toLowerCase() + ".text";
         this.flag = flag;
     }
 
@@ -94,7 +92,7 @@ public class BitWidget {
      */
     public Component[] create() {
         // Widget comment
-        JLabel label = new JLabel(Localizer.translate(this.translationKey));
+        JLabel label = new JLabel(Localizer.translate("bitly.widget." + flag.toLowerCase() + ".text"));
 
         // Creates help website if applicable
         if (this.helpUrl != null) {
