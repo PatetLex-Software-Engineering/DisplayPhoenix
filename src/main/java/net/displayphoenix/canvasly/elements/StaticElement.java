@@ -4,7 +4,7 @@ import java.awt.event.MouseListener;
 
 public class StaticElement {
 
-    private Element element;
+    private transient Element element;
     private int x;
     private int y;
     private Properties properties;

@@ -2,6 +2,10 @@ package net.displayphoenix;
 
 import net.displayphoenix.bitly.Bitly;
 import net.displayphoenix.bitly.elements.BitSave;
+import net.displayphoenix.blockly.Blockly;
+import net.displayphoenix.canvasly.elements.Element;
+import net.displayphoenix.canvasly.elements.impl.FontElement;
+import net.displayphoenix.canvasly.elements.impl.ImageElement;
 import net.displayphoenix.canvasly.tools.Tool;
 import net.displayphoenix.canvasly.tools.impl.*;
 import net.displayphoenix.enums.WidgetStyle;
@@ -30,7 +34,30 @@ import java.io.InputStreamReader;
  * @author TBroski
  */
 public class Application {
+    public static void main(String[] args) {
+        Theme theme = new Theme(new ColorTheme(new Color(38, 38, 38), new Color(192, 226, 113), new Color(255, 255, 255), Color.GRAY), WidgetStyle.POPPING, new Font(Font.MONOSPACED, Font.PLAIN, 14));
+        Application.create("sda", ImageHelper.getImage("blunt_warning"), theme, "kdsa");
 
+        Blockly.queueText();
+        Bitly.registerBit(new File("src/main/resources/test.json"));
+        final BitSave[] bitSave = {Bitly.getBitFromType("test").get()};
+        new Object() {
+            public void open() {
+                Application.openWindow(parentFrame -> {
+                    JButton lapse = new JButton("Lapse");
+                    lapse.addActionListener(new ActionListener() {
+                        @Override
+                        public void actionPerformed (ActionEvent e){
+                            parentFrame.dispose();
+                            bitSave[0] = BitSave.fromSave(bitSave[0].toSave());
+                            open();
+                        }
+                    });
+                    parentFrame.add(PanelHelper.northAndCenterElements(PanelHelper.join(lapse), bitSave[0].getBitPanel()));
+                });
+            }
+        }.open();
+    }
     private static final int BUTTON_WIDTH = 100;
     private static final int BUTTON_HEIGHT = 20;
 

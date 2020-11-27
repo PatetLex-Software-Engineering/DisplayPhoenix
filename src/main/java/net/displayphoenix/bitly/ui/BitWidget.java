@@ -242,7 +242,7 @@ public class BitWidget {
                                     for (CanvasElement canvasElement : canvasElements) {
                                         Element element = null;
                                         if (canvasElement.type.equalsIgnoreCase("image")) {
-                                            element = new ImageElement(ImageHelper.getImage(canvasElement.defaultValue).getImage());
+                                            element = new ImageElement(ImageHelper.getImage(canvasElement.defaultValue).getImage(), ClassLoader.getSystemClassLoader().getResource("textures/" + (canvasElement.defaultValue.endsWith(".png") ? canvasElement.defaultValue : canvasElement.defaultValue + ".png")).getFile());
                                         } else if (canvasElement.type.equalsIgnoreCase("text")) {
                                             element = new FontElement(canvasElement.defaultValue, new Color(canvasElement.r, canvasElement.g, canvasElement.b, canvasElement.a), 1);
                                         }

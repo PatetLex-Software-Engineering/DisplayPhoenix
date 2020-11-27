@@ -9,10 +9,20 @@ import java.awt.image.BufferedImage;
 
 public class ImageElement extends Element {
 
+    private String path;
     private Image image;
 
-    public ImageElement(Image image) {
+    public ImageElement(Image image, String path) {
         this.image = image;
+        this.path = path;
+    }
+
+    public Image getImage() {
+        return image;
+    }
+
+    public String getPath() {
+        return path;
     }
 
     @Override

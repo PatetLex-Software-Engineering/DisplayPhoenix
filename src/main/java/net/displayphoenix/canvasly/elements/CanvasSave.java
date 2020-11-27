@@ -3,7 +3,11 @@ package net.displayphoenix.canvasly.elements;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import net.displayphoenix.canvasly.Pixel;
+import net.displayphoenix.canvasly.elements.impl.FontElement;
+import net.displayphoenix.canvasly.elements.impl.ImageElement;
+import net.displayphoenix.util.ImageHelper;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -15,7 +19,7 @@ public class CanvasSave {
 
     private List<String> hiddenLayers;
     private Map<String, Pixel[][]> pixels;
-    private Map<String, List<StaticElement>> staticElements;
+    private Map<String, List<CanvasElement>> staticElements;
 
     public CanvasSave(Map<Layer, Pixel[][]> pixels, Map<Layer, List<StaticElement>> staticElements) {
         this.pixels = new HashMap<>();
@@ -36,7 +40,7 @@ public class CanvasSave {
             String layerString = convertLayer(layer);
             this.staticElements.put(layerString, new ArrayList<>());
             for (StaticElement staticElement : staticElements.get(layer)) {
-                this.staticElements.get(layerString).add(staticElement);
+                this.staticElements.get(layerString).add(new CanvasElement(staticElement));
             }
         }
     }
@@ -64,8 +68,22 @@ public class CanvasSave {
             if (this.hiddenLayers.contains(layerString))
                 layer.setHidden(true);
             newElements.put(layer, new ArrayList<>());
-            for (StaticElement staticElement : this.staticElements.get(layerString)) {
-                newElements.get(layer).add(staticElement);
+            for (CanvasElement canvasElement : this.staticElements.get(layerString)) {
+                Element element = null;
+                if (canvasElement.type.equalsIgnoreCase("image")) {
+                    element = new ImageElement(ImageHelper.fromPath(canvasElement.defaultValue).getImage(), canvasElement.defaultValue);
+                } else if (canvasElement.type.equalsIgnoreCase("text")) {
+                    element = new FontElement(canvasElement.defaultValue, new Color(canvasElement.r, canvasElement.g, canvasElement.b, canvasElement.a), 1);
+                }
+                element.setScaleFactor(canvasElement.scale);
+                StaticElement.Properties properties = new StaticElement.Properties();
+                if (canvasElement.parse) {
+                    properties.setParse();
+                }
+                if (canvasElement.overlay) {
+                    properties.setOverlay();
+                }
+                newElements.get(layer).add(new StaticElement(element, canvasElement.staticElement.getX(), canvasElement.staticElement.getY(), properties));
             }
         }
         return newElements;
@@ -90,5 +108,33 @@ public class CanvasSave {
 
     public static CanvasSave fromSave(String string) {
         return gson.fromJson(string, CanvasSave.class);
+    }
+
+    private static class CanvasElement {
+        public StaticElement staticElement;
+        public String type;
+        public String defaultValue;
+        public float scale;
+        public int r;
+        public int g;
+        public int b;
+        public int a = 255;
+        public boolean parse;
+        public boolean overlay;
+
+        public CanvasElement(StaticElement staticElement) {
+            this.staticElement = staticElement;
+            this.type = staticElement.getElement() instanceof FontElement ? "font" : "image";
+            this.defaultValue = staticElement.getElement() instanceof FontElement ? ((FontElement) staticElement.getElement()).getText() : ((ImageElement) staticElement.getElement()).getPath();
+            this.scale = staticElement.getElement().getScaleFactor();
+            if (staticElement.getElement() instanceof ColorableElement) {
+                this.r = ((ColorableElement) staticElement.getElement()).getColor().getRed();
+                this.g = ((ColorableElement) staticElement.getElement()).getColor().getGreen();
+                this.b = ((ColorableElement) staticElement.getElement()).getColor().getBlue();
+                this.a = ((ColorableElement) staticElement.getElement()).getColor().getAlpha();
+            }
+            this.parse = staticElement.getProperties().shouldParse();
+            this.overlay = staticElement.getProperties().isOverlay();
+        }
     }
 }

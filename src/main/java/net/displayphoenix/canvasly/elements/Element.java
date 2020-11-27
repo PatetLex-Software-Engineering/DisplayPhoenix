@@ -7,7 +7,6 @@ import java.awt.*;
 public abstract class Element implements Cloneable {
 
     private float scale = 1F;
-    private boolean centered = true;
 
     public abstract void parse(CanvasPanel canvas, int offsetX, int offsetY);
     public abstract void draw(CanvasPanel canvas, Graphics g);
@@ -18,16 +17,8 @@ public abstract class Element implements Cloneable {
         return this.scale;
     }
 
-    public boolean isCentered() {
-        return centered;
-    }
-
     public void setScaleFactor(float scale) {
         this.scale = scale;
-    }
-
-    public void setCentered(boolean centered) {
-        this.centered = centered;
     }
 
     public int defaultOffsetX(CanvasPanel canvas, Graphics g) {
@@ -36,6 +27,10 @@ public abstract class Element implements Cloneable {
 
     public int defaultOffsetY(CanvasPanel canvas, Graphics g) {
         return 0;
+    }
+
+    public String getType() {
+        return this.getClass().getSimpleName().toLowerCase();
     }
 
     public Element clone() {

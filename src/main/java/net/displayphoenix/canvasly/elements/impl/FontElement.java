@@ -66,6 +66,10 @@ public class FontElement extends ColorableElement implements KeyListener {
         return font;
     }
 
+    public String getText() {
+        return text;
+    }
+
     @Override
     public int getWidth(CanvasPanel canvas, Graphics g) {
         return (int) g.getFontMetrics().getStringBounds(this.text, g).getWidth();

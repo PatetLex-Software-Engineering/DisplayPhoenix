@@ -191,6 +191,11 @@ public class CanvasPanel extends JPanel implements MouseWheelListener, MouseMoti
         addLayer(layerFromIndex(layer));
     }
     public void addLayer(Layer layer) {
+        for (Layer layer1 : this.layerToPixels.keySet()) {
+            if (layer1.getIndex() == layer.getIndex()) {
+                return;
+            }
+        }
         Pixel[][] pixels = new Pixel[this.canvasWidth][this.canvasHeight];
         this.layerToPixels.put(layer, pixels);
         for (LayerListener layerListener : this.layerListeners) {
@@ -357,22 +362,22 @@ public class CanvasPanel extends JPanel implements MouseWheelListener, MouseMoti
         this.layerToPixels.clear();
         this.staticElements.clear();
         for (Layer layer : pixels.keySet()) {
-            addLayer(layer);
+            addLayer(layer.getIndex());
             for (int i = 0; i < pixels.get(layer).length; i++) {
                 for (int j = 0; j < pixels.get(layer)[i].length; j++) {
-                    this.layerToPixels.get(layer)[i][j] = pixels.get(layer)[i][j];
+                    this.layerToPixels.get(layerFromIndex(layer.getIndex()))[i][j] = pixels.get(layer)[i][j];
                 }
             }
         }
-        for (LayerListener layerListener : this.layerListeners) {
-            layerListener.onLayerSet(pixels.keySet());
-        }
         for (Layer layer : staticElements.keySet()) {
-            this.staticElements.put(layer, new ArrayList<>());
             for (StaticElement staticElement : staticElements.get(layer)) {
-                this.staticElements.get(layer).add(staticElement);
+                addStaticElement(layerFromIndex(layer.getIndex()), staticElement.getElement().clone(), staticElement.getX(), staticElement.getY(), staticElement.getProperties());
             }
         }
+        for (LayerListener layerListener : this.layerListeners) {
+            layerListener.onLayerSet(this.layerToPixels.keySet());
+        }
+        this.setLayer(0);
         repaint();
         return this;
     }

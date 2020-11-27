@@ -34,7 +34,7 @@ public class ImageTool extends Tool {
     public void onLeftClick(ToolPanel toolkit, CanvasPanel canvas, int x, int y, ISettingComponent[] settingComponents) {
         File image = openFile(getIcon(), "png");
         try {
-            canvas.setElement(canvas.getSelectedLayer(), new ImageElement(ImageIO.read(image)), x, y);
+            canvas.setElement(canvas.getSelectedLayer(), new ImageElement(ImageIO.read(image), image.getPath()), x, y);
         } catch (IOException e) {
             e.printStackTrace();
         }
