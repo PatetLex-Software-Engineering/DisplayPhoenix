@@ -154,6 +154,11 @@ public class BitWidget {
                         if (e.getButton() == MouseEvent.BUTTON1 && e.getClickCount() == 2) {
                             Application.openWindow(JFrame.DISPOSE_ON_CLOSE, parentFrame -> {
                                 BlocklyPanel blockly = new BlocklyPanel();
+                                if (provisionWidget.getFieldProvisions() != null) {
+                                    for (String extensionKey : provisionWidget.getFieldProvisions().keySet()) {
+                                        blockly.addFieldExtensions(extensionKey, provisionWidget.getFieldProvisions().get(extensionKey));
+                                    }
+                                }
                                 BlocklyDependencyPanel dependencyPanel = new BlocklyDependencyPanel(blockly);
                                 if (provisions != null) {
                                     for (String provision : provisions) {

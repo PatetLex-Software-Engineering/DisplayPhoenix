@@ -1,6 +1,7 @@
 package net.displayphoenix.ui.widget;
 
 import net.displayphoenix.Application;
+import net.displayphoenix.blockly.elements.workspace.Field;
 import net.displayphoenix.lang.Localizer;
 import net.displayphoenix.util.ComponentHelper;
 import net.displayphoenix.util.ImageHelper;
@@ -18,6 +19,7 @@ public class ProvisionWidget extends JButton {
 
     private static Random rand = new Random();
     private Map<String, Integer> colorCache = new HashMap<>();
+    private Map<String, Field[]> fieldProvisions = new HashMap<>();
     private String[] provisions;
     private String headBlock;
 
@@ -61,6 +63,10 @@ public class ProvisionWidget extends JButton {
         this.provisions = provisions;
     }
 
+    public Map<String, Field[]> getFieldProvisions() {
+        return fieldProvisions;
+    }
+
     public String[] getProvisions() {
         return provisions;
     }
@@ -75,6 +81,10 @@ public class ProvisionWidget extends JButton {
 
     public void setXml(String xml) {
         this.xml = xml;
+    }
+
+    public void setFieldProvisions(Map<String, Field[]> fieldProvisions) {
+        this.fieldProvisions = fieldProvisions;
     }
 
     @Override

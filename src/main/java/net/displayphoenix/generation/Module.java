@@ -122,15 +122,17 @@ public class Module {
         String code = this.bitCode.get(bit.getBit());
         String[] plugins = StringHelper.substringsBetween(code, getFlags("plugin")[0], getFlags("plugin")[1]);
         String[] bits = StringHelper.substringsBetween(code, getFlags("bit")[0], getFlags("bit")[1]);
-        for (BitWidget[] page : bit.getBit().getBits()) {
-            for (BitWidget widget : page) {
-                for (String input : bits) {
-                    if (input.equalsIgnoreCase(widget.getFlag())) {
-                        String val = getValueOfWidget(bit, widget);
-                        if (val == null)
-                            val = "";
-                        code = code.replace(getFlags("bit")[0] + input + getFlags("bit")[1], val);
-                        break;
+        if (bits != null) {
+            for (BitWidget[] page : bit.getBit().getBits()) {
+                for (BitWidget widget : page) {
+                    for (String input : bits) {
+                        if (input.equalsIgnoreCase(widget.getFlag())) {
+                            String val = getValueOfWidget(bit, widget);
+                            if (val == null)
+                                val = "";
+                            code = code.replace(getFlags("bit")[0] + input + getFlags("bit")[1], val);
+                            break;
+                        }
                     }
                 }
             }
@@ -227,7 +229,7 @@ public class Module {
         return blockSyntax.contains(block.getBlock()) ? code : addSyntax(code);
     }
 
-    private String getValueOfWidget(ImplementedBit bit, BitWidget widget) {
+    protected String getValueOfWidget(ImplementedBit bit, BitWidget widget) {
         switch (widget.getStyle()) {
             case TOGGLE:
                 return Boolean.toString(((Toggle) bit.getRawComponent(widget)).isToggled());

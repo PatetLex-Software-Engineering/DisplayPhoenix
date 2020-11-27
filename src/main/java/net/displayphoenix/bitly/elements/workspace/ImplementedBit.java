@@ -4,6 +4,7 @@ import net.displayphoenix.Application;
 import net.displayphoenix.bitly.elements.Bit;
 import net.displayphoenix.bitly.ui.BitArgument;
 import net.displayphoenix.bitly.ui.BitWidget;
+import net.displayphoenix.blockly.elements.workspace.Field;
 import net.displayphoenix.canvasly.effects.ImageEffect;
 import net.displayphoenix.ui.widget.FadeOnHoverWidget;
 import net.displayphoenix.util.ImageHelper;
@@ -67,11 +68,28 @@ public class ImplementedBit {
      * @param flag  Flag of bit widget
      * @return
      */
-    public Object getValueOfWidget(String flag) {
+    public Object getValue(String flag) {
         for (BitWidget[] page : this.bit.getBits()) {
             for (BitWidget widget : page) {
                 if (widget.getFlag().equalsIgnoreCase(flag)) {
                     return widget.getValue(getRawComponent(widget));
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Get component of specific bit
+     *
+     * @param flag  Flag of bit widget
+     * @return
+     */
+    public Component getComponent(String flag) {
+        for (BitWidget[] page : this.bit.getBits()) {
+            for (BitWidget widget : page) {
+                if (widget.getFlag().equalsIgnoreCase(flag)) {
+                    return getRawComponent(widget);
                 }
             }
         }
