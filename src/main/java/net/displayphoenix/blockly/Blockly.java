@@ -523,6 +523,8 @@ public class Blockly {
         JAVASCRIPT.registerBlockCode(booleanBlock, "$[field%BOOL]");
         JAVASCRIPT.manipulateField(booleanBlock, field -> field.getValue().toLowerCase());
         JAVASCRIPT.escapeSyntax(booleanBlock);
+
+        Blockly.registerBlock("null", gson.fromJson(BlocklyHelper.getBlockJson("null"), JsonObject.class), logic);
     }
 
     /**
@@ -576,6 +578,18 @@ public class Blockly {
         JAVA.escapeSyntax(textBlock);
         JAVASCRIPT.registerBlockCode(textBlock, "'$[field%TEXT]'");
         JAVASCRIPT.escapeSyntax(textBlock);
+        JAVASCRIPT.manipulateField(textBlock, field -> {
+            if (field.getKey().equalsIgnoreCase("TEXT")) {
+                return field.getValue().replaceAll("'", "\\\\'");
+            }
+            return null;
+        });
+        JAVA.manipulateField(textBlock, field -> {
+            if (field.getKey().equalsIgnoreCase("TEXT")) {
+                return field.getValue().replaceAll("\"", "\\\"");
+            }
+            return null;
+        });
 
         Blockly.registerBlock("print_text", gson.fromJson(BlocklyHelper.getBlockJson("print_text"), JsonObject.class), text);
         Blockly.registerBlock("string_length", gson.fromJson(BlocklyHelper.getBlockJson("string_length"), JsonObject.class), text);

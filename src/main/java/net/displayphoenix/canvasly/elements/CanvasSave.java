@@ -17,6 +17,8 @@ public class CanvasSave {
 
     private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
+    private transient Map<Layer, List<StaticElement>> cacheElements;
+    private transient Map<Layer, Pixel[][]> cachedPixels;
     private List<String> hiddenLayers;
     private Map<String, Pixel[][]> pixels;
     private Map<String, List<CanvasElement>> staticElements;
@@ -46,6 +48,9 @@ public class CanvasSave {
     }
 
     public Map<Layer, Pixel[][]> getPixels() {
+        if (this.cachedPixels != null) {
+            return this.cachedPixels;
+        }
         Map<Layer, Pixel[][]> newPixels = new HashMap<>();
         for (String layerString : this.pixels.keySet()) {
             Layer layer = convertString(layerString);
@@ -58,10 +63,14 @@ public class CanvasSave {
                 }
             }
         }
+        this.cachedPixels = newPixels;
         return newPixels;
     }
 
     public Map<Layer, List<StaticElement>> getStaticElements() {
+        if (this.cacheElements != null) {
+            return this.cacheElements;
+        }
         Map<Layer, List<StaticElement>> newElements = new HashMap<>();
         for (String layerString : this.staticElements.keySet()) {
             Layer layer = convertString(layerString);
@@ -86,6 +95,7 @@ public class CanvasSave {
                 newElements.get(layer).add(new StaticElement(element, canvasElement.staticElement.getX(), canvasElement.staticElement.getY(), properties));
             }
         }
+        this.cacheElements = newElements;
         return newElements;
     }
 

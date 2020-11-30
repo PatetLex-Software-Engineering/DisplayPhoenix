@@ -1,0 +1,17 @@
+{
+  "message0": "null",
+  "inputsInline": true,
+  "output": null,
+  "colour": 210,
+  "category": "logic",
+  "code": {
+    "java": "null",
+    "javascript": "undefined"
+  },
+  "escape": {
+    "java": true,
+    "javascript": true
+  },
+  "tooltip": "",
+  "helpUrl": ""
+}

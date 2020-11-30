@@ -125,7 +125,7 @@ public class CanvasPanel extends JPanel implements MouseWheelListener, MouseMoti
                     g.setColor(getForeground());
                     g.drawRect(0, 0, element.element.getWidth(this, g), element.element.getHeight(this, g));
                     ((Graphics2D) g).translate(-element.offX, -element.offY);
-                    ((Graphics2D) g).scale(element.element.getScaleFactor() / 1, element.element.getScaleFactor() / 1);
+                    ((Graphics2D) g).scale(1F / element.element.getScaleFactor(), 1F / element.element.getScaleFactor());
                 }
                 if (this.staticElements.containsKey(layer)) {
                     for (StaticElement staticElement : this.staticElements.get(layer)) {
@@ -133,6 +133,8 @@ public class CanvasPanel extends JPanel implements MouseWheelListener, MouseMoti
                             ((Graphics2D) g).translate(staticElement.getX(), staticElement.getY());
                             ((Graphics2D) g).scale(staticElement.getElement().getScaleFactor(), staticElement.getElement().getScaleFactor());
                             staticElement.getElement().draw(this, g);
+                            ((Graphics2D) g).translate(-staticElement.getX(), -staticElement.getY());
+                            ((Graphics2D) g).scale(1F / staticElement.getElement().getScaleFactor(), 1F / staticElement.getElement().getScaleFactor());
                         }
                     }
                 }
@@ -166,7 +168,12 @@ public class CanvasPanel extends JPanel implements MouseWheelListener, MouseMoti
         setPixel(layerFromIndex(layer), x, y, pixel);
     }
     public void setPixel(Layer layer, int x, int y, Pixel pixel) {
-        this.layerToPixels.get(layer)[x][y] = pixel;
+        if (this.layerToPixels.containsKey(layer)) {
+            this.layerToPixels.get(layer)[x][y] = pixel;
+        }
+        else if (this.layerToPixels.containsKey(layerFromIndex(layer.getIndex()))) {
+            this.layerToPixels.get(layerFromIndex(layer.getIndex()))[x][y] = pixel;
+        }
     }
 
     public void removeLayer(int layer) {
@@ -319,8 +326,10 @@ public class CanvasPanel extends JPanel implements MouseWheelListener, MouseMoti
 
     private void setElement(Layer layer, Element element, int offX, int offY, boolean addToStatic, StaticElement staticElement) {
         if (this.elements.containsKey(layer)) {
-            CanvasElement cElement = this.elements.get(this.getSelectedLayer());
-            cElement.element.parse(this, Math.round((float) Math.floor(cElement.offX)), Math.round((float) Math.floor(cElement.offY)));
+            CanvasElement cElement = this.elements.get(layer);
+            if (cElement.staticElement == null || cElement.staticElement.getProperties().shouldParse()) {
+                cElement.element.parse(this, Math.round((float) Math.floor(cElement.offX)), Math.round((float) Math.floor(cElement.offY)));
+            }
             this.elements.remove(layer);
         }
         CanvasElement canvasElement = new CanvasElement(element);
@@ -375,7 +384,7 @@ public class CanvasPanel extends JPanel implements MouseWheelListener, MouseMoti
             }
         }
         for (LayerListener layerListener : this.layerListeners) {
-            layerListener.onLayerSet(this.layerToPixels.keySet());
+            layerListener.onLayerSet(pixels.keySet());
         }
         this.setLayer(0);
         repaint();

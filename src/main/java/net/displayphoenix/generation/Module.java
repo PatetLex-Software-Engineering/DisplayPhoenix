@@ -119,7 +119,13 @@ public class Module {
     }
 
     public String getCodeFromBit(ImplementedBit bit) {
-        String code = this.bitCode.get(bit.getBit());
+        String code = null;
+        for (Bit bitKey : this.bitCode.keySet()) {
+            if (bitKey.getType().equalsIgnoreCase(bit.getBit().getType())) {
+                code = this.bitCode.get(bitKey);
+                break;
+            }
+        }
         String[] plugins = StringHelper.substringsBetween(code, getFlags("plugin")[0], getFlags("plugin")[1]);
         String[] bits = StringHelper.substringsBetween(code, getFlags("bit")[0], getFlags("bit")[1]);
         if (bits != null) {
@@ -161,6 +167,14 @@ public class Module {
                 code += this.blockMutators.get(block.getBlock()).getCodeFromMutation(mutation.getKey(), im + 1);
             }
         }
+        // Change markers
+        String[] markers = StringHelper.substringsBetween(code, getFlags("marker")[0], getFlags("marker")[1]);
+        if (markers != null) {
+            for (String input : markers) {
+                String marker = this.markerListener.get(block.getBlock()).getCode(input, block);
+                code = code.replace(getFlags("marker")[0] + input + getFlags("marker")[1], marker != null ? marker : "");
+            }
+        }
         String[] increments = StringHelper.substringsBetween(code, getFlags("increment")[0], getFlags("increment")[1]);
         if (increments != null && increments.length > 0) {
             index++;
@@ -171,7 +185,6 @@ public class Module {
         String[] fieldInputs = StringHelper.substringsBetween(code, getFlags("field")[0], getFlags("field")[1]);
         String[] statementInputs = StringHelper.substringsBetween(code, getFlags("statement")[0], getFlags("statement")[1]);
         String[] valueInputs = StringHelper.substringsBetween(code, getFlags("value")[0], getFlags("value")[1]);
-        String[] markers = StringHelper.substringsBetween(code, getFlags("marker")[0], getFlags("marker")[1]);
         if (!doesBlockContainFields(block)) {
             throw new InvalidParameterException();
         }
@@ -217,13 +230,6 @@ public class Module {
                         break;
                     }
                 }
-            }
-        }
-
-        // Change markers
-        if (markers != null) {
-            for (String input : markers) {
-                code = code.replace(getFlags("marker")[0] + input + getFlags("marker")[1], this.markerListener.get(block.getBlock()).getCode(input, block));
             }
         }
         return blockSyntax.contains(block.getBlock()) ? code : addSyntax(code);
@@ -272,17 +278,33 @@ public class Module {
                 code += this.blockMutators.get(block.getBlock()).getCodeFromMutation(mutation.getKey(), im + 1);
             }
         }
+        // Change markers
+        String[] markers = StringHelper.substringsBetween(code, getFlags("marker")[0], getFlags("marker")[1]);
+        if (markers != null) {
+            for (String input : markers) {
+                code = code.replace(getFlags("marker")[0] + input + getFlags("marker")[1], this.markerListener.get(block.getBlock()).getCode(input, block));
+            }
+        }
         String[] fieldInputs = StringHelper.substringsBetween(code, getFlags("field")[0], getFlags("field")[1]);
         String[] statementInputs = StringHelper.substringsBetween(code, getFlags("statement")[0], getFlags("statement")[1]);
         String[] valueInputs = StringHelper.substringsBetween(code, getFlags("value")[0], getFlags("value")[1]);
 
-        if (valueInputs != null && valueInputs.length != block.getValueBlocks().size()) {
+        int nonDeletableBlocks = 0;
+        for (String valueKey : block.getValueBlocks().keySet()) {
+            for (ImplementedBlock valueBlock : block.getValueBlocks().get(valueKey)) {
+                if (!valueBlock.isDeletable()) {
+                    nonDeletableBlocks++;
+                }
+            }
+        }
+
+        if (valueInputs != null && valueInputs.length < block.getValueBlocks().size() && valueInputs.length + nonDeletableBlocks < block.getValueBlocks().size()) {
             return false;
         }
-        if (statementInputs != null && statementInputs.length != block.getStatementBlocks().size()) {
+        if (statementInputs != null && statementInputs.length < block.getStatementBlocks().size()) {
             return false;
         }
-        if (fieldInputs != null && fieldInputs.length != block.getFields().length) {
+        if (fieldInputs != null && fieldInputs.length < block.getFields().length) {
             return false;
         }
         return true;

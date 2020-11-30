@@ -1,19 +1,16 @@
 package net.displayphoenix;
 
-import net.displayphoenix.bitly.Bitly;
-import net.displayphoenix.bitly.elements.BitSave;
+import com.google.gson.Gson;
 import net.displayphoenix.blockly.Blockly;
-import net.displayphoenix.canvasly.elements.Element;
-import net.displayphoenix.canvasly.elements.impl.FontElement;
-import net.displayphoenix.canvasly.elements.impl.ImageElement;
+import net.displayphoenix.blockly.elements.workspace.ImplementedBlock;
 import net.displayphoenix.canvasly.tools.Tool;
 import net.displayphoenix.canvasly.tools.impl.*;
-import net.displayphoenix.enums.WidgetStyle;
 import net.displayphoenix.exception.AppNotCreatedException;
+import net.displayphoenix.file.Data;
 import net.displayphoenix.generation.Module;
+import net.displayphoenix.generation.impl.JavaModule;
 import net.displayphoenix.lang.Local;
 import net.displayphoenix.lang.Localizer;
-import net.displayphoenix.ui.ColorTheme;
 import net.displayphoenix.ui.Theme;
 import net.displayphoenix.ui.widget.OverlayOnHoverWidget;
 import net.displayphoenix.ui.widget.RoundedButton;
@@ -21,12 +18,9 @@ import net.displayphoenix.util.ImageHelper;
 import net.displayphoenix.util.PanelHelper;
 
 import javax.swing.*;
-import javax.swing.plaf.ColorUIResource;
-import javax.swing.plaf.metal.DefaultMetalTheme;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
@@ -34,30 +28,7 @@ import java.io.InputStreamReader;
  * @author TBroski
  */
 public class Application {
-    public static void main(String[] args) {
-        Theme theme = new Theme(new ColorTheme(new Color(38, 38, 38), new Color(192, 226, 113), new Color(255, 255, 255), Color.GRAY), WidgetStyle.POPPING, new Font(Font.MONOSPACED, Font.PLAIN, 14));
-        Application.create("sda", ImageHelper.getImage("blunt_warning"), theme, "kdsa");
 
-        Blockly.queueText();
-        Bitly.registerBit(new File("src/main/resources/test.json"));
-        final BitSave[] bitSave = {Bitly.getBitFromType("test").get()};
-        new Object() {
-            public void open() {
-                Application.openWindow(parentFrame -> {
-                    JButton lapse = new JButton("Lapse");
-                    lapse.addActionListener(new ActionListener() {
-                        @Override
-                        public void actionPerformed (ActionEvent e){
-                            parentFrame.dispose();
-                            bitSave[0] = BitSave.fromSave(bitSave[0].toSave());
-                            open();
-                        }
-                    });
-                    parentFrame.add(PanelHelper.northAndCenterElements(PanelHelper.join(lapse), bitSave[0].getBitPanel()));
-                });
-            }
-        }.open();
-    }
     private static final int BUTTON_WIDTH = 100;
     private static final int BUTTON_HEIGHT = 20;
 
@@ -66,7 +37,7 @@ public class Application {
     private static String title;
     private static ImageIcon icon;
     private static Theme theme;
-    private static Local selected_local = Local.EN_US;
+    private static Local selectedLocal = Local.EN_US;
 
     /**
      * Creates the app, used for organization and constants.
@@ -81,8 +52,10 @@ public class Application {
         icon = appIcon;
         theme = appTheme;
         version = appVersion;
+        CREATED = true;
 
         Localizer.create();
+        Data.create();
         Module.registerModule(Module.JAVA);
         Module.registerModule(Module.JAVASCRIPT);
         Tool.REGISTERED_TOOLS.add(new BucketTool());
@@ -91,7 +64,6 @@ public class Application {
         Tool.REGISTERED_TOOLS.add(new PencilTool());
         Tool.REGISTERED_TOOLS.add(new PickerTool());
         Tool.REGISTERED_TOOLS.add(new TextTool());
-        CREATED = true;
     }
 
     /**
@@ -193,6 +165,16 @@ public class Application {
 
         windowCreation.creation(frame);
 
+        if (closeAction == JFrame.EXIT_ON_CLOSE) {
+            frame.addWindowListener(new WindowAdapter() {
+                @Override
+                public void windowClosing(WindowEvent e) {
+                    super.windowClosing(e);
+                    Data.save();
+                }
+            });
+        }
+
         frame.setResizable(resizeable);
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
@@ -237,7 +219,7 @@ public class Application {
             @Override
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
-                if (selected_local == local) {
+                if (selectedLocal == local) {
                     ((Graphics2D) g).setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1));
                     g.setColor(theme.getColorTheme().getAccentColor());
                     g.drawRect(0, 0, getWidth() - 1, getHeight() - 1);
@@ -248,7 +230,7 @@ public class Application {
         localOverlay.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                selected_local = local;
+                selectedLocal = local;
             }
         });
         return localOverlay;
@@ -419,6 +401,7 @@ public class Application {
                 output.append(line + "\n");
             }
             int exitVal = process.waitFor();
+            System.out.println(output.toString());
             return exitVal;
         } catch (InterruptedException e) {
             e.printStackTrace();
@@ -469,7 +452,14 @@ public class Application {
      * @return Selected local
      */
     public static Local getSelectedLocal() {
-        return selected_local;
+        return selectedLocal;
+    }
+
+    /**
+     * @param local  Local to set
+     */
+    public static void setLocal(Local local) {
+        selectedLocal = local;
     }
 
     /**
@@ -536,39 +526,5 @@ public class Application {
      */
     public interface IOpenWindow {
         void creation(JFrame parentFrame);
-    }
-
-    private static class ApplicationThemedLook extends DefaultMetalTheme {
-/*        public ColorUIResource getWindowTitleInactiveBackground() {
-            return new ColorUIResource(java.awt.Color.orange);
-        }*/
-
-        public ColorUIResource getWindowTitleBackground() {
-            return new ColorUIResource(java.awt.Color.orange);
-        }
-
-        public ColorUIResource getPrimaryControlHighlight() {
-            return new ColorUIResource(java.awt.Color.orange);
-        }
-
-        public ColorUIResource getPrimaryControlDarkShadow() {
-            return new ColorUIResource(java.awt.Color.orange);
-        }
-
-/*        public ColorUIResource getPrimaryControl() {
-            return new ColorUIResource(java.awt.Color.orange);
-        }*/
-
-/*        public ColorUIResource getControlHighlight() {
-            return new ColorUIResource(java.awt.Color.orange);
-        }
-
-        public ColorUIResource getControlDarkShadow() {
-            return new ColorUIResource(java.awt.Color.orange);
-        }
-
-        public ColorUIResource getControl() {
-            return new ColorUIResource(java.awt.Color.orange);
-        }*/
     }
 }

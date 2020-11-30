@@ -4,9 +4,9 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import net.displayphoenix.Application;
-import net.displayphoenix.util.StringHelper;
 
 import java.io.*;
+import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -19,7 +19,11 @@ public class Localizer {
     private static Map<Local, Map<String, String>> TRANSLATED_VALUES_LOCAL = new HashMap<>();
 
     public static String translate(String key, Object... arguments) {
-        String translatedText = TRANSLATED_VALUES_LOCAL.get(Application.getSelectedLocal()).getOrDefault(key, key);
+        return translate(key, Application.getSelectedLocal(), arguments);
+    }
+
+    public static String translate(String key, Local local, Object... arguments) {
+        String translatedText = TRANSLATED_VALUES_LOCAL.get(local).getOrDefault(key, key);
         for (int i = 1; i < arguments.length; i++) {
             translatedText = translatedText.replaceAll("%" + i, String.valueOf(arguments[i]));
         }
@@ -74,7 +78,7 @@ public class Localizer {
 
     private static void loadDefaultValues() {
         for (Local local : Local.values()) {
-            loadStream(local, ClassLoader.getSystemClassLoader().getResourceAsStream("lang/" + local.getTag() + ".json"));
+            loadStream(local, ClassLoader.getSystemClassLoader().getResourceAsStream("def_lang/" + local.getTag() + ".json"));
         }
     }
 
@@ -86,6 +90,16 @@ public class Localizer {
             String out;
             while ((out = reader.readLine()) != null) {
                 output.append(out + "\n");
+            }
+            if (TRANSLATED_VALUES_LOCAL.containsKey(local)) {
+                Map<String, String> translations = gson.fromJson(output.toString(), new TypeToken<Map<String, String>>() {}.getType());
+                for (String translationKey : translations.keySet()) {
+                    if (!TRANSLATED_VALUES_LOCAL.get(local).keySet().contains(translationKey)) {
+                        TRANSLATED_VALUES_LOCAL.get(local).put(translationKey, translations.get(translationKey));
+                    }
+                }
+
+                return;
             }
             TRANSLATED_VALUES_LOCAL.put(local, gson.fromJson(output.toString(), new TypeToken<Map<String, String>>() {}.getType()));
             if (TRANSLATED_VALUES_LOCAL.get(local) == null)
