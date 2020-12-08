@@ -36,13 +36,16 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
-import java.util.ArrayList;
+import java.util.*;
 import java.util.List;
 import java.util.function.Consumer;
 
 public class BitWidget {
 
+    private static transient final Random rand = new Random();
     private static transient final Gson gson = new GsonBuilder().setPrettyPrinting().create();
+    private static transient Map<String, Integer> colorCache = new HashMap<>();
+
 
     private BitWidgetStyle style;
     private String flag;
@@ -59,10 +62,9 @@ public class BitWidget {
     /**
      * Main component of Bitly, used as widgets for main panel
      *
-     * @see BitWidgetStyle
-     *
-     * @param style  Style of widget
+     * @param style Style of widget
      * @param flag  Flag for code
+     * @see BitWidgetStyle
      */
     public BitWidget(BitWidgetStyle style, String flag) {
         this.style = style;
@@ -72,9 +74,8 @@ public class BitWidget {
     /**
      * Returns style of widget
      *
-     * @see BitWidgetStyle
-     *
      * @return Style of widget
+     * @see BitWidgetStyle
      */
     public BitWidgetStyle getStyle() {
         return style;
@@ -83,18 +84,16 @@ public class BitWidget {
     /**
      * Returns code flag of widget
      *
-     *
-     * @return  Flag of bit
+     * @return Flag of bit
      */
     public String getFlag() {
         return flag;
     }
 
     /**
-     *
      * Creates the main component and panel component
-     * 
-     * @return  Component array of both panel and component
+     *
+     * @return Component array of both panel and component
      */
     public Component[] create() {
         // Widget comment
@@ -120,13 +119,13 @@ public class BitWidget {
             case TOGGLE:
                 Toggle toggle = new Toggle();
                 toggle.setPreferredSize(new Dimension(150, 75));
-                return new Component[] {PanelHelper.northAndCenterElements(PanelHelper.join(label), PanelHelper.join(toggle)), toggle};
+                return new Component[]{PanelHelper.northAndCenterElements(PanelHelper.join(label), PanelHelper.join(toggle)), toggle};
             case TEXT:
                 TextField textField = new TextField();
                 textField.setPreferredSize(new Dimension(150, 75));
                 ComponentHelper.deriveFont(textField, 25);
                 textField.setHorizontalAlignment(SwingConstants.CENTER);
-                return new Component[] {PanelHelper.northAndCenterElements(PanelHelper.join(label), PanelHelper.join(textField)), textField};
+                return new Component[]{PanelHelper.northAndCenterElements(PanelHelper.join(label), PanelHelper.join(textField)), textField};
             case NUMBER:
                 TextField numField = new TextField();
                 numField.addKeyListener(new KeyAdapter() {
@@ -146,14 +145,14 @@ public class BitWidget {
                 numField.setPreferredSize(new Dimension(150, 75));
                 ComponentHelper.deriveFont(numField, 25);
                 numField.setHorizontalAlignment(SwingConstants.CENTER);
-                return new Component[] {PanelHelper.northAndCenterElements(PanelHelper.join(label), PanelHelper.join(numField)), numField};
+                return new Component[]{PanelHelper.northAndCenterElements(PanelHelper.join(label), PanelHelper.join(numField)), numField};
             case BLOCKLY:
                 ProvisionWidget provisionWidget = new ProvisionWidget(this.provisions, headBlock != null ? headBlock : "event_wrapper");
                 provisionWidget.addMouseListener(new MouseAdapter() {
                     @Override
                     public void mouseClicked(MouseEvent e) {
                         if (e.getButton() == MouseEvent.BUTTON1 && e.getClickCount() == 2) {
-                            Application.openWindow(JFrame.DISPOSE_ON_CLOSE, parentFrame -> {
+                            Application.openWindow(JFrame.DO_NOTHING_ON_CLOSE, parentFrame -> {
                                 BlocklyPanel blockly = new BlocklyPanel();
                                 if (provisionWidget.getFieldProvisions() != null) {
                                     for (String extensionKey : provisionWidget.getFieldProvisions().keySet()) {
@@ -190,6 +189,35 @@ public class BitWidget {
                                         });
                                     }
                                 });
+                                parentFrame.addWindowListener(new WindowAdapter() {
+                                    @Override
+                                    public void windowClosing(WindowEvent e) {
+                                        super.windowClosing(e);
+                                        if (dependencyPanel.getUnsatisfiedDependencies().isEmpty()) {
+                                            parentFrame.dispose();
+                                        } else {
+                                            Application.openWindow(JFrame.DISPOSE_ON_CLOSE, parentFrame -> {
+                                                JLabel label = new JLabel(Localizer.translate("blockly.unsatisfied_dependencies.text"));
+                                                ComponentHelper.themeComponent(label);
+                                                ComponentHelper.deriveFont(label, 20);
+                                                JPanel list = PanelHelper.join();
+                                                for (String unsatisfiedDependency : dependencyPanel.getUnsatisfiedDependencies()) {
+                                                    JLabel unsatisfyLabel = new JLabel(unsatisfiedDependency);
+                                                    ComponentHelper.themeComponent(unsatisfyLabel);
+                                                    ComponentHelper.deriveFont(unsatisfyLabel, 17);
+                                                    if (!colorCache.containsKey(unsatisfiedDependency))
+                                                        colorCache.put(unsatisfiedDependency, rand.nextInt(360));
+                                                    float hue = colorCache.get(unsatisfiedDependency);
+                                                    label.setForeground(Color.getHSBColor(hue / 360F, 0.45F, 0.65F));
+                                                    JPanel labelPanel = PanelHelper.join(label);
+                                                    labelPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
+                                                    list = PanelHelper.northAndCenterElements(list, labelPanel);
+                                                }
+                                                parentFrame.add(PanelHelper.northAndCenterElements(PanelHelper.join(label), list));
+                                            }, Math.round(Application.getTheme().getWidth() * 0.3F), Math.round(Application.getTheme().getHeight() * 0.5F));
+                                        }
+                                    }
+                                });
                                 parentFrame.add(PanelHelper.westAndCenterElements(blockly, dependencyPanel));
                                 blockly.setPreferredSize(new Dimension(Math.round(parentFrame.getWidth() * 0.8F), parentFrame.getHeight()));
                                 dependencyPanel.setPreferredSize(new Dimension(Math.round(parentFrame.getWidth() * 0.2F), parentFrame.getHeight()));
@@ -199,7 +227,7 @@ public class BitWidget {
                 });
                 ComponentHelper.deriveFont(provisionWidget, 25);
                 provisionWidget.setPreferredSize(new Dimension(150, 75));
-                return new Component[] {PanelHelper.northAndCenterElements(PanelHelper.join(label), PanelHelper.join(provisionWidget)), provisionWidget};
+                return new Component[]{PanelHelper.northAndCenterElements(PanelHelper.join(label), PanelHelper.join(provisionWidget)), provisionWidget};
             case RESOURCE:
                 ResourceWidget resourceWidget = new ResourceWidget();
                 resourceWidget.addMouseListener(new MouseAdapter() {
@@ -209,11 +237,11 @@ public class BitWidget {
                     }
                 });
                 resourceWidget.setPreferredSize(new Dimension(150, 150));
-                return new Component[] {PanelHelper.northAndCenterElements(PanelHelper.join(label), PanelHelper.join(resourceWidget)), resourceWidget};
+                return new Component[]{PanelHelper.northAndCenterElements(PanelHelper.join(label), PanelHelper.join(resourceWidget)), resourceWidget};
             case IMAGE:
                 JLabel label1 = new JLabel(ImageHelper.resize(ImageHelper.fromPath(this.path), this.width > 0 ? this.width : 150, this.height > 0 ? this.height : 150));
                 label1.setPreferredSize(new Dimension(this.width > 0 ? this.width : 150, this.height > 0 ? this.height : 150));
-                return new Component[] {PanelHelper.northAndCenterElements(PanelHelper.join(label), PanelHelper.join(label1)), label1};
+                return new Component[]{PanelHelper.northAndCenterElements(PanelHelper.join(label), PanelHelper.join(label1)), label1};
             case CANVAS:
                 CanvasWidget canvasWidget = new CanvasWidget();
                 canvasWidget.setToolTipText(this.width + " x " + this.height);
@@ -278,7 +306,7 @@ public class BitWidget {
                     }
                 });
                 canvasWidget.setPreferredSize(new Dimension(150, 150));
-                return new Component[] {PanelHelper.northAndCenterElements(PanelHelper.join(label), PanelHelper.join(canvasWidget)), canvasWidget};
+                return new Component[]{PanelHelper.northAndCenterElements(PanelHelper.join(label), PanelHelper.join(canvasWidget)), canvasWidget};
         }
         return null;
     }
@@ -286,10 +314,9 @@ public class BitWidget {
     /**
      * Sets the value of a widget to argument
      *
-     * @see Bit#get(BitArgument...)
-     * 
      * @param component Component to set
-     * @param argument Argument to set to
+     * @param argument  Argument to set to
+     * @see Bit#get(BitArgument...)
      */
     public void setValue(Component component, BitArgument argument) {
 
@@ -322,7 +349,6 @@ public class BitWidget {
     /**
      * Returns the value of a component
      *
-     *
      * @param component Component to check
      */
     public Object getValue(Component component) {
@@ -347,9 +373,8 @@ public class BitWidget {
     /**
      * Returns website of <code>helpUrl</code>
      *
-     * @see BitWidget#create()
-     *
      * @return Website of help url
+     * @see BitWidget#create()
      */
     public Website getHelpWebsite() {
         return this.helpUrl != null ? new Website(this.helpUrl) : null;

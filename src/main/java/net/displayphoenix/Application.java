@@ -1,7 +1,8 @@
 package net.displayphoenix;
 
 import net.displayphoenix.blockly.Blockly;
-import net.displayphoenix.blockly.js.BlocklyJS;
+import net.displayphoenix.blockly.gen.BlocklyHtmlGenerator;
+import net.displayphoenix.blockly.ui.BlocklyDependencyPanel;
 import net.displayphoenix.blockly.ui.BlocklyPanel;
 import net.displayphoenix.canvasly.tools.Tool;
 import net.displayphoenix.canvasly.tools.impl.*;
@@ -29,7 +30,15 @@ import java.io.InputStreamReader;
  * @author TBroski
  */
 public class Application {
-
+    public static void main(String[] args) {
+        Theme theme = new Theme(new ColorTheme(new Color(38, 38, 38), new Color(192, 226, 113), new Color(255, 255, 255), Color.GRAY), WidgetStyle.POPPING, new Font(Font.MONOSPACED, Font.PLAIN, 14));
+        Application.create("sda", ImageHelper.getImage("blunt_warning"), theme, "kdsa");
+        Blockly.queueText();
+        Application.openWindow(parentFrame -> {
+            BlocklyPanel blockly = new BlocklyPanel();
+            parentFrame.add(blockly);
+        });
+    }
     private static final int BUTTON_WIDTH = 100;
     private static final int BUTTON_HEIGHT = 20;
 

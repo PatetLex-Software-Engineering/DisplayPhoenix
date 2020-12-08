@@ -26,15 +26,16 @@ import java.util.function.Consumer;
 /**
  * @author TBroski
  */
-public class BlocklyPanel extends WebPanel {
+public class BlocklyPanel extends WebPanel implements BlocklyHtmlGenerator {
 
     private List<Runnable> runOnLoad = new ArrayList<>();
     private Map<String, String[][]> fieldExtensions = new HashMap<>();
     private boolean isLoaded;
+    private String futureXml;
+    private double scale;
 
     private List<IBlocklyListener> eventListeners = new ArrayList<>();
 
-    private String prevXml;
     private Category[] categories;
 
     /**
@@ -135,11 +136,6 @@ public class BlocklyPanel extends WebPanel {
      */
     public BlocklyPanel whitelist(Category... categories) {
         this.categories = categories;
-        StringBuilder html = new StringBuilder();
-        BlocklyHtmlGenerator.appendTopWrapper(html);
-        if (categories != null)
-            Blockly.appendCategories(html, categories);
-        BlocklyHtmlGenerator.appendBottomWrapper(html, Blockly.parseBlocksToJsonArray());
         reload();
         return this;
     }
@@ -152,9 +148,6 @@ public class BlocklyPanel extends WebPanel {
      * @throws NullPointerException if categories is null
      */
     public BlocklyPanel blacklist(Category... categories) {
-        this.categories = categories;
-        StringBuilder html = new StringBuilder();
-        BlocklyHtmlGenerator.appendTopWrapper(html);
         Category[] registeredCategories = Blockly.getBlocklyCategories();
         Category[] categoriesToAdd = new Category[registeredCategories.length - categories.length];
         int i = 0;
@@ -167,8 +160,7 @@ public class BlocklyPanel extends WebPanel {
             categoriesToAdd[i] = registeredCategory;
             i++;
         }
-        Blockly.appendCategories(html, categoriesToAdd);
-        BlocklyHtmlGenerator.appendBottomWrapper(html, Blockly.parseBlocksToJsonArray());
+        this.categories = categoriesToAdd;
         reload();
         return this;
     }
@@ -189,24 +181,33 @@ public class BlocklyPanel extends WebPanel {
      */
     public void reload() {
         StringBuilder html = new StringBuilder();
-        BlocklyHtmlGenerator.appendTopWrapper(html, getCss());
+        this.appendTopWrapper(html);
         Blockly.appendCategories(html, getCategories());
-        BlocklyHtmlGenerator.appendBottomWrapper(html, Blockly.parseBlocksToJsonArray(this.fieldExtensions));
+        this.appendBottomWrapper(html, Blockly.parseBlocksToJsonArray(this.fieldExtensions));
         if (this.isLoaded) {
             this.isLoaded = false;
         }
         if (getBrowser() != null) {
+            getRawWorkspace(new Consumer<String>() {
+                @Override
+                public void accept(String s) {
+                    futureXml = s;
+                }
+            });
             loadBlockly(html.toString());
         }
     }
 
     private void load() {
         this.isLoaded = false;
+        setScale(0.8);
+
         StringBuilder html = new StringBuilder();
-        BlocklyHtmlGenerator.appendTopWrapper(html, getCss());
+        this.appendTopWrapper(html);
         Blockly.appendCategories(html, getCategories());
-        BlocklyHtmlGenerator.appendBottomWrapper(html, Blockly.parseBlocksToJsonArray(this.fieldExtensions));
+        this.appendBottomWrapper(html, Blockly.parseBlocksToJsonArray(this.fieldExtensions));
         loadBlockly(html.toString());
+
         setMember("blocklypanel", this);
         addLoadHandler(new CefLoadHandlerAdapter() {
             @Override
@@ -216,19 +217,17 @@ public class BlocklyPanel extends WebPanel {
                     isLoaded = true;
                     String code = " function onBlocklyEvent(event) {" +
                             "if (typeof blocklypanel !== \"undefined\")" +
-                            "   blocklypanel.fire(event.type, workspace.getBlockById(event.blockId) != null ? workspace.getBlockById(event.blockId).type : '', event.element, event.name, event.oldValue, event.newValue, event.newCoordinate != null ? event.newCoordinate.x : 0, event.newCoordinate != null ? event.newCoordinate.y : 0, event.oldCoordinate != null ? event.oldCoordinate.x : 0, event.oldCoordinate != null ? event.oldCoordinate.y : 0);" +
+                            "   blocklypanel.fire(event.type, workspace.getBlockById(event.blockId) !== null ? workspace.getBlockById(event.blockId).type : '', event.element, event.name, event.oldValue, event.newValue, event.newCoordinate != null ? event.newCoordinate.x : 0, event.newCoordinate != null ? event.newCoordinate.y : 0, event.oldCoordinate != null ? event.oldCoordinate.x : 0, event.oldCoordinate != null ? event.oldCoordinate.y : 0);" +
                             "}" +
                             "workspace.addChangeListener(onBlocklyEvent);";
                     browser.executeJavaScript(testForJavaScriptMembers(code) + code, browser.getURL(), 1);
                     for (Runnable runnable : runOnLoad) {
                         runnable.run();
                     }
-                    getRawWorkspace(new Consumer<String>() {
-                        @Override
-                        public void accept(String s) {
-                            prevXml = s;
-                        }
-                    });
+                    if (futureXml != null) {
+                        addBlocks(futureXml);
+                        futureXml = null;
+                    }
                 }
             }
         });
@@ -274,84 +273,23 @@ public class BlocklyPanel extends WebPanel {
      */
     @SuppressWarnings("unused")
     public void fire(Object type, Object blockId, Object element, Object name, Object oldValue, Object newValue, Object newCoordinateX, Object newCoordinateY, Object oldCoordinateX, Object oldCoordinateY) {
-        BlocklyPanel instance = this;
-        getWorkspace(new Consumer<ImplementedBlock[]>() {
-            @Override
-            public void accept(ImplementedBlock[] implementedBlocks) {
-                BlocklyEvent event = new BlocklyEvent((String) type, instance, Blockly.getBlockFromType((String) blockId));
-                List<ImplementedBlock> prevBlocks = Arrays.asList(BlocklyXmlParser.fromWorkspaceXml(prevXml));
-                List<ImplementedBlock> nowBlocks = Arrays.asList(implementedBlocks);
-                List<ImplementedBlock> involvedBlocks = new ArrayList<>();
+        BlocklyEvent event = new BlocklyEvent((String) type, this, Blockly.getBlockFromType((String) blockId));
 
-                for (ImplementedBlock nowBlock : nowBlocks) {
-                    boolean contains = false;
-                    for (ImplementedBlock prevBlock : prevBlocks) {
-                        if (nowBlock.equals(prevBlock)) {
-                            contains = true;
-                            break;
-                        }
-                    }
-                    if (!contains) {
-                        involvedBlocks.add(nowBlock);
-                    }
-                }
-                for (ImplementedBlock prevBlock : prevBlocks) {
-                    boolean contains = false;
-                    for (ImplementedBlock nowBlock : nowBlocks) {
-                        if (prevBlock.equals(nowBlock)) {
-                            contains = true;
-                            break;
-                        }
-                    }
-                    if (!contains) {
-                        involvedBlocks.add(prevBlock);
-                    }
-                }
+        if (type.equals("create")) {
+            event = new BlocklyCreateEvent((String) type, this, Blockly.getBlockFromType((String) blockId));
+        } else if (type.equals("delete")) {
+            event = new BlocklyDeleteEvent((String) type, this, Blockly.getBlockFromType((String) blockId));
+        } else if (type.equals("change")) {
+            event = new BlocklyChangeEvent((String) type, this, Blockly.getBlockFromType((String) blockId), (String) element, (String) name, (String) oldValue, (String) newValue);
+        } else if (type.equals("move")) {
+            event = new BlocklyMoveEvent((String) type, this, Blockly.getBlockFromType((String) blockId), Math.round((float) (double) oldCoordinateX), Math.round((float) (double) oldCoordinateY), Math.round((float) (double) newCoordinateX), Math.round((float) (double) newCoordinateY));
+        } else if (type.equals("ui")) {
+            event = new BlocklyUIEvent((String) type, this, Blockly.getBlockFromType((String) blockId), (String) element, (String) oldValue, (String) newValue);
+        }
 
-                ImplementedBlock[] involvedBlocksArray = new ImplementedBlock[involvedBlocks.size()];
-                involvedBlocksArray = involvedBlocks.toArray(involvedBlocksArray);
-
-                if (type.equals("create")) {
-                    event = new BlocklyCreateEvent((String) type, instance, Blockly.getBlockFromType((String) blockId), involvedBlocksArray);
-                    getRawWorkspace(new Consumer<String>() {
-                        @Override
-                        public void accept(String s) {
-                            prevXml = s;
-                        }
-                    });
-                } else if (type.equals("delete")) {
-                    event = new BlocklyDeleteEvent((String) type, instance, Blockly.getBlockFromType((String) blockId), involvedBlocksArray);
-                    getRawWorkspace(new Consumer<String>() {
-                        @Override
-                        public void accept(String s) {
-                            prevXml = s;
-                        }
-                    });
-                } else if (type.equals("change")) {
-                    event = new BlocklyChangeEvent((String) type, instance, Blockly.getBlockFromType((String) blockId), (String) element, (String) name, (String) oldValue, (String) newValue);
-                    getRawWorkspace(new Consumer<String>() {
-                        @Override
-                        public void accept(String s) {
-                            prevXml = s;
-                        }
-                    });
-                } else if (type.equals("move")) {
-                    event = new BlocklyMoveEvent((String) type, instance, Blockly.getBlockFromType((String) blockId), Integer.parseInt((String) oldCoordinateX), Integer.parseInt((String) oldCoordinateY), Integer.parseInt((String) newCoordinateX), Integer.parseInt((String) newCoordinateY));
-                    getRawWorkspace(new Consumer<String>() {
-                        @Override
-                        public void accept(String s) {
-                            prevXml = s;
-                        }
-                    });
-                } else if (type.equals("ui")) {
-                    event = new BlocklyUIEvent((String) type, instance, Blockly.getBlockFromType((String) blockId), (String) element, (String) oldValue, (String) newValue);
-                }
-
-                for (IBlocklyListener listener : eventListeners) {
-                    listener.onBlocklyEvent(event);
-                }
-            }
-        });
+        for (IBlocklyListener listener : eventListeners) {
+            listener.onBlocklyEvent(event);
+        }
     }
 
     @Override
@@ -372,7 +310,8 @@ public class BlocklyPanel extends WebPanel {
         reload();
     }
 
-    protected String getCss() {
+    @Override
+    public String getCss() {
         return "* {\n" +
                 "    font-family: " + getFont().getFontName().toLowerCase() + ";\n" +
                 "}\n" +
@@ -413,7 +352,7 @@ public class BlocklyPanel extends WebPanel {
                 "\n" +
                 ".blocklyTreeLabel {\n" +
                 "    font-family: " + getFont().getFontName().toLowerCase() + ";\n" +
-                "    font-size: " + Math.round(getFont().getSize() * 0.8F) + "px;\n" +
+                "    font-size: 11px;\n" +
                 "}\n" +
                 "\n" +
                 ".blocklyText {\n" +
@@ -557,5 +496,15 @@ public class BlocklyPanel extends WebPanel {
                 "    background: " + ColorHelper.convertColorToHexadeimal(getForeground()) + ";\n" +
                 "    color: white;\n" +
                 "}";
+    }
+
+    @Override
+    public void setScale(double scale) {
+        this.scale = scale;
+    }
+
+    @Override
+    public double getScale() {
+        return this.scale;
     }
 }

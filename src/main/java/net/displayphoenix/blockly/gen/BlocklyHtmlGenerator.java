@@ -8,31 +8,22 @@ import net.displayphoenix.blockly.js.BlocklyJS;
 public interface BlocklyHtmlGenerator {
 
     /**
-     * Appends top part of html
-     *
-     * @param builder  StringBuilder to append
-     */
-    static void appendTopWrapper(StringBuilder builder) {
-        appendTopWrapper(builder, "");
-    }
-
-    /**
      * Appends top part of html with css styling
      *
      * @param builder  StringBuilder to append
-     * @param css  Css style
      */
-    static void appendTopWrapper(StringBuilder builder, String css) {
+    default void appendTopWrapper(StringBuilder builder) {
         builder.append("<!DOCTYPE html>\n" +
                 "<html>\n" +
                 "<head>\n" +
                 "    <meta charset=\"utf-8\">\n" +
                 "    <title>Blockly</title>\n" +
+                "    <script>window.onerror = function(message, url, lineNumber) {return true};</script>\n" +
                 "    <script>" + BlocklyJS.getBlocklyCompressedContent() + "</script>\n" +
                 "    <script>" + BlocklyJS.getBlocksCompressedContent() + "</script>\n" +
                 "    <script>" + BlocklyJS.getLangENContent() + "</script>\n" +
                 "    <style>\n" +
-                css + "\n" +
+                getCss() + "\n" +
                 "  </style>\n" +
                 "</head>\n" +
                 "<body>\n" +
@@ -48,17 +39,20 @@ public interface BlocklyHtmlGenerator {
      * @param builder  StringBuilder to append
      * @param blocksArray  Blocks to define
      */
-    static void appendBottomWrapper(StringBuilder builder, String blocksArray) {
+    default void appendBottomWrapper(StringBuilder builder, String blocksArray) {
         builder.append("</xml>\n" +
                 "\n" +
                 "<script>\n" +
                 "    var workspace = Blockly.inject('blocklyDiv',\n" +
-                "        {media: '../../media/',\n" +
+                "        {media: '',\n" +
                 "         toolbox: document.getElementById('toolbox')," +
                 "         comments : false," +
                 "         renderer : 'thrasos'," +
                 "         collapse : true," +
                 "         trashcan : false," +
+                "         zoom: {" +
+                "          startScale: " + getScale() + "," +
+                "         }," +
                 "});\n" +
                 "Blockly.defineBlocksWithJsonArray(\n");
         builder.append(blocksArray);
@@ -68,4 +62,10 @@ public interface BlocklyHtmlGenerator {
                 "</body>\n" +
                 "</html>");
     }
+
+    void setScale(double scale);
+
+    double getScale();
+
+    String getCss();
 }

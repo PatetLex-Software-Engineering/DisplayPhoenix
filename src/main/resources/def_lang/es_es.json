@@ -3,6 +3,7 @@
 
   "blockly.dependency.text": "Dependencias:",
   "blockly.provision.text": "Provisiones:",
+  "blockly.unsatisfied_dependencies.text": "Dependencias insatisfechas:",
 
   "blockly.category.flow_control.text": "Control de flujo",
   "blockly.category.logic.text": "Lógica",

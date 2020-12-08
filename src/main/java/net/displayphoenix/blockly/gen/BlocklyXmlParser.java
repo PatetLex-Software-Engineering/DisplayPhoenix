@@ -16,6 +16,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.*;
+import java.util.function.Consumer;
 
 /**
  * @author TBroski
@@ -26,7 +27,7 @@ public interface BlocklyXmlParser {
      * Parses an xml string to java objects
      *
      * @see ImplementedBlock
-     * @see BlocklyPanel#getRawWorkspace()
+     * @see BlocklyPanel#getRawWorkspace(Consumer <String>)
      *
      * @param xml  Xml to parse
      * @return
