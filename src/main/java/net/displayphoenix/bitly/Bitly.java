@@ -11,9 +11,12 @@ import net.displayphoenix.generation.Module;
 import net.displayphoenix.util.ImageHelper;
 
 import javax.swing.*;
+import java.awt.*;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -31,15 +34,14 @@ public class Bitly {
 
     /**
      * Registers a bit object, unless it already exists <code>!BITS.contains(bit)</code>.
-     *
+     * <p>
      * If the bit is a plugin it checks for parent, if none is found it adds to plugin
      * queue.
      *
+     * @param bit Bit to register
      * @see Bitly#registerBit(File)
      * @see Bitly#getBitFromType(String)
      * @see BitlyPluginLoader#loadBitsFromDirectory(File)
-     *
-     * @param bit  Bit to register
      */
     public static void registerBit(Bit bit) {
         // Checking if bit is a plugin
@@ -78,57 +80,60 @@ public class Bitly {
     }
 
     /**
-     * Parses a JSON file, using GSON
-     * Type name is file name
+     * Parses a JSON file
      *
-     * @see Bitly#registerBit(Bit)
-     *
-     * @param bitFile  JSON file of bit
+     * @param file File to bit
+     * @see Bitly#registerBit(String, String)
      */
-    public static void registerBit(File bitFile) {
-        try {
-            // Wrapping file
-            DetailedFile detailedBitFile = new DetailedFile(bitFile);
+    public static void registerBit(File file) {
+        DetailedFile detailedFile = new DetailedFile(file);
+        registerBit(detailedFile.getFileName(), detailedFile.getFileContents());
+    }
 
-            // Obtaining JSON object
-            JsonObject bitObject = gson.fromJson(new FileReader(bitFile), JsonObject.class);
+    /**
+     * Parses a JSON string, using GSON
+     *
+     * @param type Type of bit
+     * @param json Json of bit
+     * @see Bitly#registerBit(Bit)
+     */
+    public static void registerBit(String type, String json) {
+        // Obtaining JSON object
+        JsonObject bitObject = gson.fromJson(json, JsonObject.class);
 
-            String iconPath = null;
-            if (bitObject.get("icon") != null) {
-                iconPath = bitObject.get("icon").getAsString();
-            }
-            else if (new File(bitFile.getParentFile().getPath() + "/icons/" + detailedBitFile.getFileName() + ".png").exists()) {
-                iconPath = bitFile.getParentFile().getPath() + "/icons/" + detailedBitFile.getFileName() + ".png";
-            }
-
-            // Creating Bit object
-            Bit bit = new Bit(detailedBitFile.getFileName(), bitObject.get("plugin") != null ? bitObject.get("plugin").getAsString() : null, bitObject.get("pluginFlag") != null ? bitObject.get("pluginFlag").getAsString() : null, iconPath, gson.fromJson(bitObject.get("widgets").toString(), new TypeToken<List<BitWidget[]>>(){}.getType()));
-
-            // Registering Bit object
-            registerBit(bit);
-
-            // Registering code
-            if (bitObject.get("code") != null) {
-                Map<String, String> moduleToCode = gson.fromJson(bitObject.get("code").toString(), new TypeToken<Map<String, String>>() {}.getType());
-                for (String module : moduleToCode.keySet()) {
-                    Module.getModuleFromName(module).registerBitCode(bit, moduleToCode.get(module));
-                }
-            }
-            System.out.println("[BITLY] Registered bit: " + detailedBitFile.getFileName() + ".");
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
+        ImageIcon icon;
+        if (bitObject.get("iconPath") != null) {
+            icon = ImageHelper.fromPath(bitObject.get("iconPath").getAsString());
+        } else {
+            icon = ImageHelper.getImage("bitly/" + type);
         }
+
+
+        // Creating Bit object
+        Bit bit = new Bit(type, bitObject.get("plugin") != null ? bitObject.get("plugin").getAsString() : null, bitObject.get("pluginFlag") != null ? bitObject.get("pluginFlag").getAsString() : null, icon, gson.fromJson(bitObject.get("widgets").toString(), new TypeToken<List<BitWidget[]>>() {
+        }.getType()));
+
+        // Registering Bit object
+        registerBit(bit);
+
+        // Registering code
+        if (bitObject.get("code") != null) {
+            Map<String, String> moduleToCode = gson.fromJson(bitObject.get("code").toString(), new TypeToken<Map<String, String>>() {
+            }.getType());
+            for (String module : moduleToCode.keySet()) {
+                Module.getModuleFromName(module).registerBitCode(bit, moduleToCode.get(module));
+            }
+        }
+        System.out.println("[BITLY] Registered bit: " + type + ".");
     }
 
     /**
      * Obtains a bit from type name, will not return a plugin
-     * 
-     * @see Bitly#registerBit(Bit) 
-     * @see BitlyPluginLoader#loadBitsFromDirectory(File)
      *
      * @param type Type name of bit
-     *
      * @return Bit object corresponding to type name
+     * @see Bitly#registerBit(Bit)
+     * @see BitlyPluginLoader#loadBitsFromDirectory(File)
      */
     public static Bit getBitFromType(String type) {
         // Iterating registered bits
@@ -144,13 +149,13 @@ public class Bitly {
 
     /**
      * Returns all registered bits, unmodifiable
-     * 
+     * <p>
      * To add a bit
-     * @see Bitly#registerBit(Bit) 
-     * @see Bitly#registerBit(File) 
-     * @see BitlyPluginLoader#loadBitsFromDirectory(File)
-     * 
+     *
      * @return All registered bits
+     * @see Bitly#registerBit(Bit)
+     * @see Bitly#registerBit(File)
+     * @see BitlyPluginLoader#loadBitsFromDirectory(File)
      */
     public static List<Bit> getRegisteredBits() {
         return Collections.unmodifiableList(BITS);

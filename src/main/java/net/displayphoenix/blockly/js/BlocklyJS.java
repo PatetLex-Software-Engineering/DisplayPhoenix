@@ -1,5 +1,7 @@
 package net.displayphoenix.blockly.js;
 
+import net.displayphoenix.util.FileHelper;
+
 import java.net.URI;
 import java.net.URISyntaxException;
 
@@ -18,6 +20,10 @@ public class BlocklyJS {
         return null;
     }
 
+    public static String getBlocklyCompressedContent() {
+        return FileHelper.readAllLines(getBlocklyCompressed());
+    }
+
     /**
      * Returns URI of blocks compressed
      * @return
@@ -31,6 +37,10 @@ public class BlocklyJS {
         return null;
     }
 
+    public static String getBlocksCompressedContent() {
+        return FileHelper.readAllLines(getBlocksCompressed());
+    }
+
     /**
      * Returns en translations
      * @return
@@ -42,5 +52,9 @@ public class BlocklyJS {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public static String getLangENContent() {
+        return FileHelper.readAllLines(getLangEN());
     }
 }

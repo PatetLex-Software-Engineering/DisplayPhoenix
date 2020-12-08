@@ -38,6 +38,7 @@ import java.awt.event.*;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 public class BitWidget {
 
@@ -181,7 +182,12 @@ public class BitWidget {
                                 parentFrame.addWindowListener(new WindowAdapter() {
                                     @Override
                                     public void windowClosing(WindowEvent e) {
-                                        provisionWidget.setXml(dependencyPanel.getBlocklyPanel().getRawWorkspace());
+                                        dependencyPanel.getBlocklyPanel().getRawWorkspace(new Consumer<String>() {
+                                            @Override
+                                            public void accept(String s) {
+                                                provisionWidget.setXml(s);
+                                            }
+                                        });
                                     }
                                 });
                                 parentFrame.add(PanelHelper.westAndCenterElements(blockly, dependencyPanel));

@@ -3,7 +3,9 @@ package net.displayphoenix.bitly.elements;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import com.google.gson.reflect.TypeToken;
+import net.displayphoenix.bitly.Bitly;
 import net.displayphoenix.bitly.elements.workspace.ImplementedBit;
 import net.displayphoenix.bitly.ui.BitArgument;
 import net.displayphoenix.bitly.ui.BitWidget;
@@ -54,14 +56,14 @@ public class BitSave {
             }
         }
         object.add("widgets", gson.fromJson(gson.toJson(widgetToValue), JsonObject.class));
-        object.add("bit", gson.fromJson(gson.toJson(this.implementedBit.getBit()), JsonObject.class));
+        object.add("bit", new JsonPrimitive(this.implementedBit.getBit().getType()));
         return gson.toJson(object);
     }
 
     public static BitSave fromSave(String string) {
         JsonObject object = gson.fromJson(string, JsonObject.class);
         Map<String, Object> widgetToValue = gson.fromJson(object.get("widgets"), new TypeToken<Map<String, Object>>() {}.getType());
-        Bit bit = gson.fromJson(object.get("bit"), Bit.class);
+        Bit bit = Bitly.getBitFromType(gson.fromJson(object.get("bit"), JsonPrimitive.class).getAsString());
         List<BitArgument> arguments = new ArrayList<>();
         for (String widgetJson : widgetToValue.keySet()) {
             arguments.add(new BitArgument(widgetJson, widgetToValue.get(widgetJson)));

@@ -1,5 +1,7 @@
 package net.displayphoenix.file;
 
+import net.displayphoenix.util.FileHelper;
+
 import java.io.File;
 
 /**
@@ -27,6 +29,10 @@ public class DetailedFile {
 
     public String getFileName() {
         return fileName;
+    }
+
+    public String getFileContents() {
+        return FileHelper.readAllLines(this.getFile());
     }
 
     private static String getExtensionOfFile(File file) {

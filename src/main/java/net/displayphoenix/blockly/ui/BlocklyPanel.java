@@ -1,13 +1,5 @@
 package net.displayphoenix.blockly.ui;
 
-import com.sun.javafx.webkit.Accessor;
-import javafx.collections.ListChangeListener;
-import javafx.concurrent.Worker;
-import javafx.embed.swing.JFXPanel;
-import javafx.scene.Node;
-import javafx.scene.Scene;
-import javafx.scene.web.WebEngine;
-import javafx.scene.web.WebView;
 import net.displayphoenix.Application;
 import net.displayphoenix.blockly.Blockly;
 import net.displayphoenix.blockly.elements.workspace.Field;
@@ -21,27 +13,24 @@ import net.displayphoenix.blockly.event.events.*;
 import net.displayphoenix.file.FileDialog;
 import net.displayphoenix.util.ColorHelper;
 import net.displayphoenix.util.FileHelper;
-import net.displayphoenix.util.ThreadHelper;
-import netscape.javascript.JSObject;
-import org.w3c.dom.Element;
-import org.w3c.dom.Text;
+import org.cef.browser.CefBrowser;
+import org.cef.browser.CefFrame;
+import org.cef.handler.CefLoadHandlerAdapter;
+import org.cef.ui.WebPanel;
 
 import java.awt.*;
 import java.util.*;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.FutureTask;
+import java.util.function.Consumer;
 
 /**
  * @author TBroski
  */
-public class BlocklyPanel extends JFXPanel {
+public class BlocklyPanel extends WebPanel {
 
     private List<Runnable> runOnLoad = new ArrayList<>();
     private Map<String, String[][]> fieldExtensions = new HashMap<>();
-    private boolean isLoaded = false;
-    private WebEngine engine;
-    private WebView view;
+    private boolean isLoaded;
 
     private List<IBlocklyListener> eventListeners = new ArrayList<>();
 
@@ -60,27 +49,36 @@ public class BlocklyPanel extends JFXPanel {
     /**
      * Allows to get the workspace of the panel in java code
      *
-     * @see BlocklyXmlParser#fromWorkspaceXml(String)
-     * @see BlocklyPanel#getRawWorkspace()
-     * @see BlocklyPanel#addBlocks(String)
-     *
      * @return Array of blocks in workspace
+     * @see BlocklyXmlParser#fromWorkspaceXml(String)
+     * @see BlocklyPanel#getRawWorkspace(Consumer<String>)
+     * @see BlocklyPanel#addBlocks(String)
      */
-    public ImplementedBlock[] getWorkspace() {
-        return BlocklyXmlParser.fromWorkspaceXml(getRawWorkspace());
+    public void getWorkspace(Consumer<ImplementedBlock[]> futureBlocks) {
+        getRawWorkspace(new Consumer<String>() {
+            @Override
+            public void accept(String s) {
+                futureBlocks.accept(BlocklyXmlParser.fromWorkspaceXml(s));
+            }
+        });
     }
 
     /**
      * @return Raw xml of BlocklyPanel
      */
-    public String getRawWorkspace() {
-        return (String) executeJavaScriptSynchronously("Blockly.Xml.domToText(Blockly.Xml.workspaceToDom(workspace, true))");
+    public void getRawWorkspace(Consumer<String> futureXml) {
+        executeScript("Blockly.Xml.domToText(Blockly.Xml.workspaceToDom(workspace, true))", new Consumer<Object>() {
+            @Override
+            public void accept(Object o) {
+                futureXml.accept((String) o);
+            }
+        });
     }
 
     /**
      * Parses blocks and add xml string
      *
-     * @param blocks  Blocks to parse
+     * @param blocks Blocks to parse
      */
     public void addBlocks(ImplementedBlock... blocks) {
         String xml = BlocklyXmlParser.parseWorkspaceXml(blocks);
@@ -90,17 +88,15 @@ public class BlocklyPanel extends JFXPanel {
     /**
      * Adds blocks from raw xml string
      *
+     * @param xml Xml to set
      * @see BlocklyPanel#addBlocks(ImplementedBlock...)
-     * 
-     * @param xml  Xml to set
      */
     public void addBlocks(String xml) {
-        xml = xml.replace("'", "\\'").replace("\n", "\\n").replace("\r", "\\r");
+        xml = xml.replaceAll("\\\\'", "'").replaceAll("'", "\\\\'").replace("\n", "\\n").replace("\r", "\\r");
         if (this.isLoaded) {
-            executeJavaScriptSynchronously("Blockly.Xml.domToWorkspace(Blockly.Xml.textToDom('" + xml + "'), workspace)");
-            executeJavaScriptSynchronously("workspace.clearUndo()");
-        }
-        else {
+            executeScript("Blockly.Xml.domToWorkspace(Blockly.Xml.textToDom('" + xml + "'), workspace)");
+            executeScript("workspace.clearUndo()");
+        } else {
             String finalXml = xml;
             queueOnLoad(() -> addBlocks(finalXml));
         }
@@ -110,7 +106,7 @@ public class BlocklyPanel extends JFXPanel {
      * Clears workspace
      */
     public void clear() {
-        executeJavaScriptSynchronously("workspace.clear()");
+        executeScript("workspace.clear()");
     }
 
     /**
@@ -123,7 +119,7 @@ public class BlocklyPanel extends JFXPanel {
     /**
      * Queue statement to run when Blockly runs
      *
-     * @param runnable  Code to run
+     * @param runnable Code to run
      */
     public void queueOnLoad(Runnable runnable) {
         this.runOnLoad.add(runnable);
@@ -131,68 +127,61 @@ public class BlocklyPanel extends JFXPanel {
 
     /**
      * Whitelist categories to show in BlocklyPanel
-     *
+     * <p>
      * if categories is null, no categories will show
      *
-     * @param categories  Categories to show
+     * @param categories Categories to show
      * @return
      */
     public BlocklyPanel whitelist(Category... categories) {
         this.categories = categories;
-        ThreadHelper.runOnFxThread(() -> {
-            StringBuilder html = new StringBuilder();
-            BlocklyHtmlGenerator.appendTopWrapper(html);
-            if (categories != null)
-                Blockly.appendCategories(html, categories);
-            BlocklyHtmlGenerator.appendBottomWrapper(html, Blockly.parseBlocksToJsonArray());
-            reload();
-        });
+        StringBuilder html = new StringBuilder();
+        BlocklyHtmlGenerator.appendTopWrapper(html);
+        if (categories != null)
+            Blockly.appendCategories(html, categories);
+        BlocklyHtmlGenerator.appendBottomWrapper(html, Blockly.parseBlocksToJsonArray());
+        reload();
         return this;
     }
 
     /**
      * Blacklist categories to show in BlocklyPanel
      *
-     * @exception NullPointerException  if categories is null
-     *
-     * @param categories  Categories to blacklist
+     * @param categories Categories to blacklist
      * @return
+     * @throws NullPointerException if categories is null
      */
     public BlocklyPanel blacklist(Category... categories) {
         this.categories = categories;
-        ThreadHelper.runOnFxThread(() -> {
-            StringBuilder html = new StringBuilder();
-            BlocklyHtmlGenerator.appendTopWrapper(html);
-            Category[] registeredCategories = Blockly.getBlocklyCategories();
-            Category[] categoriesToAdd = new Category[registeredCategories.length - categories.length];
-            int i = 0;
-            for (Category registeredCategory : registeredCategories) {
-                for (Category blacklistedCategory : categories) {
-                    if (registeredCategory.equals(blacklistedCategory)) {
-                        continue;
-                    }
+        StringBuilder html = new StringBuilder();
+        BlocklyHtmlGenerator.appendTopWrapper(html);
+        Category[] registeredCategories = Blockly.getBlocklyCategories();
+        Category[] categoriesToAdd = new Category[registeredCategories.length - categories.length];
+        int i = 0;
+        for (Category registeredCategory : registeredCategories) {
+            for (Category blacklistedCategory : categories) {
+                if (registeredCategory.equals(blacklistedCategory)) {
+                    continue;
                 }
-                categoriesToAdd[i] = registeredCategory;
-                i++;
             }
-            Blockly.appendCategories(html, categoriesToAdd);
-            BlocklyHtmlGenerator.appendBottomWrapper(html, Blockly.parseBlocksToJsonArray());
-            reload();
-        });
+            categoriesToAdd[i] = registeredCategory;
+            i++;
+        }
+        Blockly.appendCategories(html, categoriesToAdd);
+        BlocklyHtmlGenerator.appendBottomWrapper(html, Blockly.parseBlocksToJsonArray());
+        reload();
         return this;
     }
 
     /**
-     * @return  Categories of BlocklyPanel
+     * @return Categories of BlocklyPanel
      */
     public Category[] getCategories() {
         return categories != null ? categories : Blockly.getBlocklyCategories();
     }
 
     private void loadBlockly(String html) {
-        ThreadHelper.runOnFxThread(() -> {
-            this.engine.loadContent(html.replace("@WIDTH", String.valueOf(this.getWidth())).replace("@HEIGHT", String.valueOf(this.getHeight())));
-        });
+        loadHtml(html.replace("@WIDTH", String.valueOf(Math.round(this.getWidth() * 0.666F))).replace("@HEIGHT", String.valueOf(Math.round(this.getHeight() * 0.676F))));
     }
 
     /**
@@ -200,79 +189,54 @@ public class BlocklyPanel extends JFXPanel {
      */
     public void reload() {
         StringBuilder html = new StringBuilder();
-        BlocklyHtmlGenerator.appendTopWrapper(html);
+        BlocklyHtmlGenerator.appendTopWrapper(html, getCss());
         Blockly.appendCategories(html, getCategories());
         BlocklyHtmlGenerator.appendBottomWrapper(html, Blockly.parseBlocksToJsonArray(this.fieldExtensions));
         if (this.isLoaded) {
             this.isLoaded = false;
+        }
+        if (getBrowser() != null) {
             loadBlockly(html.toString());
         }
     }
 
     private void load() {
-        setOpaque(false);
-        ThreadHelper.runOnFxThread(() -> {
-            this.view = new WebView();
-            Scene scene = new Scene(this.view);
-
-            scene.setFill(javafx.scene.paint.Color.rgb(Application.getTheme().getColorTheme().getPrimaryColor().getRed(), Application.getTheme().getColorTheme().getPrimaryColor().getGreen(), Application.getTheme().getColorTheme().getPrimaryColor().getBlue()));
-            setScene(scene);
-
-            this.engine = this.view.getEngine();
-
-            StringBuilder html = new StringBuilder();
-            BlocklyHtmlGenerator.appendTopWrapper(html);
-            Blockly.appendCategories(html, getCategories());
-            BlocklyHtmlGenerator.appendBottomWrapper(html, Blockly.parseBlocksToJsonArray(this.fieldExtensions));
-            loadBlockly(html.toString());
-
-            //Changing colors
-            this.view.getChildrenUnmodifiable().addListener(
-                    (ListChangeListener<Node>) change -> view.lookupAll(".scroll-bar")
-                            .forEach(bar -> bar.setVisible(false)));
-            this.engine.getLoadWorker().stateProperty().addListener((ov, oldState, newState) -> {
-                if (!this.isLoaded && newState == Worker.State.SUCCEEDED && this.engine.getDocument() != null) {
-                    this.isLoaded = true;
-                    Element styleNode = this.engine.getDocument().createElement("style");
-                    String css = getCss();
-
-                    Text styleContent = this.engine.getDocument().createTextNode(css);
-                    styleNode.appendChild(styleContent);
-                    this.engine.getDocument().getDocumentElement().getElementsByTagName("head").item(0).appendChild(styleNode);
-
-                    Accessor.getPageFor(this.engine).setBackgroundColor(0);
-
-                    executeJavaScriptSynchronously("function onBlocklyEvent(event) {\n" +
-                            "if (typeof blocklypanel !== \"undefined\")\n" +
-                            "   blocklypanel.fire(event.type, workspace.getBlockById(event.blockId) != null ? workspace.getBlockById(event.blockId).type : '', event.element, event.name, event.oldValue, event.newValue, event.newCoordinate != null ? event.newCoordinate.x : 0, event.newCoordinate != null ? event.newCoordinate.y : 0, event.oldCoordinate != null ? event.oldCoordinate.x : 0, event.oldCoordinate != null ? event.oldCoordinate.y : 0); \n" +
-                            "}\n" +
-                            "workspace.addChangeListener(onBlocklyEvent);");
-
-                    for (Runnable runnable : this.runOnLoad) {
+        this.isLoaded = false;
+        StringBuilder html = new StringBuilder();
+        BlocklyHtmlGenerator.appendTopWrapper(html, getCss());
+        Blockly.appendCategories(html, getCategories());
+        BlocklyHtmlGenerator.appendBottomWrapper(html, Blockly.parseBlocksToJsonArray(this.fieldExtensions));
+        loadBlockly(html.toString());
+        setMember("blocklypanel", this);
+        addLoadHandler(new CefLoadHandlerAdapter() {
+            @Override
+            public void onLoadEnd(CefBrowser browser, CefFrame frame, int httpStatusCode) {
+                super.onLoadEnd(browser, frame, httpStatusCode);
+                if (!isLoaded) {
+                    isLoaded = true;
+                    String code = " function onBlocklyEvent(event) {" +
+                            "if (typeof blocklypanel !== \"undefined\")" +
+                            "   blocklypanel.fire(event.type, workspace.getBlockById(event.blockId) != null ? workspace.getBlockById(event.blockId).type : '', event.element, event.name, event.oldValue, event.newValue, event.newCoordinate != null ? event.newCoordinate.x : 0, event.newCoordinate != null ? event.newCoordinate.y : 0, event.oldCoordinate != null ? event.oldCoordinate.x : 0, event.oldCoordinate != null ? event.oldCoordinate.y : 0);" +
+                            "}" +
+                            "workspace.addChangeListener(onBlocklyEvent);";
+                    browser.executeJavaScript(testForJavaScriptMembers(code) + code, browser.getURL(), 1);
+                    for (Runnable runnable : runOnLoad) {
                         runnable.run();
                     }
-
-                    this.engine.executeScript("var MCR_BLCKLY_PREF = { "
-                            + "'comments' : " + false + ","
-                            + "'renderer' : '" + "thrasos" + "',"
-                            + "'collapse' : " + true + ","
-                            + "'trashcan' : " + true + ","
-                            + "'maxScale' : " + 400/100.0 + ","
-                            + "'minScale' : " + 40/100.0 + ","
-                            + "'scaleSpeed' : " + 105/100.0 + ","
-                            + " };");
-
-                    JSObject window = (JSObject) this.engine.executeScript("window");
-                    window.setMember("blocklypanel", this);
-                    this.prevXml = getRawWorkspace();
+                    getRawWorkspace(new Consumer<String>() {
+                        @Override
+                        public void accept(String s) {
+                            prevXml = s;
+                        }
+                    });
                 }
-            });
+            }
         });
     }
 
     /**
      * Adds options to blockly inputs, specifically the field_dropdown type
-     *
+     * <p>
      * For example, if a block input has the type "field_dropdown" and the identifier
      * <code>"extend": "places"</code>
      * The parameter extensionKey is a String value of "places"
@@ -280,15 +244,14 @@ public class BlocklyPanel extends JFXPanel {
      * {("Chicago", "CHICAGO"), ("New York", "NEW_YORK")}
      * Then the CHICAGO and NEW_YORK option will be added to the block field_dropdown input
      *
-     *
-     * @param extensionKey  The key identifier for blocks
-     * @param optionsToAdd  All the options to add to the block input options
+     * @param extensionKey The key identifier for blocks
+     * @param optionsToAdd All the options to add to the block input options
      */
     public void addFieldExtensions(String extensionKey, Field... optionsToAdd) {
         if (!this.fieldExtensions.containsKey(extensionKey)) {
             String[][] options = new String[optionsToAdd.length][2];
             for (int i = 0; i < optionsToAdd.length; i++) {
-                options[i] = new String[] {optionsToAdd[i].getKey(), optionsToAdd[i].getValue()};
+                options[i] = new String[]{optionsToAdd[i].getKey(), optionsToAdd[i].getValue()};
             }
             this.fieldExtensions.put(extensionKey, options);
             reload();
@@ -297,7 +260,7 @@ public class BlocklyPanel extends JFXPanel {
 
     /**
      * Attach event listener to Blockly panel
-     *
+     * <p>
      * https://developers.google.com/blockly/guides/configure/web/events
      *
      * @param listener
@@ -308,85 +271,93 @@ public class BlocklyPanel extends JFXPanel {
 
     /**
      * Fires an event, called from JavaScript
-     *
-     * @param type
-     * @param blockId
-     * @param element
-     * @param name
-     * @param oldValue
-     * @param newValue
-     * @param newCoordinateX
-     * @param newCoordinateY
-     * @param oldCoordinateX
-     * @param oldCoordinateY
      */
     @SuppressWarnings("unused")
-    public void fire(String type, String blockId, String element, String name, String oldValue, String newValue, String newCoordinateX, String newCoordinateY, String oldCoordinateX, String oldCoordinateY) {
+    public void fire(Object type, Object blockId, Object element, Object name, Object oldValue, Object newValue, Object newCoordinateX, Object newCoordinateY, Object oldCoordinateX, Object oldCoordinateY) {
+        BlocklyPanel instance = this;
+        getWorkspace(new Consumer<ImplementedBlock[]>() {
+            @Override
+            public void accept(ImplementedBlock[] implementedBlocks) {
+                BlocklyEvent event = new BlocklyEvent((String) type, instance, Blockly.getBlockFromType((String) blockId));
+                List<ImplementedBlock> prevBlocks = Arrays.asList(BlocklyXmlParser.fromWorkspaceXml(prevXml));
+                List<ImplementedBlock> nowBlocks = Arrays.asList(implementedBlocks);
+                List<ImplementedBlock> involvedBlocks = new ArrayList<>();
 
-        BlocklyEvent event = new BlocklyEvent(type, this, Blockly.getBlockFromType(blockId));
-        List<ImplementedBlock> prevBlocks = Arrays.asList(BlocklyXmlParser.fromWorkspaceXml(this.prevXml));
-        List<ImplementedBlock> nowBlocks = Arrays.asList(getWorkspace());
-        List<ImplementedBlock> involvedBlocks = new ArrayList<>();
+                for (ImplementedBlock nowBlock : nowBlocks) {
+                    boolean contains = false;
+                    for (ImplementedBlock prevBlock : prevBlocks) {
+                        if (nowBlock.equals(prevBlock)) {
+                            contains = true;
+                            break;
+                        }
+                    }
+                    if (!contains) {
+                        involvedBlocks.add(nowBlock);
+                    }
+                }
+                for (ImplementedBlock prevBlock : prevBlocks) {
+                    boolean contains = false;
+                    for (ImplementedBlock nowBlock : nowBlocks) {
+                        if (prevBlock.equals(nowBlock)) {
+                            contains = true;
+                            break;
+                        }
+                    }
+                    if (!contains) {
+                        involvedBlocks.add(prevBlock);
+                    }
+                }
 
-        for (ImplementedBlock nowBlock : nowBlocks) {
-            boolean contains = false;
-            for (ImplementedBlock prevBlock : prevBlocks) {
-                if (nowBlock.equals(prevBlock)) {
-                    contains = true;
-                    break;
+                ImplementedBlock[] involvedBlocksArray = new ImplementedBlock[involvedBlocks.size()];
+                involvedBlocksArray = involvedBlocks.toArray(involvedBlocksArray);
+
+                if (type.equals("create")) {
+                    event = new BlocklyCreateEvent((String) type, instance, Blockly.getBlockFromType((String) blockId), involvedBlocksArray);
+                    getRawWorkspace(new Consumer<String>() {
+                        @Override
+                        public void accept(String s) {
+                            prevXml = s;
+                        }
+                    });
+                } else if (type.equals("delete")) {
+                    event = new BlocklyDeleteEvent((String) type, instance, Blockly.getBlockFromType((String) blockId), involvedBlocksArray);
+                    getRawWorkspace(new Consumer<String>() {
+                        @Override
+                        public void accept(String s) {
+                            prevXml = s;
+                        }
+                    });
+                } else if (type.equals("change")) {
+                    event = new BlocklyChangeEvent((String) type, instance, Blockly.getBlockFromType((String) blockId), (String) element, (String) name, (String) oldValue, (String) newValue);
+                    getRawWorkspace(new Consumer<String>() {
+                        @Override
+                        public void accept(String s) {
+                            prevXml = s;
+                        }
+                    });
+                } else if (type.equals("move")) {
+                    event = new BlocklyMoveEvent((String) type, instance, Blockly.getBlockFromType((String) blockId), Integer.parseInt((String) oldCoordinateX), Integer.parseInt((String) oldCoordinateY), Integer.parseInt((String) newCoordinateX), Integer.parseInt((String) newCoordinateY));
+                    getRawWorkspace(new Consumer<String>() {
+                        @Override
+                        public void accept(String s) {
+                            prevXml = s;
+                        }
+                    });
+                } else if (type.equals("ui")) {
+                    event = new BlocklyUIEvent((String) type, instance, Blockly.getBlockFromType((String) blockId), (String) element, (String) oldValue, (String) newValue);
+                }
+
+                for (IBlocklyListener listener : eventListeners) {
+                    listener.onBlocklyEvent(event);
                 }
             }
-            if (!contains) {
-                involvedBlocks.add(nowBlock);
-            }
-        }
-        for (ImplementedBlock prevBlock : prevBlocks) {
-            boolean contains = false;
-            for (ImplementedBlock nowBlock : nowBlocks) {
-                if (prevBlock.equals(nowBlock)) {
-                    contains = true;
-                    break;
-                }
-            }
-            if (!contains) {
-                involvedBlocks.add(prevBlock);
-            }
-        }
-
-        ImplementedBlock[] involvedBlocksArray = new ImplementedBlock[involvedBlocks.size()];
-        involvedBlocksArray = involvedBlocks.toArray(involvedBlocksArray);
-
-        if (type.equalsIgnoreCase("create")) {
-            event = new BlocklyCreateEvent(type, this, Blockly.getBlockFromType(blockId), involvedBlocksArray);
-            this.prevXml = getRawWorkspace();
-        }
-        else if (type.equalsIgnoreCase("delete")) {
-            event = new BlocklyDeleteEvent(type, this, Blockly.getBlockFromType(blockId), involvedBlocksArray);
-            this.prevXml = getRawWorkspace();
-        }
-        else if (type.equalsIgnoreCase("change")) {
-            event = new BlocklyChangeEvent(type, this, Blockly.getBlockFromType(blockId), element, name, oldValue, newValue);
-            this.prevXml = getRawWorkspace();
-        }
-        else if (type.equalsIgnoreCase("move")) {
-            event = new BlocklyMoveEvent(type, this, Blockly.getBlockFromType(blockId), Integer.parseInt(oldCoordinateX), Integer.parseInt(oldCoordinateY), Integer.parseInt(newCoordinateX), Integer.parseInt(newCoordinateY));
-            this.prevXml = getRawWorkspace();
-        }
-        else if (type.equalsIgnoreCase("ui")) {
-            event = new BlocklyUIEvent(type, this, Blockly.getBlockFromType(blockId), element, oldValue, newValue);
-        }
-
-        for (IBlocklyListener listener : this.eventListeners) {
-            listener.onBlocklyEvent(event);
-        }
+        });
     }
 
     @Override
     public void reshape(int x, int y, int w, int h) {
         super.reshape(x, y, w, h);
-        if (w != getWidth() || h != getHeight() || x != getX() || y != getY()) {
-            reload();
-        }
+        reload();
     }
 
     @Override
@@ -401,77 +372,7 @@ public class BlocklyPanel extends JFXPanel {
         reload();
     }
 
-    private Object executeJavaScriptSynchronously(String javaScript) {
-        try {
-            if (this.isLoaded) {
-                FutureTask<Object> query = new FutureTask<>(() -> this.engine.executeScript(javaScript));
-                ThreadHelper.runOnFxThread(query);
-                return query.get();
-            }
-        } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
     protected String getCss() {
-/*        return "body {\n" +
-                "    margin: 0;\n" +
-                "    padding: 0;\n" +
-                "    background: transparent;\n" +
-                "    overflow: hidden;\n" +
-                "}\n" +
-                ".blocklyText {\n" +
-                "    font-family: " + getFont().getName().toLowerCase() + ";\n" +
-                "}" +
-                ".blocklyTreeLabel {\n" +
-                "  color: " + ColorHelper.convertColorToHexadeimal(Application.getTheme().getColorTheme().getTextColor()) + ";\n" +
-                "}\n" +
-                "#blockly {\n" +
-                "    position: absolute;\n" +
-                "    background: transparent;\n" +
-                "    top: 30;\n" +
-                "    left: 30;\n" +
-                "    width: 100%;\n" +
-                "    height: 100%;\n" +
-                "}\n" +
-                ".blocklyMainBackground {\n" +
-                "    fill: rgb(" + getBackground().getRed() + ", " + getBackground().getGreen() + ", " + getBackground().getBlue() + ") !important;\n" +
-                "    stroke-width: 0;\n" +
-                "}\n" +
-                "\n" +
-                ".blocklyFlyoutBackground {\n" +
-                "    fill-opacity: 0;\n" +
-                "}\n" +
-                "\n" +
-                ".blocklyFlyout {\n" +
-                "    background-color: " + ColorHelper.convertColorToHexadeimal(getForeground()) + ";\n" +
-                "}\n\n" +
-                ".blocklyToolboxDiv {\n" +
-                "    background-color: " + ColorHelper.convertColorToHexadeimal(getForeground()) + ";\n" +
-                "    color: white;\n" +
-                "}" +
-                ".blocklyScrollbarVertical .blocklyScrollbarHandle {\n" +
-                "    fill: " + ColorHelper.convertColorToHexadeimal(getBackground().brighter()) + ";\n" +
-                "    rx: 0;\n" +
-                "    ry: 0;\n" +
-                "    width: 10px;\n" +
-                "}\n" +
-                "\n" +
-                ".blocklyScrollbarVertical:hover .blocklyScrollbarHandle {\n" +
-                "    fill: " + ColorHelper.convertColorToHexadeimal(getForeground()) + ";\n" +
-                "}\n" +
-                "\n" +
-                ".blocklyScrollbarHorizontal .blocklyScrollbarHandle {\n" +
-                "    fill: " + ColorHelper.convertColorToHexadeimal(getBackground().brighter()) + ";\n" +
-                "    rx: 0;\n" +
-                "    ry: 0;\n" +
-                "    height: 10px;\n" +
-                "}\n" +
-                "\n" +
-                ".blocklyScrollbarHorizontal:hover .blocklyScrollbarHandle {\n" +
-                "    fill: " + ColorHelper.convertColorToHexadeimal(getForeground()) + ";\n" +
-                "}";*/
         return "* {\n" +
                 "    font-family: " + getFont().getFontName().toLowerCase() + ";\n" +
                 "}\n" +
@@ -512,7 +413,7 @@ public class BlocklyPanel extends JFXPanel {
                 "\n" +
                 ".blocklyTreeLabel {\n" +
                 "    font-family: " + getFont().getFontName().toLowerCase() + ";\n" +
-                "    font-size: " + getFont().getSize() + "px;\n" +
+                "    font-size: " + Math.round(getFont().getSize() * 0.8F) + "px;\n" +
                 "}\n" +
                 "\n" +
                 ".blocklyText {\n" +
@@ -649,7 +550,7 @@ public class BlocklyPanel extends JFXPanel {
                 "\n" +
                 ".blocklySelected > .blocklyPath {\n" +
                 "    stroke: " + ColorHelper.convertColorToHexadeimal(Application.getTheme().getColorTheme().getAccentColor()) + " !important;\n" +
-                "    stroke-width: 3px !important;\n" +
+                "    stroke-width: 1px !important;\n" +
                 "}\n" +
                 "\n" +
                 ".blocklyHtmlTextAreaInput {\n" +

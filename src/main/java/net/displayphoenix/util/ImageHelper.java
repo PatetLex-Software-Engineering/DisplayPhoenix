@@ -7,6 +7,8 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URL;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -87,16 +89,19 @@ public class ImageHelper {
     }
 
     public static ImageIcon fromPath(String path) {
-        if (CACHE.get(path) != null)
+        try {
+            return fromPath(new File(path).toURI().toURL());
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+    public static ImageIcon fromPath(URL path) {
+        if (CACHE.get(path.getPath()) != null)
             return CACHE.get(path);
         else {
-            ImageIcon newItem = null;
-            try {
-                newItem = new ImageIcon(Toolkit.getDefaultToolkit().createImage(new File(path).toURI().toURL()));
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
-            }
-            CACHE.put(path, newItem);
+            ImageIcon newItem = new ImageIcon(Toolkit.getDefaultToolkit().createImage(path));
+            CACHE.put(path.getPath(), newItem);
             return newItem;
         }
     }

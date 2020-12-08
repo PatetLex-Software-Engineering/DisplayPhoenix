@@ -17,7 +17,7 @@ import java.util.Locale;
  */
 public class FileDialog {
 
-    private static File previousDirectory = new File(System.getProperty("user.home"));
+    public static File PREVIOUS_DIRECTORY = new File(System.getProperty("user.home"));
 
     public static DetailedFile openFile(String... extensions) {
         JFrame parentWindow = new JFrame();
@@ -53,7 +53,7 @@ public class FileDialog {
         JFileChooser fc = new JFileChooser();
         fc.setPreferredSize(new Dimension(720, 420));
 
-        fc.setCurrentDirectory(previousDirectory);
+        fc.setCurrentDirectory(PREVIOUS_DIRECTORY);
 
         fc.setFileFilter(new FileFilter() {
             @Override public boolean accept(File file) {
@@ -84,7 +84,7 @@ public class FileDialog {
             }
         }
         fileGetter.setPreferredSize(new Dimension(720, 420));
-        fileGetter.setCurrentDirectory(previousDirectory);
+        fileGetter.setCurrentDirectory(PREVIOUS_DIRECTORY);
         fileGetter.setMultiSelectionEnabled(multiSelect);
         fileGetter.setAcceptAllFileFilterUsed(false);
         fileGetter.setFileView(new FileView() {
@@ -98,7 +98,7 @@ public class FileDialog {
             }
         });
         int response = open ? fileGetter.showOpenDialog(parent) : fileGetter.showSaveDialog(parent);
-        previousDirectory = fileGetter.getCurrentDirectory();
+        PREVIOUS_DIRECTORY = fileGetter.getCurrentDirectory();
         if (response == JFileChooser.APPROVE_OPTION) {
             if (multiSelect) {
                 File[] files = fileGetter.getSelectedFiles();

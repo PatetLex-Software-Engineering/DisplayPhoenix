@@ -71,9 +71,34 @@ public class Localizer {
     }
 
     private static void loadValues() {
-        File langDir = new File("src/main/resources/lang");
-        langDir.mkdir();
-        loadLangFromDirectory(langDir);
+        for (Local local : Local.values()) {
+            InputStream inputStream = ClassLoader.getSystemClassLoader().getResourceAsStream("lang/" + local.getTag() + ".json");
+            if (inputStream == null) {
+                File file = new File("src/main/resources/lang/" + local.getTag() + ".json");
+                try {
+                    File langDir = new File("src/main/resources/lang");
+                    langDir.mkdir();
+                    langDir.createNewFile();
+                    if (file.createNewFile()) {
+                        FileWriter writer = new FileWriter(file);
+                        Map<String, String> example = new HashMap<>();
+                        example.put("key.example.test", "Example");
+                        TRANSLATED_VALUES_LOCAL.put(local, example);
+
+                        String json = gson.toJson(TRANSLATED_VALUES_LOCAL.get(local));
+
+                        writer.write(json);
+
+                        writer.flush();
+                        writer.close();
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                continue;
+            }
+            loadStream(local, inputStream);
+        }
     }
 
     private static void loadDefaultValues() {

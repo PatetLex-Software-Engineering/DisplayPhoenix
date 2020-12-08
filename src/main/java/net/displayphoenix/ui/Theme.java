@@ -22,7 +22,7 @@ public class Theme {
     }
 
     public Theme(ColorTheme colorTheme, WidgetStyle widgetStyle, Font font, int width, int height) {
-        this(colorTheme, widgetStyle, font, width, height, false);
+        this(colorTheme, widgetStyle, font, width, height, true);
     }
 
     private Theme(ColorTheme colorTheme, WidgetStyle widgetStyle, Font font, int width, int height, boolean resizeable) {

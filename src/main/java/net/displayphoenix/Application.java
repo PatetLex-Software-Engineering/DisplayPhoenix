@@ -1,16 +1,17 @@
 package net.displayphoenix;
 
-import com.google.gson.Gson;
 import net.displayphoenix.blockly.Blockly;
-import net.displayphoenix.blockly.elements.workspace.ImplementedBlock;
+import net.displayphoenix.blockly.js.BlocklyJS;
+import net.displayphoenix.blockly.ui.BlocklyPanel;
 import net.displayphoenix.canvasly.tools.Tool;
 import net.displayphoenix.canvasly.tools.impl.*;
+import net.displayphoenix.enums.WidgetStyle;
 import net.displayphoenix.exception.AppNotCreatedException;
 import net.displayphoenix.file.Data;
 import net.displayphoenix.generation.Module;
-import net.displayphoenix.generation.impl.JavaModule;
 import net.displayphoenix.lang.Local;
 import net.displayphoenix.lang.Localizer;
+import net.displayphoenix.ui.ColorTheme;
 import net.displayphoenix.ui.Theme;
 import net.displayphoenix.ui.widget.OverlayOnHoverWidget;
 import net.displayphoenix.ui.widget.RoundedButton;
@@ -28,7 +29,14 @@ import java.io.InputStreamReader;
  * @author TBroski
  */
 public class Application {
-
+    public static void main(String[] args) {
+        Theme theme = new Theme(new ColorTheme(new Color(38, 38, 38), new Color(192, 226, 113), new Color(255, 255, 255), Color.GRAY), WidgetStyle.POPPING, new Font(Font.MONOSPACED, Font.PLAIN, 14), 750, 750);
+        Application.create("sda", ImageHelper.getImage("blunt_warning"), theme, "kdsa");
+        Blockly.queueText();
+        openWindow(parentFrame -> {
+            parentFrame.add(new BlocklyPanel());
+        });
+    }
     private static final int BUTTON_WIDTH = 100;
     private static final int BUTTON_HEIGHT = 20;
 

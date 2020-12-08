@@ -72,6 +72,10 @@ public class Data {
             }
             Local local = (Local) get("local");
             Application.setLocal(local != null ? local : Local.EN_US);
+            String prevDir = (String) get("prev_dir");
+            if (prevDir != null) {
+                FileDialog.PREVIOUS_DIRECTORY = new File(prevDir);
+            }
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
         }
@@ -80,6 +84,7 @@ public class Data {
     public static void save() {
         try {
             store("local", Application.getSelectedLocal());
+            store("prev_dir", FileDialog.PREVIOUS_DIRECTORY.getPath());
             File dir = new File(System.getProperty("user.home") + "/." + StringHelper.id(Application.getTitle()));
             dir.mkdir();
             dir.createNewFile();

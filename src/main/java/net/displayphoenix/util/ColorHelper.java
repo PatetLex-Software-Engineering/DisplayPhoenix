@@ -1,13 +1,16 @@
 package net.displayphoenix.util;
 
+import net.displayphoenix.Application;
+
 import java.awt.*;
 
 /**
  * @author TBroski
  */
 public class ColorHelper {
-    public static String convertColorToHexadeimal(Color color)
-    {
+    public static String convertColorToHexadeimal(Color color) {
+        if (color == null)
+            color = Application.getTheme().getColorTheme().getPrimaryColor();
         String hex = Integer.toHexString(color.getRGB() & 0xffffff);
         if(hex.length() < 6)
         {

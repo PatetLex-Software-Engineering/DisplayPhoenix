@@ -2,10 +2,7 @@ package net.displayphoenix.util;
 
 import net.displayphoenix.interfaces.FileIteration;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.net.URI;
 import java.nio.charset.Charset;
 import java.nio.file.FileSystems;
@@ -46,7 +43,19 @@ public class FileHelper {
     }
 
     public static String readAllLines(URI uri) {
-        return readAllLines(new File(uri));
+        try {
+            BufferedReader reader = new BufferedReader(new InputStreamReader(uri.toURL().openStream()));
+
+            StringBuilder output = new StringBuilder();
+            String out;
+            while ((out = reader.readLine()) != null) {
+                output.append(out + "\n");
+            }
+            return output.toString();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     public static String readAllLines(File file) {

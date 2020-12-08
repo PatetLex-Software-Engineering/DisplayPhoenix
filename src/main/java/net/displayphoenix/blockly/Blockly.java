@@ -586,7 +586,7 @@ public class Blockly {
         });
         JAVA.manipulateField(textBlock, field -> {
             if (field.getKey().equalsIgnoreCase("TEXT")) {
-                return field.getValue().replaceAll("\"", "\\\"");
+                return field.getValue().replaceAll("\"", "\\\"").replaceAll("'", "\\\\'");
             }
             return null;
         });

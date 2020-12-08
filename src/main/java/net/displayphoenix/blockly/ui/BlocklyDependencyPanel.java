@@ -15,6 +15,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.*;
 import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * @author TBroski
@@ -94,45 +95,50 @@ public class BlocklyDependencyPanel extends JPanel {
             }
         }
 
-        for (ImplementedBlock implementedBlock : getBlocklyPanel().getWorkspace()) {
-            List<String> blockDependencies = new Object() {
-                public List<String> getBlockStatementDependencies(ImplementedBlock implementedBlock, List<String> statementProvisions) {
-                    List<String> blockDependencies = new ArrayList<>();
-                    for (String statement : implementedBlock.getStatementBlocks().keySet()) {
-                        for (String provision : implementedBlock.getBlock().getStatementProvisions(statement)) {
-                            statementProvisions.add(provision);
-                        }
-                        for (ImplementedBlock statementBlock : implementedBlock.getStatementBlocks().get(statement)) {
-                            for (String dependency : getBlockStatementDependencies(statementBlock, statementProvisions)) {
-                                blockDependencies.add(dependency);
+        getBlocklyPanel().getWorkspace(new Consumer<ImplementedBlock[]>() {
+            @Override
+            public void accept(ImplementedBlock[] implementedBlocks) {
+                for (ImplementedBlock implementedBlock : implementedBlocks) {
+                    List<String> blockDependencies = new Object() {
+                        public List<String> getBlockStatementDependencies(ImplementedBlock implementedBlock, List<String> statementProvisions) {
+                            List<String> blockDependencies = new ArrayList<>();
+                            for (String statement : implementedBlock.getStatementBlocks().keySet()) {
+                                for (String provision : implementedBlock.getBlock().getStatementProvisions(statement)) {
+                                    statementProvisions.add(provision);
+                                }
+                                for (ImplementedBlock statementBlock : implementedBlock.getStatementBlocks().get(statement)) {
+                                    for (String dependency : getBlockStatementDependencies(statementBlock, statementProvisions)) {
+                                        blockDependencies.add(dependency);
+                                    }
+                                }
                             }
-                        }
-                    }
-                    for (String value : implementedBlock.getValueBlocks().keySet()) {
-                        for (ImplementedBlock valueBlock : implementedBlock.getValueBlocks().get(value)) {
-                            for (String dependency : getBlockStatementDependencies(valueBlock, statementProvisions)) {
-                                blockDependencies.add(dependency);
+                            for (String value : implementedBlock.getValueBlocks().keySet()) {
+                                for (ImplementedBlock valueBlock : implementedBlock.getValueBlocks().get(value)) {
+                                    for (String dependency : getBlockStatementDependencies(valueBlock, statementProvisions)) {
+                                        blockDependencies.add(dependency);
+                                    }
+                                }
                             }
-                        }
-                    }
-                    if (implementedBlock.isDeletable() && implementedBlock.isMovable() && implementedBlock.getBlock().getStatementDependencies() != null) {
-                        for (String dependency : implementedBlock.getBlock().getStatementDependencies()) {
-                            if (!statementProvisions.contains(dependency)) {
-                                blockDependencies.add(dependency);
+                            if (implementedBlock.isDeletable() && implementedBlock.isMovable() && implementedBlock.getBlock().getStatementDependencies() != null) {
+                                for (String dependency : implementedBlock.getBlock().getStatementDependencies()) {
+                                    if (!statementProvisions.contains(dependency)) {
+                                        blockDependencies.add(dependency);
+                                    }
+                                }
                             }
+                            blockDependencies = ListHelper.removeDuplicates(blockDependencies);
+                            return blockDependencies;
                         }
+                    }.getBlockStatementDependencies(implementedBlock, new ArrayList<>());
+                    for (String blockDependency : blockDependencies) {
+                        dependencies.add(blockDependency);
                     }
-                    blockDependencies = ListHelper.removeDuplicates(blockDependencies);
-                    return blockDependencies;
                 }
-            }.getBlockStatementDependencies(implementedBlock, new ArrayList<>());
-            for (String blockDependency : blockDependencies) {
-                dependencies.add(blockDependency);
             }
-        }
+        });
 
-        dependencies = ListHelper.removeDuplicates(dependencies);
-        return dependencies;
+        List<String> validDependencies = ListHelper.removeDuplicates(dependencies);
+        return validDependencies;
     }
 
     /**
@@ -143,20 +149,25 @@ public class BlocklyDependencyPanel extends JPanel {
     public List<String> getDependencies() {
         List<String> dependencies = new ArrayList<>();
 
-        // Iterating dependencies of all blocks
-        for (ImplementedBlock implementedBlock : getBlocklyPanel().getWorkspace()) {
+        getBlocklyPanel().getWorkspace(new Consumer<ImplementedBlock[]>() {
+            @Override
+            public void accept(ImplementedBlock[] implementedBlocks) {
+                // Iterating dependencies of all blocks
+                for (ImplementedBlock implementedBlock : implementedBlocks) {
 
-            // Iterating all dependencies
-            for (String dependency : getDependenciesFromBlock(implementedBlock)) {
+                    // Iterating all dependencies
+                    for (String dependency : getDependenciesFromBlock(implementedBlock)) {
 
-                // Adding dependency
-                dependencies.add(dependency);
+                        // Adding dependency
+                        dependencies.add(dependency);
+                    }
+                }
             }
-        }
+        });
 
         // Removing duplicates
-        dependencies = ListHelper.removeDuplicates(dependencies);
-        return dependencies;
+        List<String> validDependencies = ListHelper.removeDuplicates(dependencies);
+        return validDependencies;
     }
 
     /**
@@ -178,14 +189,19 @@ public class BlocklyDependencyPanel extends JPanel {
     public List<String> getProvisions() {
         List<String> provisions = new ArrayList<>();
 
-        // Iterating all blocks
-        for (ImplementedBlock implementedBlock : getBlocklyPanel().getWorkspace()) {
+        getBlocklyPanel().getWorkspace(new Consumer<ImplementedBlock[]>() {
+            @Override
+            public void accept(ImplementedBlock[] implementedBlocks) {
+                // Iterating all blocks
+                for (ImplementedBlock implementedBlock : implementedBlocks) {
 
-            // Adding all provisions
-            for (String provision : getProvisionsFromBlock(implementedBlock)) {
-                provisions.add(provision);
+                    // Adding all provisions
+                    for (String provision : getProvisionsFromBlock(implementedBlock)) {
+                        provisions.add(provision);
+                    }
+                }
             }
-        }
+        });
 
         // Adding manual provisions
         for (String provision : this.addedProvisions) {
@@ -193,8 +209,8 @@ public class BlocklyDependencyPanel extends JPanel {
         }
 
         // Removing duplicates
-        provisions = ListHelper.removeDuplicates(provisions);
-        return provisions;
+        List<String> validProvisions = ListHelper.removeDuplicates(provisions);
+        return validProvisions;
     }
 
     private JPanel getDependencyPanel() {
