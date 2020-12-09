@@ -5,6 +5,8 @@ import net.displayphoenix.blockly.elements.workspace.Field;
 import net.displayphoenix.blockly.elements.workspace.ImplementedBlock;
 import net.displayphoenix.blockly.event.BlocklyEvent;
 import net.displayphoenix.blockly.event.IBlocklyListener;
+import net.displayphoenix.blockly.event.events.BlocklyCreateEvent;
+import net.displayphoenix.blockly.event.events.BlocklyDeleteEvent;
 import net.displayphoenix.exception.AppNotCreatedException;
 import net.displayphoenix.lang.Localizer;
 import net.displayphoenix.util.ComponentHelper;
@@ -40,7 +42,9 @@ public class BlocklyDependencyPanel extends JPanel {
         this.blocklyPanel.addBlocklyEventListener(new IBlocklyListener() {
             @Override
             public void onBlocklyEvent(BlocklyEvent event) {
-                updateDependencies();
+                if (event instanceof BlocklyCreateEvent || event instanceof BlocklyDeleteEvent) {
+                    updateDependencies();
+                }
             }
         });
         this.blocklyPanel.queueOnLoad(() -> {
@@ -73,8 +77,8 @@ public class BlocklyDependencyPanel extends JPanel {
         JPanel dependPanelWithBorder = PanelHelper.northAndCenterElements(dependPanel, dependencyList);
         dependPanelWithBorder.setBorder(BorderFactory.createEmptyBorder(0, 0, 30, 0));
         this.add("South", dependPanelWithBorder);
-        this.revalidate();
-        this.repaint();
+/*        this.revalidate();
+        this.repaint();*/
     }
 
     /**
@@ -153,13 +157,15 @@ public class BlocklyDependencyPanel extends JPanel {
             @Override
             public void accept(ImplementedBlock[] implementedBlocks) {
                 // Iterating dependencies of all blocks
-                for (ImplementedBlock implementedBlock : implementedBlocks) {
+                if (implementedBlocks != null) {
+                    for (ImplementedBlock implementedBlock : implementedBlocks) {
 
-                    // Iterating all dependencies
-                    for (String dependency : getDependenciesFromBlock(implementedBlock)) {
+                        // Iterating all dependencies
+                        for (String dependency : getDependenciesFromBlock(implementedBlock)) {
 
-                        // Adding dependency
-                        dependencies.add(dependency);
+                            // Adding dependency
+                            dependencies.add(dependency);
+                        }
                     }
                 }
             }
@@ -193,11 +199,13 @@ public class BlocklyDependencyPanel extends JPanel {
             @Override
             public void accept(ImplementedBlock[] implementedBlocks) {
                 // Iterating all blocks
-                for (ImplementedBlock implementedBlock : implementedBlocks) {
+                if (implementedBlocks != null) {
+                    for (ImplementedBlock implementedBlock : implementedBlocks) {
 
-                    // Adding all provisions
-                    for (String provision : getProvisionsFromBlock(implementedBlock)) {
-                        provisions.add(provision);
+                        // Adding all provisions
+                        for (String provision : getProvisionsFromBlock(implementedBlock)) {
+                            provisions.add(provision);
+                        }
                     }
                 }
             }

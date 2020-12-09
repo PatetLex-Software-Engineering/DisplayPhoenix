@@ -59,7 +59,9 @@ public class BlocklyPanel extends WebPanel implements BlocklyHtmlGenerator {
         getRawWorkspace(new Consumer<String>() {
             @Override
             public void accept(String s) {
-                futureBlocks.accept(BlocklyXmlParser.fromWorkspaceXml(s));
+                if (!s.equalsIgnoreCase("no-output")) {
+                    futureBlocks.accept(BlocklyXmlParser.fromWorkspaceXml(s));
+                }
             }
         });
     }
@@ -294,8 +296,10 @@ public class BlocklyPanel extends WebPanel implements BlocklyHtmlGenerator {
 
     @Override
     public void reshape(int x, int y, int w, int h) {
+        boolean flag = x != getX() || y != getY() || w != getWidth() || h != getHeight();
         super.reshape(x, y, w, h);
-        reload();
+        if (flag)
+            reload();
     }
 
     @Override

@@ -36,7 +36,10 @@ public class Application {
         Blockly.queueText();
         Application.openWindow(parentFrame -> {
             BlocklyPanel blockly = new BlocklyPanel();
-            parentFrame.add(blockly);
+            BlocklyDependencyPanel dependencyPanel = new BlocklyDependencyPanel(blockly);
+            blockly.setPreferredSize(new Dimension(Math.round(parentFrame.getWidth() * 0.8F), parentFrame.getHeight()));
+            dependencyPanel.setPreferredSize(new Dimension(Math.round(parentFrame.getWidth() * 0.2F), parentFrame.getHeight()));
+            parentFrame.add(PanelHelper.westAndCenterElements(blockly, dependencyPanel));
         });
     }
     private static final int BUTTON_WIDTH = 100;
