@@ -590,7 +590,6 @@ public class Blockly {
             }
             return null;
         });
-        textBlock.setLocalDependencies(new String[] {"Dependdd"});
 
         Blockly.registerBlock("print_text", gson.fromJson(BlocklyHelper.getBlockJson("print_text"), JsonObject.class), text);
         Blockly.registerBlock("string_length", gson.fromJson(BlocklyHelper.getBlockJson("string_length"), JsonObject.class), text);
