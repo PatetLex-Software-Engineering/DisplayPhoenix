@@ -30,19 +30,7 @@ import java.io.InputStreamReader;
  * @author TBroski
  */
 public class Application {
-    public static void main(String[] args) {
-        Theme theme = new Theme(new ColorTheme(new Color(38, 38, 38), new Color(192, 226, 113), new Color(255, 255, 255), Color.GRAY), WidgetStyle.POPPING, new Font(Font.MONOSPACED, Font.PLAIN, 14));
-        Application.create("sda", ImageHelper.getImage("blunt_warning"), theme, "kdsa");
-        Blockly.queueText();
-        openWindow(parentFrame -> {
-            BlocklyPanel blockly = new BlocklyPanel();
-            BlocklyDependencyPanel dependencyPanel = new BlocklyDependencyPanel(blockly);
-            blockly.setPreferredSize(new Dimension(Math.round(parentFrame.getWidth() * 0.8F), parentFrame.getHeight()));
-            dependencyPanel.setPreferredSize(new Dimension(Math.round(parentFrame.getWidth() * 0.2F), parentFrame.getHeight()));
-            parentFrame.add(PanelHelper.westAndCenterElements(blockly, dependencyPanel));
-            dependencyPanel.addProvision("Provvv");
-        });
-    }
+
     private static final int BUTTON_WIDTH = 100;
     private static final int BUTTON_HEIGHT = 20;
 
