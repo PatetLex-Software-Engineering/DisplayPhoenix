@@ -181,12 +181,7 @@ public class BitWidget {
                                 parentFrame.addWindowListener(new WindowAdapter() {
                                     @Override
                                     public void windowClosing(WindowEvent e) {
-                                        dependencyPanel.getBlocklyPanel().getRawWorkspace(new Consumer<String>() {
-                                            @Override
-                                            public void accept(String s) {
-                                                provisionWidget.setXml(s);
-                                            }
-                                        });
+                                        provisionWidget.setXml(dependencyPanel.getBlocklyPanel().getRawWorkspace());
                                     }
                                 });
                                 parentFrame.addWindowListener(new WindowAdapter() {

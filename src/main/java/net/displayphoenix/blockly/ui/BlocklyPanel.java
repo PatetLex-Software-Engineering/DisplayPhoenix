@@ -32,6 +32,7 @@ public class BlocklyPanel extends WebPanel implements BlocklyHtmlGenerator {
     private Map<String, String[][]> fieldExtensions = new HashMap<>();
     private boolean isLoaded;
     private String futureXml;
+    private String currentXml;
     private double scale;
 
     private List<IBlocklyListener> eventListeners = new ArrayList<>();
@@ -52,30 +53,23 @@ public class BlocklyPanel extends WebPanel implements BlocklyHtmlGenerator {
      *
      * @return Array of blocks in workspace
      * @see BlocklyXmlParser#fromWorkspaceXml(String)
-     * @see BlocklyPanel#getRawWorkspace(Consumer<String>)
+     * @see BlocklyPanel#getRawWorkspace()
      * @see BlocklyPanel#addBlocks(String)
      */
-    public void getWorkspace(Consumer<ImplementedBlock[]> futureBlocks) {
-        getRawWorkspace(new Consumer<String>() {
-            @Override
-            public void accept(String s) {
-                if (!s.equalsIgnoreCase("no-output")) {
-                    futureBlocks.accept(BlocklyXmlParser.fromWorkspaceXml(s));
-                }
-            }
-        });
+    public ImplementedBlock[] getWorkspace() {
+        String xml = getRawWorkspace();
+        if (xml != null && !xml.equalsIgnoreCase("no-output")) {
+            ImplementedBlock[] arr = BlocklyXmlParser.fromWorkspaceXml(xml);
+            return arr;
+        }
+        return null;
     }
 
     /**
      * @return Raw xml of BlocklyPanel
      */
-    public void getRawWorkspace(Consumer<String> futureXml) {
-        executeScript("Blockly.Xml.domToText(Blockly.Xml.workspaceToDom(workspace, true))", new Consumer<Object>() {
-            @Override
-            public void accept(Object o) {
-                futureXml.accept((String) o);
-            }
-        });
+    public String getRawWorkspace() {
+        return this.currentXml;
     }
 
     /**
@@ -190,12 +184,7 @@ public class BlocklyPanel extends WebPanel implements BlocklyHtmlGenerator {
             this.isLoaded = false;
         }
         if (getBrowser() != null) {
-            getRawWorkspace(new Consumer<String>() {
-                @Override
-                public void accept(String s) {
-                    futureXml = s;
-                }
-            });
+            this.futureXml = getRawWorkspace();
             loadBlockly(html.toString());
         }
     }
@@ -217,6 +206,10 @@ public class BlocklyPanel extends WebPanel implements BlocklyHtmlGenerator {
                 super.onLoadEnd(browser, frame, httpStatusCode);
                 if (!isLoaded) {
                     isLoaded = true;
+                    if (futureXml != null) {
+                        addBlocks(futureXml);
+                        futureXml = null;
+                    }
                     String code = " function onBlocklyEvent(event) {" +
                             "if (typeof blocklypanel !== \"undefined\")" +
                             "   blocklypanel.fire(event.type, workspace.getBlockById(event.blockId) !== null ? workspace.getBlockById(event.blockId).type : '', event.element, event.name, event.oldValue, event.newValue, event.newCoordinate != null ? event.newCoordinate.x : 0, event.newCoordinate != null ? event.newCoordinate.y : 0, event.oldCoordinate != null ? event.oldCoordinate.x : 0, event.oldCoordinate != null ? event.oldCoordinate.y : 0);" +
@@ -225,10 +218,6 @@ public class BlocklyPanel extends WebPanel implements BlocklyHtmlGenerator {
                     browser.executeJavaScript(testForJavaScriptMembers(code) + code, browser.getURL(), 1);
                     for (Runnable runnable : runOnLoad) {
                         runnable.run();
-                    }
-                    if (futureXml != null) {
-                        addBlocks(futureXml);
-                        futureXml = null;
                     }
                 }
             }
@@ -289,9 +278,16 @@ public class BlocklyPanel extends WebPanel implements BlocklyHtmlGenerator {
             event = new BlocklyUIEvent((String) type, this, Blockly.getBlockFromType((String) blockId), (String) element, (String) oldValue, (String) newValue);
         }
 
-        for (IBlocklyListener listener : eventListeners) {
-            listener.onBlocklyEvent(event);
-        }
+        BlocklyEvent finalEvent = event;
+        executeScript("Blockly.Xml.domToText(Blockly.Xml.workspaceToDom(workspace, true))", new Consumer<Object>() {
+            @Override
+            public void accept(Object o) {
+                currentXml = (String) o;
+                for (IBlocklyListener listener : eventListeners) {
+                    listener.onBlocklyEvent(finalEvent);
+                }
+            }
+        });
     }
 
     @Override
