@@ -213,9 +213,9 @@ public class BitWidget {
                                         }
                                     }
                                 });
-                                parentFrame.add(PanelHelper.westAndCenterElements(blockly, dependencyPanel));
-                                blockly.setPreferredSize(new Dimension(Math.round(parentFrame.getWidth() * 0.8F), parentFrame.getHeight()));
-                                dependencyPanel.setPreferredSize(new Dimension(Math.round(parentFrame.getWidth() * 0.2F), parentFrame.getHeight()));
+                                parentFrame.add(PanelHelper.centerAndEastElements(blockly, dependencyPanel));
+                                blockly.setPreferredSize(new Dimension(Math.round(parentFrame.getWidth() * 0.85F), parentFrame.getHeight()));
+                                dependencyPanel.setPreferredSize(new Dimension(Math.round(parentFrame.getWidth() * 0.15F), parentFrame.getHeight()));
                             });
                         }
                     }

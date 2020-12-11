@@ -40,6 +40,14 @@ public class PanelHelper {
         return panel;
     }
 
+    public static JPanel centerAndEastElements(Component center, Component east) {
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.setOpaque(false);
+        panel.add("Center", center);
+        panel.add("East", east);
+        return panel;
+    }
+
     public static JPanel northAndSouthElements(Component top, Component bottom) {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setOpaque(false);

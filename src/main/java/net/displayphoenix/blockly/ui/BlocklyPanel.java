@@ -29,6 +29,7 @@ import java.util.function.Consumer;
 public class BlocklyPanel extends WebPanel implements BlocklyHtmlGenerator {
 
     private List<Runnable> runOnLoad = new ArrayList<>();
+    private List<Runnable> runOnNextLoad = new ArrayList<>();
     private Map<String, String[][]> fieldExtensions = new HashMap<>();
     private boolean isLoaded;
     private String futureXml;
@@ -73,7 +74,7 @@ public class BlocklyPanel extends WebPanel implements BlocklyHtmlGenerator {
     }
 
     /**
-     * Parses blocks and add xml string
+     * Parses blocks and adds xml string
      *
      * @param blocks Blocks to parse
      */
@@ -95,7 +96,33 @@ public class BlocklyPanel extends WebPanel implements BlocklyHtmlGenerator {
             executeScript("workspace.clearUndo()");
         } else {
             String finalXml = xml;
-            queueOnLoad(() -> addBlocks(finalXml));
+            queueOnNextLoad(() -> addBlocks(finalXml));
+        }
+    }
+
+    /**
+     * Parses blocks and sets xml string
+     *
+     * @param blocks Blocks to parse
+     */
+    public void setWorkspace(ImplementedBlock... blocks) {
+        String xml = BlocklyXmlParser.parseWorkspaceXml(blocks);
+        setWorkspace(xml);
+    }
+
+    /**
+     * Sets blocks from raw xml string
+     *
+     * @param xml  Xml to set
+     * @see BlocklyPanel#setWorkspace(ImplementedBlock...)
+     */
+    public void setWorkspace(String xml) {
+        xml = xml.replaceAll("\\\\'", "'").replaceAll("'", "\\\\'").replace("\n", "\\n").replace("\r", "\\r");
+        if (this.isLoaded) {
+            executeScript("Blockly.Xml.domToWorkspace(Blockly.Xml.textToDom('" + xml + "'), workspace)");
+        } else {
+            String finalXml = xml;
+            queueOnNextLoad(() -> setWorkspace(finalXml));
         }
     }
 
@@ -114,12 +141,21 @@ public class BlocklyPanel extends WebPanel implements BlocklyHtmlGenerator {
     }
 
     /**
-     * Queue statement to run when Blockly runs
+     * Queue statement to run when Blockly loads, continuous
      *
      * @param runnable Code to run
      */
     public void queueOnLoad(Runnable runnable) {
         this.runOnLoad.add(runnable);
+    }
+
+    /**
+     * Queue statement to run when Blockly loads next time, once
+     *
+     * @param runnable Code to run
+     */
+    public void queueOnNextLoad(Runnable runnable) {
+        this.runOnNextLoad.add(runnable);
     }
 
     /**
@@ -169,7 +205,7 @@ public class BlocklyPanel extends WebPanel implements BlocklyHtmlGenerator {
     }
 
     private void loadBlockly(String html) {
-        loadHtml(html.replace("@WIDTH", String.valueOf(Math.round(this.getWidth() * 0.666F))).replace("@HEIGHT", String.valueOf(Math.round(this.getHeight() * 0.676F))));
+        loadHtml(html);
     }
 
     /**
@@ -207,7 +243,7 @@ public class BlocklyPanel extends WebPanel implements BlocklyHtmlGenerator {
                 if (!isLoaded) {
                     isLoaded = true;
                     if (futureXml != null) {
-                        addBlocks(futureXml);
+                        setWorkspace(futureXml);
                         futureXml = null;
                     }
                     String code = " function onBlocklyEvent(event) {" +
@@ -218,6 +254,14 @@ public class BlocklyPanel extends WebPanel implements BlocklyHtmlGenerator {
                     browser.executeJavaScript(testForJavaScriptMembers(code) + code, browser.getURL(), 1);
                     for (Runnable runnable : runOnLoad) {
                         runnable.run();
+                    }
+                    List<Runnable> runnablesToDestroy = new ArrayList<>();
+                    for (Runnable runnable : runOnNextLoad) {
+                        runnable.run();
+                        runnablesToDestroy.add(runnable);
+                    }
+                    for (Runnable runnable : runnablesToDestroy) {
+                        runOnNextLoad.remove(runnable);
                     }
                 }
             }
@@ -291,14 +335,6 @@ public class BlocklyPanel extends WebPanel implements BlocklyHtmlGenerator {
     }
 
     @Override
-    public void reshape(int x, int y, int w, int h) {
-        boolean flag = x != getX() || y != getY() || w != getWidth() || h != getHeight();
-        super.reshape(x, y, w, h);
-        if (flag)
-            reload();
-    }
-
-    @Override
     public void setForeground(Color fg) {
         super.setForeground(fg);
         reload();
@@ -337,7 +373,7 @@ public class BlocklyPanel extends WebPanel implements BlocklyHtmlGenerator {
                 "    background: transparent;\n" +
                 "}\n" +
                 "\n" +
-                "#blockly {\n" +
+                "#blocklyDiv {\n" +
                 "    position: absolute;\n" +
                 "    background: transparent;\n" +
                 "    top: 0;\n" +

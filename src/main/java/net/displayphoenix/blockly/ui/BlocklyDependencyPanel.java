@@ -104,8 +104,10 @@ public class BlocklyDependencyPanel extends JPanel {
                 public List<String> getBlockStatementDependencies(ImplementedBlock implementedBlock, List<String> statementProvisions) {
                     List<String> blockDependencies = new ArrayList<>();
                     for (String statement : implementedBlock.getStatementBlocks().keySet()) {
-                        for (String provision : implementedBlock.getBlock().getStatementProvisions(statement)) {
-                            statementProvisions.add(provision);
+                        if (implementedBlock.getBlock().getStatementProvisions(statement) != null) {
+                            for (String provision : implementedBlock.getBlock().getStatementProvisions(statement)) {
+                                statementProvisions.add(provision);
+                            }
                         }
                         for (ImplementedBlock statementBlock : implementedBlock.getStatementBlocks().get(statement)) {
                             for (String dependency : getBlockStatementDependencies(statementBlock, statementProvisions)) {

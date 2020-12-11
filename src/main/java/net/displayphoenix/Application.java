@@ -18,6 +18,7 @@ import net.displayphoenix.ui.widget.OverlayOnHoverWidget;
 import net.displayphoenix.ui.widget.RoundedButton;
 import net.displayphoenix.util.ImageHelper;
 import net.displayphoenix.util.PanelHelper;
+import org.cef.CefApp;
 
 import javax.swing.*;
 import java.awt.*;
@@ -173,6 +174,7 @@ public class Application {
                 public void windowClosing(WindowEvent e) {
                     super.windowClosing(e);
                     Data.save();
+                    CefApp.getInstance().dispose();
                 }
             });
         }

@@ -28,9 +28,9 @@ public interface BlocklyHtmlGenerator {
                 "</head>\n" +
                 "<body>\n" +
                 "\n" +
-                "<div id=\"blocklyDiv\" style=\"height: @HEIGHTpx; width: @WIDTHpx;\"></div>\n" +
+                "<div id=\"blocklyDiv\"></div>\n" +
                 "\n" +
-                "<xml id=\"toolbox\" style=\"display: none\">\n");
+                "<xml id=\"toolbox\">\n");
     }
 
     /**
@@ -40,8 +40,7 @@ public interface BlocklyHtmlGenerator {
      * @param blocksArray  Blocks to define
      */
     default void appendBottomWrapper(StringBuilder builder, String blocksArray) {
-        builder.append("</xml>\n" +
-                "\n" +
+        builder.append("</xml>" +
                 "<script>\n" +
                 "    var workspace = Blockly.inject('blocklyDiv',\n" +
                 "        {media: '',\n" +
@@ -57,7 +56,14 @@ public interface BlocklyHtmlGenerator {
                 "Blockly.defineBlocksWithJsonArray(\n");
         builder.append(blocksArray);
         builder.append(");" +
-                "  </script>\n" +
+                "var blocklyDiv = document.getElementById('blocklyDiv');" +
+                "var onresize = function(e) {\n" +
+                "    Blockly.svgResize(workspace);\n" +
+                "};\n" +
+                "window.addEventListener('resize', onresize, false);\n" +
+                "onresize();\n" +
+                "Blockly.svgResize(workspace);" +
+                "</script>\n" +
                 "\n" +
                 "</body>\n" +
                 "</html>");

@@ -51,6 +51,7 @@ public class FileHelper {
             while ((out = reader.readLine()) != null) {
                 output.append(out + "\n");
             }
+            reader.close();
             return output.toString();
         } catch (IOException e) {
             e.printStackTrace();
@@ -67,6 +68,7 @@ public class FileHelper {
             while ((out = reader.readLine()) != null) {
                 output.append(out + "\n");
             }
+            reader.close();
             return output.toString();
         } catch (IOException e) {
             e.printStackTrace();
