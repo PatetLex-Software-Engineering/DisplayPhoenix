@@ -19,6 +19,8 @@ import java.util.Set;
  */
 public class FileHelper {
 
+    public static final File TEMP_DIRECTORY = new File(System.getProperty("java.io.tmpdir"));
+
     public static void forEachSubFile(File directory, FileIteration iterator) {
         for (File subFile : directory.listFiles()) {
             if (subFile.isDirectory()) {
@@ -76,6 +78,23 @@ public class FileHelper {
         return null;
     }
 
+    public static String readAllLines(InputStream inputStream) {
+        try {
+            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+
+            StringBuilder output = new StringBuilder();
+            String out;
+            while ((out = reader.readLine()) != null) {
+                output.append(out + "\n");
+            }
+            reader.close();
+            return output.toString();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     public static void changeFilePermissions(File file, PosixFilePermission... permissions) {
         if (FileSystems.getDefault().supportedFileAttributeViews().contains("posix")) {
             Set<PosixFilePermission> permissionSet = new HashSet<>();
@@ -111,5 +130,51 @@ public class FileHelper {
                 e.printStackTrace();
             }
         }
+    }
+
+    public static void storeTemporaryFile(File file) {
+        try {
+            storeTemporaryFile(Files.readAllBytes(file.toPath()), file.getName());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static String storeTemporaryFile(InputStream inputStream, String name) {
+        return storeTemporaryFile(readAllBytesFromStream(inputStream), name);
+    }
+
+    public static String storeTemporaryFile(byte[] content, String name) {
+        try {
+            File tempFile = new File(TEMP_DIRECTORY.getPath() + "/" + name);
+            tempFile.createNewFile();
+            OutputStream fileWriter = new FileOutputStream(tempFile);
+            fileWriter.write(content);
+            fileWriter.flush();
+            fileWriter.close();
+            return tempFile.getPath();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static byte[] readAllBytesFromStream(InputStream inputStream) {
+        try {
+            ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+
+            int nRead;
+            byte[] data = new byte[16384];
+
+            while ((nRead = inputStream.read(data, 0, data.length)) != -1) {
+                buffer.write(data, 0, nRead);
+            }
+
+            buffer.flush();
+            return buffer.toByteArray();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }

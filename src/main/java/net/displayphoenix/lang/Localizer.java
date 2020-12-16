@@ -24,8 +24,8 @@ public class Localizer {
 
     public static String translate(String key, Local local, Object... arguments) {
         String translatedText = TRANSLATED_VALUES_LOCAL.get(local).getOrDefault(key, key);
-        for (int i = 1; i < arguments.length; i++) {
-            translatedText = translatedText.replaceAll("%" + i, String.valueOf(arguments[i]));
+        for (int i = 0; i < arguments.length; i++) {
+            translatedText = translatedText.replaceAll("%" + (i + 1), String.valueOf(arguments[i]));
         }
         return translatedText;
     }

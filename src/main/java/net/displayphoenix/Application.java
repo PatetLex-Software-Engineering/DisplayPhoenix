@@ -248,61 +248,15 @@ public class Application {
      * @param okListener Adds a listener to ok button
      * @param isWarning Whether it is a warning
      */
-    public static void prompt(String title, String text, ActionListener okListener, boolean isWarning) {
-        if (!CREATED) {
-            try {
-                throw new AppNotCreatedException("App not created");
-            } catch (AppNotCreatedException e) {
-                e.printStackTrace();
-            }
-        }
-        JFrame dialogBox = new JFrame(title);
-        dialogBox.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        dialogBox.setBounds(0,0,400, 200);
-        dialogBox.setIconImage(isWarning ? ImageHelper.getImage(theme.getWidgetStyle().getName() + "_warning").getImage() : icon.getImage());
-
-        JPanel labelPanel = new JPanel();
-        labelPanel.setBorder(BorderFactory.createMatteBorder(30, 0, 20, 0, theme.getColorTheme().getPrimaryColor()));
-        labelPanel.setBackground(theme.getColorTheme().getPrimaryColor());
-        JLabel textLabel = new JLabel(text);
-        textLabel.setForeground(theme.getColorTheme().getAccentColor());
-        textLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        textLabel.setFont(theme.getFont());
-        labelPanel.add(textLabel);
-        dialogBox.add("North", labelPanel);
-
-        JPanel okPanel = new JPanel();
-        okPanel.setBorder(BorderFactory.createMatteBorder(20, 0, 45, 0, theme.getColorTheme().getPrimaryColor()));
-        okPanel.setBackground(theme.getColorTheme().getPrimaryColor());
-        RoundedButton okButton = new RoundedButton("Ok");
-        okButton.addActionListener(e -> {
-            dialogBox.dispose();
-        });
-        okButton.addActionListener(okListener);
-        okButton.setForeground(theme.getColorTheme().getAccentColor());
-        okButton.setHorizontalAlignment(SwingConstants.CENTER);
-        okButton.setPreferredSize(new Dimension(BUTTON_WIDTH, BUTTON_HEIGHT));
-        okButton.setFont(theme.getFont());
-        okPanel.add(okButton);
-        dialogBox.add("South", okPanel);
-
-        dialogBox.setResizable(false);
-        dialogBox.setLocationRelativeTo(null);
-        dialogBox.setAlwaysOnTop(isWarning);
-        dialogBox.setVisible(true);
+    public static void prompt(String title, String text, MouseListener okListener, boolean isWarning) {
+        PromptedButton promptedButton = new PromptedButton("Ok", okListener).closeWindow();
+        promptWithButtons(title, text, isWarning, promptedButton);
     }
     public static void prompt(String title, String text, boolean isWarning) {
-        if (!CREATED) {
-            try {
-                throw new AppNotCreatedException("App not created");
-            } catch (AppNotCreatedException e) {
-                e.printStackTrace();
-            }
-        }
-        prompt(title, text, new ActionListener() {
+        prompt(title, text, new MouseAdapter() {
             @Override
-            public void actionPerformed(ActionEvent e) {
-
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
             }
         }, isWarning);
     }
@@ -346,7 +300,6 @@ public class Application {
         }
         JFrame dialogBox = new JFrame(title);
         dialogBox.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        dialogBox.setBounds(0,0,400, 200);
         dialogBox.setIconImage(isWarning ? ImageHelper.getImage(theme.getWidgetStyle().getName() + "_warning").getImage() : icon.getImage());
 
         JPanel labelPanel = new JPanel();
@@ -356,6 +309,7 @@ public class Application {
         textLabel.setForeground(theme.getColorTheme().getAccentColor());
         textLabel.setHorizontalAlignment(SwingConstants.CENTER);
         textLabel.setFont(theme.getFont());
+        dialogBox.setBounds(0,0, textLabel.getPreferredSize().getWidth() > 400 ? (int) textLabel.getPreferredSize().getWidth() + 20 : 400, 200);
         labelPanel.add(textLabel);
         dialogBox.add("North", labelPanel);
 

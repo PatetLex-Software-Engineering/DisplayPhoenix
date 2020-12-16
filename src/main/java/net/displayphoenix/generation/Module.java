@@ -118,6 +118,14 @@ public class Module {
         this.blockMutators.put(block, mutator);
     }
 
+    public String getCodeFromBit(Bit bit) {
+        return this.bitCode.get(bit);
+    }
+
+    public String getCodeFromBlock(Block block) {
+        return this.blockCode.get(block);
+    }
+
     public String getCodeFromBit(ImplementedBit bit) {
         String code = null;
         for (Bit bitKey : this.bitCode.keySet()) {
