@@ -21,21 +21,22 @@ import net.displayphoenix.canvasly.elements.StaticElement;
 import net.displayphoenix.canvasly.elements.impl.FontElement;
 import net.displayphoenix.canvasly.elements.impl.ImageElement;
 import net.displayphoenix.canvasly.tools.Tool;
+import net.displayphoenix.file.Data;
 import net.displayphoenix.file.DetailedFile;
 import net.displayphoenix.file.FileDialog;
 import net.displayphoenix.lang.Localizer;
 import net.displayphoenix.ui.widget.*;
 import net.displayphoenix.ui.widget.TextField;
-import net.displayphoenix.util.BlocklyHelper;
-import net.displayphoenix.util.ComponentHelper;
-import net.displayphoenix.util.ImageHelper;
-import net.displayphoenix.util.PanelHelper;
-import net.displayphoenix.web.Website;
+import net.displayphoenix.util.*;
+import net.displayphoenix.system.web.Website;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.*;
 import java.util.List;
 import java.util.function.Consumer;
@@ -170,11 +171,8 @@ public class BitWidget {
                                 } else {
                                     Block event = Blockly.getBlockFromType(headBlock != null ? headBlock : "event_wrapper");
                                     if (event == null) {
-                                        Blockly.registerCategory("flow_control", BlocklyHelper.getCategoryJson("flow_control"));
-                                        Blockly.registerBlock("event_wrapper", BlocklyHelper.getBlockJson("event_wrapper"));
                                         event = Blockly.getBlockFromType("event_wrapper");
                                         event.persist();
-                                        event.hide();
                                     }
                                     dependencyPanel.getBlocklyPanel().addBlocks(new ImplementedBlock(event, 50, 50, false, true));
                                 }
@@ -228,7 +226,12 @@ public class BitWidget {
                 resourceWidget.addMouseListener(new MouseAdapter() {
                     @Override
                     public void mouseClicked(MouseEvent e) {
-                        resourceWidget.setFile(FileDialog.openFile(extensions));
+                        FileDialog.openFile(new Consumer<DetailedFile>() {
+                            @Override
+                            public void accept(DetailedFile detailedFile) {
+                                resourceWidget.setFile(detailedFile);
+                            }
+                        }, extensions);
                     }
                 });
                 resourceWidget.setPreferredSize(new Dimension(150, 150));
@@ -276,7 +279,12 @@ public class BitWidget {
                                     for (CanvasElement canvasElement : canvasElements) {
                                         Element element = null;
                                         if (canvasElement.type.equalsIgnoreCase("image")) {
-                                            element = new ImageElement(ImageHelper.getImage(canvasElement.defaultValue).getImage(), ClassLoader.getSystemClassLoader().getResource("textures/" + (canvasElement.defaultValue.endsWith(".png") ? canvasElement.defaultValue : canvasElement.defaultValue + ".png")).getFile());
+                                            String[] paths = canvasElement.defaultValue.split("/");
+                                            try {
+                                                element = new ImageElement(ImageIO.read(Data.find("/bitly/elements/" + paths[paths.length - 1])), System.getProperty("user.home") + "/." + StringHelper.id(Application.getTitle()) + "/cache/bitly/elements/" + paths[paths.length - 1]);
+                                            } catch (IOException ioException) {
+                                                ioException.printStackTrace();
+                                            }
                                         } else if (canvasElement.type.equalsIgnoreCase("text")) {
                                             element = new FontElement(canvasElement.defaultValue, new Color(canvasElement.r, canvasElement.g, canvasElement.b, canvasElement.a), 1);
                                         }
@@ -373,6 +381,31 @@ public class BitWidget {
      */
     public Website getHelpWebsite() {
         return this.helpUrl != null ? new Website(this.helpUrl) : null;
+    }
+
+    public Map<String, byte[]> getExternalFiles(boolean isNative, File relativePath) {
+        Map<String, byte[]> nameToContent = new HashMap<>();
+        for (CanvasElement canvasElement : this.canvasElements) {
+            byte[] bytes = null;
+            if (isNative) {
+                bytes = FileHelper.readAllBytesFromStream(ClassLoader.getSystemClassLoader().getResourceAsStream("textures/bitly/" + canvasElement.defaultValue));
+            }
+            else {
+                try {
+                    bytes = Files.readAllBytes(new File(relativePath.getPath() + "/" + canvasElement.defaultValue).toPath());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (canvasElement.defaultValue.contains("/")) {
+                String[] paths = canvasElement.defaultValue.split("/");
+                nameToContent.put(paths[paths.length - 1], bytes);
+            }
+            else {
+                nameToContent.put(canvasElement.defaultValue, bytes);
+            }
+        }
+        return nameToContent;
     }
 
     private static class CanvasElement {

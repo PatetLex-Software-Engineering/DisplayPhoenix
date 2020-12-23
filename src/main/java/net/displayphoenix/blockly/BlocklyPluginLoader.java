@@ -3,6 +3,7 @@ package net.displayphoenix.blockly;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
+import net.displayphoenix.Application;
 import net.displayphoenix.bitly.Bitly;
 import net.displayphoenix.blockly.elements.Category;
 import net.displayphoenix.file.DetailedFile;
@@ -19,9 +20,9 @@ public class BlocklyPluginLoader {
     private static Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
     /**
-     * Iterates through all sub-files and registers each as JSON file
+     * Iterates through all sub-files and loads each as JSON file
      *
-     * @see Blockly#registerBlock(File)
+     * @see Blockly#loadBlock(File)
      *
      * @param directory  Directory of blocks
      */
@@ -34,16 +35,19 @@ public class BlocklyPluginLoader {
                 // Check if file is a JSON
                 if (new DetailedFile(subFile).getFileExtension().equalsIgnoreCase("json")) {
                     // Register JSON file
-                    Blockly.registerBlock(subFile);
+                    Blockly.loadBlock(subFile);
                 }
             }
+        }
+        if (Application.isCreated()) {
+            Blockly.load();
         }
     }
 
     /**
      * Iterates through all sub-files and registers each as JSON file
      *
-     * @see Blockly#registerCategory(Category)
+     * @see Blockly#loadCategory(File) 
      *
      * @param directory  Directory of categories
      */
@@ -53,8 +57,11 @@ public class BlocklyPluginLoader {
                 loadBlocksFromDirectory(subFile);
             }
             else {
-                Blockly.registerCategory(subFile);
+                Blockly.loadCategory(subFile);
             }
+        }
+        if (Application.isCreated()) {
+            Blockly.load();
         }
     }
 }

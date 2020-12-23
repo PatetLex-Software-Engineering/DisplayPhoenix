@@ -1,44 +1,48 @@
 package net.displayphoenix.util;
 
+import net.displayphoenix.blockly.Blockly;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
 public class BlocklyHelper {
 
-    public static String getBlockJson(String identifier) {
-        try {
-            if (!(identifier.endsWith(".json")))
-                identifier += ".json";
-            BufferedReader reader = new BufferedReader(new InputStreamReader(ClassLoader.getSystemClassLoader().getResourceAsStream("blockly/blocks/" + identifier)));
-
-            StringBuilder output = new StringBuilder();
-            String out;
-            while ((out = reader.readLine()) != null) {
-                output.append(out + "\n");
-            }
-            return output.toString();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;
+    public static void loadBlockResource(String identifier) {
+        loadBlockResource(identifier, identifier);
     }
 
-    public static String getCategoryJson(String identifier) {
+    public static void loadBlockResource(String identifier, String path) {
         try {
-            if (!(identifier.endsWith(".json")))
-                identifier += ".json";
-            BufferedReader reader = new BufferedReader(new InputStreamReader(ClassLoader.getSystemClassLoader().getResourceAsStream("blockly/categories/" + identifier)));
+            BufferedReader reader = new BufferedReader(new InputStreamReader(ClassLoader.getSystemClassLoader().getResourceAsStream("blockly/blocks/" + path + ".json")));
 
             StringBuilder output = new StringBuilder();
             String out;
             while ((out = reader.readLine()) != null) {
                 output.append(out + "\n");
             }
-            return output.toString();
+            Blockly.loadBlock(identifier, output.toString());
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return null;
+    }
+
+    public static void loadCategoryResource(String identifier) {
+        loadCategoryResource(identifier, identifier);
+    }
+
+    public static void loadCategoryResource(String identifier, String path) {
+        try {
+            BufferedReader reader = new BufferedReader(new InputStreamReader(ClassLoader.getSystemClassLoader().getResourceAsStream("blockly/categories/" + path + ".json")));
+
+            StringBuilder output = new StringBuilder();
+            String out;
+            while ((out = reader.readLine()) != null) {
+                output.append(out + "\n");
+            }
+            Blockly.loadCategory(identifier, output.toString());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

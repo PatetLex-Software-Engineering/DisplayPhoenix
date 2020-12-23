@@ -1,4 +1,6 @@
 {
+  "label.example.text": "Esempio",
+
   "widget.provisions_on_right_click.text": "Vedi le disposizioni sul clic destro",
 
   "blockly.dependency.text": "Dependencies:",
@@ -15,5 +17,9 @@
   "blockly.block.text_substring.text": "Ottieni la sottostringa di %1 dall'indice %2 all'indice %3",
   "blockly.block.print_text.text": "stampa %1",
   "blockly.block.repeat.text": "ripeti %1 volte %2 fai %3",
-  "blockly.block.negate_logic.text": "non %1"
+  "blockly.block.negate_logic.text": "non %1",
+
+  "canvasly.font.setting.text": "Carattere:",
+  "canvasly.point.setting.text": "Dimensione in punti:",
+  "canvasly.tolerance.setting.text": "Tolleranza:"
 }

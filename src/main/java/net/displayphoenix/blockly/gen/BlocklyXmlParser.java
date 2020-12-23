@@ -27,7 +27,7 @@ public interface BlocklyXmlParser {
      * Parses an xml string to java objects
      *
      * @see ImplementedBlock
-     * @see BlocklyPanel#getRawWorkspace(Consumer <String>)
+     * @see BlocklyPanel#getRawWorkspace()
      *
      * @param xml  Xml to parse
      * @return

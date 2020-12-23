@@ -25,6 +25,7 @@
     }
   ],
   "inputsInline": "!0",
+  "category": "math",
   "output": "Number",
   "style": "math_blocks",
   "helpUrl": "%{BKY_MATH_ARITHMETIC_HELPURL}",

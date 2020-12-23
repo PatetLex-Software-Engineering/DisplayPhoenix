@@ -1,5 +1,6 @@
 package net.displayphoenix.util;
 
+import net.displayphoenix.file.DetailedFile;
 import net.displayphoenix.interfaces.FileIteration;
 
 import java.io.*;
@@ -24,7 +25,7 @@ public class FileHelper {
     public static void forEachSubFile(File directory, FileIteration iterator) {
         for (File subFile : directory.listFiles()) {
             if (subFile.isDirectory()) {
-                forEachSubFile(directory, iterator);
+                forEachSubFile(subFile, iterator);
             }
             else {
                 iterator.iterate(subFile);
@@ -42,6 +43,35 @@ public class FileHelper {
             }
         }
         directory.delete();
+    }
+
+    public static void copyFilesFromFolderToFolder(File originDirectory, File outputDirectory, boolean replace) {
+        try {
+            if (!outputDirectory.exists()) {
+                outputDirectory.mkdir();
+                originDirectory.createNewFile();
+            }
+            for (File subFile : originDirectory.listFiles()) {
+                DetailedFile file = new DetailedFile(subFile);
+                if (subFile.isDirectory()) {
+                    File newDir = new File(outputDirectory.getPath() + "/" + file.getFile().getName());
+                    newDir.mkdir();
+                    newDir.createNewFile();
+                    copyFilesFromFolderToFolder(subFile, newDir, replace);
+                }
+                else {
+                    File newFile = new File(outputDirectory.getPath() + "/" + file.getFile().getName());
+                    if (newFile.createNewFile() || replace) {
+                        OutputStream writer = new FileOutputStream(newFile);
+                        writer.write(Files.readAllBytes(subFile.toPath()));
+                        writer.flush();
+                        writer.close();
+                    }
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public static String readAllLines(URI uri) {
@@ -139,12 +169,13 @@ public class FileHelper {
             e.printStackTrace();
         }
     }
-
-    public static String storeTemporaryFile(InputStream inputStream, String name) {
+    public static DetailedFile storeTemporaryFile(InputStream inputStream, String name) {
         return storeTemporaryFile(readAllBytesFromStream(inputStream), name);
     }
-
-    public static String storeTemporaryFile(byte[] content, String name) {
+    public static DetailedFile storeTemporaryFile(String content, String name) {
+        return storeTemporaryFile(content.getBytes(), name);
+    }
+    public static DetailedFile storeTemporaryFile(byte[] content, String name) {
         try {
             File tempFile = new File(TEMP_DIRECTORY.getPath() + "/" + name);
             tempFile.createNewFile();
@@ -152,7 +183,7 @@ public class FileHelper {
             fileWriter.write(content);
             fileWriter.flush();
             fileWriter.close();
-            return tempFile.getPath();
+            return new DetailedFile(tempFile);
         } catch (IOException e) {
             e.printStackTrace();
         }

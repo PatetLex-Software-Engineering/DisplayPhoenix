@@ -14,6 +14,7 @@
   ],
   "inputsInline": true,
   "output": "String",
+  "category": "text",
   "code": {
     "javascript": "($[value%A] + $[value%B])",
     "java": "($[value%A] + $[value%B])"

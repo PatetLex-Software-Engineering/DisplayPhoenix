@@ -10,6 +10,7 @@ import net.displayphoenix.blockly.elements.workspace.ImplementedBlock;
 import net.displayphoenix.blockly.event.BlocklyEvent;
 import net.displayphoenix.blockly.event.IBlocklyListener;
 import net.displayphoenix.blockly.event.events.*;
+import net.displayphoenix.file.DetailedFile;
 import net.displayphoenix.file.FileDialog;
 import net.displayphoenix.util.ColorHelper;
 import net.displayphoenix.util.FileHelper;
@@ -137,7 +138,12 @@ public class BlocklyPanel extends WebPanel implements BlocklyHtmlGenerator {
      * Prompts and imports xml file to workspace
      */
     public void importXmlFileToWorkspace() {
-        addBlocks(FileHelper.readAllLines(FileDialog.openFile().getFile()));
+        FileDialog.openFile(new Consumer<DetailedFile>() {
+            @Override
+            public void accept(DetailedFile detailedFile) {
+                addBlocks(detailedFile.getFileContents());
+            }
+        });
     }
 
     /**

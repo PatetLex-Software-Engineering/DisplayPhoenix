@@ -27,19 +27,19 @@ public abstract class Tool {
 
     public static List<Setting> getToleranceSettings() {
         List<Setting> settings = new ArrayList<>();
-        settings.add(new IntegerSetting("canvas.tolerance.setting.text", 75, 0, 100));
+        settings.add(new IntegerSetting("canvasly.tolerance.setting.text", 75, 0, 100));
         return settings;
     }
 
     public static List<Setting> getPointSettings() {
         List<Setting> settings = new ArrayList<>();
-        settings.add(new IntegerSetting("canvas.point.setting.text", 1, 1, 50));
+        settings.add(new IntegerSetting("canvasly.point.setting.text", 1, 1, 50));
         return settings;
     }
 
     public static List<Setting> getFontSettings() {
         List<Setting> settings = new ArrayList<>();
-        settings.add(new FontSetting("canvas.font.setting.text"));
+        settings.add(new FontSetting("canvasly.font.setting.text"));
         return settings;
     }
 

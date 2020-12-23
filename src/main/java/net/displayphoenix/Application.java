@@ -1,40 +1,54 @@
 package net.displayphoenix;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
+import net.displayphoenix.bitly.Bitly;
 import net.displayphoenix.blockly.Blockly;
-import net.displayphoenix.blockly.gen.BlocklyHtmlGenerator;
-import net.displayphoenix.blockly.ui.BlocklyDependencyPanel;
-import net.displayphoenix.blockly.ui.BlocklyPanel;
 import net.displayphoenix.canvasly.tools.Tool;
 import net.displayphoenix.canvasly.tools.impl.*;
-import net.displayphoenix.enums.WidgetStyle;
 import net.displayphoenix.exception.AppNotCreatedException;
 import net.displayphoenix.file.Data;
+import net.displayphoenix.file.indexly.Indexly;
 import net.displayphoenix.generation.Module;
+import net.displayphoenix.init.ColorInit;
 import net.displayphoenix.lang.Local;
 import net.displayphoenix.lang.Localizer;
+import net.displayphoenix.system.exe.SystemProcessor;
+import net.displayphoenix.ui.ApplicationFrame;
 import net.displayphoenix.ui.ColorTheme;
 import net.displayphoenix.ui.Theme;
+import net.displayphoenix.ui.animation.Clipper;
 import net.displayphoenix.ui.widget.OverlayOnHoverWidget;
 import net.displayphoenix.ui.widget.RoundedButton;
-import net.displayphoenix.util.ImageHelper;
-import net.displayphoenix.util.PanelHelper;
+import net.displayphoenix.util.*;
 import org.cef.CefApp;
 
 import javax.swing.*;
+import javax.swing.plaf.basic.BasicArrowButton;
 import java.awt.*;
 import java.awt.event.*;
-import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.InputStream;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author TBroski
  */
 public class Application {
 
+    private static final SystemProcessor systemProcessor = new SystemProcessor();
+    private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
+
     private static final int BUTTON_WIDTH = 100;
     private static final int BUTTON_HEIGHT = 20;
 
+    private static Class exeClass;
     private static String version;
     private static boolean CREATED;
     private static String title;
@@ -42,25 +56,29 @@ public class Application {
     private static Theme theme;
     private static Local selectedLocal = Local.EN_US;
 
+    private static List<Runnable> runOnCreate = new ArrayList<>();
+
     /**
      * Creates the app, used for organization and constants.
      *
-     * @param appTitle Title of the app, the default for all windows unless set otherwise.
      * @param appIcon The app icon.
      * @param appTheme Theme of the app, subject to change.
-     * @param appVersion The version of the app.
      */
-    public static void create(String appTitle, ImageIcon appIcon, Theme appTheme, String appVersion) {
-        title = appTitle;
+    public static void create(Class mainClass, ImageIcon appIcon, Theme appTheme) {
+        exeClass = mainClass;
+        title = readAppProperty("name");
         icon = appIcon;
         theme = appTheme;
-        version = appVersion;
+        version = readAppProperty("version");
         CREATED = true;
 
-        Localizer.create();
-        Data.create();
         Module.registerModule(Module.JAVA);
         Module.registerModule(Module.JAVASCRIPT);
+        Localizer.create();
+        Data.create();
+        Blockly.load();
+        Bitly.load();
+        Indexly.registerExtension(StringHelper.id(title), appIcon);
         Tool.REGISTERED_TOOLS.add(new BucketTool());
         Tool.REGISTERED_TOOLS.add(new EraserTool());
         Tool.REGISTERED_TOOLS.add(new ImageTool());
@@ -97,7 +115,7 @@ public class Application {
      * @return Returns the frame for additional manipulation
      */
     public static JFrame openWindow(String title, int closeAction, IOpenWindow windowCreation, int width, int height, boolean resizeable) {
-        JFrame frame = new JFrame(title) {
+        ApplicationFrame frame = new ApplicationFrame(title) {
             @Override
             protected void addImpl(Component comp, Object constraints, int index) {
                 super.addImpl(comp, constraints, index);
@@ -118,10 +136,14 @@ public class Application {
                             @Override
                             public void componentAdded(ContainerEvent e) {
                                 if (lFColor.equals(e.getComponent().getForeground()) || bFColor.equals(e.getComponent().getForeground())) {
-                                    e.getComponent().setForeground(e.getComponent() instanceof JLabel || e.getComponent() instanceof JButton || e.getComponent() instanceof JComboBox ? theme.getColorTheme().getTextColor() : theme.getColorTheme().getSecondaryColor());
+                                    if (!(e.getComponent() instanceof BasicArrowButton || e.getComponent() instanceof JScrollBar)) {
+                                        e.getComponent().setForeground(e.getComponent() instanceof JLabel || e.getComponent() instanceof JButton || e.getComponent() instanceof JComboBox ? theme.getColorTheme().getTextColor() : theme.getColorTheme().getSecondaryColor());
+                                    }
                                 }
                                 if (lBColor.equals(e.getComponent().getBackground()) || bBColor.equals(e.getComponent().getBackground())) {
-                                    e.getComponent().setBackground(theme.getColorTheme().getPrimaryColor());
+                                    if (!(e.getComponent() instanceof BasicArrowButton || e.getComponent() instanceof JScrollBar)) {
+                                        e.getComponent().setBackground(theme.getColorTheme().getPrimaryColor());
+                                    }
                                 }
                             }
                         });
@@ -132,10 +154,17 @@ public class Application {
                         private void setColors(Container container) {
                             for (Component component : container.getComponents()) {
                                 if (lFColor.equals(component.getForeground()) || bFColor.equals(component.getForeground())) {
-                                    component.setForeground(component instanceof JLabel || component instanceof JButton || component instanceof JComboBox ? theme.getColorTheme().getTextColor() : theme.getColorTheme().getSecondaryColor());
+                                    if (!(component instanceof BasicArrowButton || component instanceof JScrollBar)) {
+                                        component.setForeground(component instanceof JLabel || component instanceof JButton || component instanceof JComboBox ? theme.getColorTheme().getTextColor() : theme.getColorTheme().getSecondaryColor());
+                                    }
                                 }
                                 if (lBColor.equals(component.getBackground()) || bBColor.equals(component.getBackground())) {
-                                    component.setBackground(theme.getColorTheme().getPrimaryColor());
+                                    if (!(component instanceof BasicArrowButton || component instanceof JScrollBar)) {
+                                        component.setBackground(theme.getColorTheme().getPrimaryColor());
+                                    }
+                                    else {
+                                        component.setBackground(ColorHelper.max(Application.getTheme().getColorTheme().getPrimaryColor(), 0.6F));
+                                    }
                                 }
                                 component.setFont(component.getFont() != null ? theme.getFont().deriveFont(component.getFont().getSize()) : theme.getFont());
                                 if (component instanceof Container) {
@@ -200,6 +229,94 @@ public class Application {
         return openWindow(JFrame.EXIT_ON_CLOSE, windowCreation);
     }
 
+    /**
+     * Simple way to obtain a JPanel containing theme widgets;
+     * Each widget is represented by a generated template.
+     *
+     * @return  JPanel of theme widget
+     */
+    public static JPanel getColorThemeChangePanel(ColorTheme... themes) {
+        Component[] widgets = new Component[themes.length];
+        for (int i = 0; i < themes.length; i++) {
+            int finalI = i;
+            JPanel widget = new JPanel() {
+                private Clipper clipper = new Clipper(0.005F, 0.5F, 0F).smooth();
+                @Override
+                protected void paintComponent(Graphics g) {
+                    super.paintComponent(g);
+                    g.setColor(themes[finalI].getPrimaryColor());
+                    g.fillRect(0, 0, getWidth(), getHeight());
+                    g.setColor(themes[finalI].getTextColor());
+                    g.setFont(theme.getFont());
+                    String label = Localizer.translate("label.example.text");
+                    int height = (int) g.getFontMetrics().getStringBounds(label, g).getHeight();
+                    g.drawString(label, 0, height);
+                    g.setFont(g.getFont().deriveFont(g.getFont().getSize() * 0.75F));
+                    g.drawString(label, 0, height * 2);
+                    g.setFont(g.getFont().deriveFont(g.getFont().getSize() * 0.75F));
+                    g.drawString(label, 0, height * 3);
+                    g.setColor(themes[finalI].getSecondaryColor());
+                    g.fillRect(0, getHeight() - Math.round(getHeight() * 0.3F), getWidth(), getHeight() - Math.round(getHeight() * 0.3F));
+                    g.setColor(themes[finalI].getAccentColor());
+                    g.fillRect(0, getHeight() - Math.round(getHeight() * 0.3F) - 5, getWidth(), 5);
+                    Graphics2D g2d = (Graphics2D) g;
+                    if (this.clipper.getCurrentValue() != 0) {
+                        g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, this.clipper.getCurrentValue()));
+                        g.setColor(theme.getColorTheme().getSecondaryColor());
+                        g.fillRect(0, 0, getWidth(), getHeight());
+                    }
+                    if (theme.getColorTheme().equals(themes[finalI])) {
+                        ((Graphics2D) g).setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1));
+                        g.setColor(theme.getColorTheme().getAccentColor());
+                        g.drawRect(0, 0, getWidth() - 1, getHeight() - 1);
+                    }
+                }
+                public JPanel init() {
+                    this.addMouseListener(new MouseAdapter() {
+                        @Override
+                        public void mouseEntered(MouseEvent e) {
+                            super.mouseEntered(e);
+                            clipper.increment();
+                        }
+
+                        @Override
+                        public void mouseExited(MouseEvent e) {
+                            super.mouseExited(e);
+                            clipper.decrement();
+                        }
+                    });
+                    this.clipper.addListener(new Runnable() {
+                        @Override
+                        public void run() {
+                            repaint();
+                        }
+                    });
+                    return this;
+                }
+            }.init();
+            widget.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    super.mouseClicked(e);
+                    Application.switchTheme(themes[finalI]);
+                    for (Component component : widgets) {
+                        component.repaint();
+                    }
+                }
+            });
+            widget.setCursor(new Cursor(Cursor.HAND_CURSOR));
+            widget.setPreferredSize(new Dimension(150, 150));
+            widgets[i] = PanelHelper.join(widget);
+        }
+        return PanelHelper.grid(3, widgets);
+    }
+
+    /**
+     * Simple way to obtain a JPanel containing local widgets;
+     * Each widget is represented by its respective flag.
+     *
+     * @return  JPanel of local widgets
+     */
     public static JPanel getLocalChangePanel() {
         Component[] widgets = new Component[Local.values().length];
         for (int i = 0; i < Local.values().length; i++) {
@@ -299,42 +416,15 @@ public class Application {
             }
         }
         JFrame dialogBox = new JFrame(title);
+        dialogBox.setLayout(new BorderLayout());
         dialogBox.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         dialogBox.setIconImage(isWarning ? ImageHelper.getImage(theme.getWidgetStyle().getName() + "_warning").getImage() : icon.getImage());
+        dialogBox.setBackground(theme.getColorTheme().getPrimaryColor());
 
-        JPanel labelPanel = new JPanel();
-        labelPanel.setBorder(BorderFactory.createMatteBorder(30, 0, 20, 0, theme.getColorTheme().getPrimaryColor()));
-        labelPanel.setBackground(theme.getColorTheme().getPrimaryColor());
-        JLabel textLabel = new JLabel(text);
-        textLabel.setForeground(theme.getColorTheme().getAccentColor());
-        textLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        textLabel.setFont(theme.getFont());
-        dialogBox.setBounds(0,0, textLabel.getPreferredSize().getWidth() > 400 ? (int) textLabel.getPreferredSize().getWidth() + 20 : 400, 200);
-        labelPanel.add(textLabel);
-        dialogBox.add("North", labelPanel);
-
-        JPanel buttonsPanel = new JPanel();
-        buttonsPanel.setBorder(BorderFactory.createMatteBorder(20, 0, 45, 0, theme.getColorTheme().getPrimaryColor()));
-        buttonsPanel.setBackground(theme.getColorTheme().getPrimaryColor());
-
-        for (PromptedButton promptedButton : promptedButtons) {
-            RoundedButton button = new RoundedButton(promptedButton.getButtonText());
-            if (promptedButton.closeWindow)
-                button.addMouseListener(new MouseAdapter() {
-                    @Override
-                    public void mouseClicked(MouseEvent e) {
-                        dialogBox.dispose();
-                    }
-                });
-            button.addMouseListener(promptedButton.getActionListener());
-            button.setForeground(theme.getColorTheme().getAccentColor());
-            button.setHorizontalAlignment(SwingConstants.CENTER);
-            button.setFont(theme.getFont());
-            button.setPreferredSize(new Dimension(BUTTON_WIDTH - (BUTTON_WIDTH / 3), BUTTON_HEIGHT));
-            buttonsPanel.add(button);
-        }
-
-        dialogBox.add("South", buttonsPanel);
+        JPanel panel = getPromptPanel(text, dialogBox, promptedButtons);
+        panel.setOpaque(true);
+        panel.setBackground(theme.getColorTheme().getPrimaryColor());
+        dialogBox.add(panel, BorderLayout.CENTER);
 
         dialogBox.setResizable(false);
         dialogBox.setLocationRelativeTo(null);
@@ -342,31 +432,62 @@ public class Application {
         dialogBox.setVisible(true);
     }
 
-    /**
-     * Executes simple command
-     *
-     * @param command Command to execute
-     * @return Exit value of command
-     */
-    public static int systemExecute(String command) {
-        try {
-            Process process = Runtime.getRuntime().exec(command);
-
-            StringBuilder output = new StringBuilder();
-            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-            String line;
-            while ((line = reader.readLine()) != null) {
-                output.append(line + "\n");
-            }
-            int exitVal = process.waitFor();
-            System.out.println(output.toString());
-            return exitVal;
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
+    private static JPanel getPromptPanel(String text, JFrame dialogBox, PromptedButton... promptedButtons) {
+        JPanel panel = new JPanel();
+        if (dialogBox == null) {
+            panel = new JPanel() {
+                @Override
+                protected void paintComponent(Graphics g) {
+                    super.paintComponent(g);
+                    g.setColor(theme.getColorTheme().getPrimaryColor());
+                    g.fillRoundRect(0, 0, getWidth(), getHeight(), 50, 50);
+                }
+            };
         }
-        return -1;
+        panel.setOpaque(false);
+        panel.setBackground(ColorInit.TRANSPARENT);
+
+        JPanel labelPanel = new JPanel();
+        labelPanel.setBorder(BorderFactory.createEmptyBorder(30, 0, 10, 0));
+        labelPanel.setOpaque(false);
+        JLabel textLabel = new JLabel(text);
+        textLabel.setForeground(theme.getColorTheme().getAccentColor());
+        textLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        textLabel.setFont(theme.getFont());
+        if (dialogBox != null)
+            dialogBox.setBounds(0,0, textLabel.getPreferredSize().getWidth() > 400 ? (int) textLabel.getPreferredSize().getWidth() + 20 : 400, 200);
+        panel.setPreferredSize(new Dimension(textLabel.getPreferredSize().getWidth() > 400 ? (int) textLabel.getPreferredSize().getWidth() + 20 : 400, 200));
+        labelPanel.add(textLabel);
+
+        JPanel buttonsPanel = new JPanel();
+        buttonsPanel.setBorder(BorderFactory.createEmptyBorder(20, 0, 45, 0));
+        buttonsPanel.setOpaque(false);
+
+        for (PromptedButton promptedButton : promptedButtons) {
+            RoundedButton button = new RoundedButton(promptedButton.getButtonText());
+            if (promptedButton.closeWindow)
+                button.addMouseListener(new MouseAdapter() {
+                    @Override
+                    public void mouseClicked(MouseEvent e) {
+                        if (dialogBox != null) {
+                            dialogBox.dispose();
+                        }
+                    }
+                });
+            button.addMouseListener(promptedButton.getActionListener());
+            button.setForeground(theme.getColorTheme().getAccentColor());
+            button.setHorizontalAlignment(SwingConstants.CENTER);
+            button.setFont(theme.getFont());
+            button.setPreferredSize(new Dimension(BUTTON_WIDTH, BUTTON_HEIGHT));
+            buttonsPanel.add(button);
+        }
+
+        panel.add(PanelHelper.northAndCenterElements(labelPanel, buttonsPanel));
+        return panel;
+    }
+
+    public static JPanel getPromptPanel(String text, PromptedButton... promptedButtons) {
+        return getPromptPanel(text, null, promptedButtons);
     }
 
     /**
@@ -374,8 +495,24 @@ public class Application {
      *
      * @param newTheme Theme to change
      */
-    public static void switchTheme(Theme newTheme) {
-        theme = newTheme;
+    public static void switchTheme(ColorTheme newTheme) {
+        if (CREATED) {
+            theme = new Theme(newTheme, theme.getWidgetStyle(), theme.getFont(), theme.getWidth(), theme.getHeight(), theme.isResizeable());
+        }
+        else {
+            runOnCreate.add(() -> {
+                theme = new Theme(newTheme, theme.getWidgetStyle(), theme.getFont(), theme.getWidth(), theme.getHeight(), theme.isResizeable());
+            });
+        }
+    }
+
+    /**
+     * Run upon app creation
+     *
+     * @param runnable  Code to run
+     */
+    public static void runOnCreation(Runnable runnable) {
+        runOnCreate.add(runnable);
     }
 
     /**
@@ -424,28 +561,75 @@ public class Application {
      * @return App version
      */
     public static String getVersion() {
-        if (!CREATED) {
-            try {
-                throw new AppNotCreatedException("App not created");
-            } catch (AppNotCreatedException e) {
-                e.printStackTrace();
-            }
+        if (version != null) {
+            return version;
         }
-        return version;
+        return readAppProperty("version");
     }
 
     /**
      * @return App title
      */
     public static String getTitle() {
-        if (!CREATED) {
-            try {
-                throw new AppNotCreatedException("App not created");
-            } catch (AppNotCreatedException e) {
-                e.printStackTrace();
-            }
+        if (title != null) {
+            return title;
         }
-        return title;
+        return readAppProperty("name");
+    }
+
+    /**
+     * @return  Application state
+     */
+    public static boolean isCreated() {
+        return CREATED;
+    }
+
+    /**
+     * @return  File directory of execution file (.exe)
+     * ex.
+     * .../user/DisplayPhoenix.exe
+     * returns .../user/
+     */
+    public static File getExecutableFolderPath() {
+        //return new File(ClassLoader.getSystemClassLoader().getResource("").getPath()).getParentFile();
+        try {
+            return new File(exeClass.getProtectionDomain().getCodeSource().getLocation().toURI()).getParentFile();
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    /**
+     * @return  System processor
+     */
+    public static SystemProcessor getSystemProcessor() {
+        return systemProcessor;
+    }
+
+    private static String readAppProperty(String key) {
+        try {
+            InputStream appPropertyStream = ClassLoader.getSystemClassLoader().getResourceAsStream("app_properties.json");
+            if (appPropertyStream == null) {
+                File appPropertyFile = new File("src/main/resources/app_properties.json");
+                appPropertyFile.createNewFile();
+                JsonObject object = new JsonObject();
+                object.add("name", new JsonPrimitive("ExampleApp"));
+                object.add("version", new JsonPrimitive("1.0.0.0"));
+                FileWriter writer = new FileWriter(appPropertyFile);
+                writer.write(gson.toJson(object));
+                writer.flush();
+                writer.close();
+                throw new Exception("app_properties.json not created!");
+            }
+            JsonObject object = gson.fromJson(FileHelper.readAllLines(appPropertyStream), JsonObject.class);
+            return object.get(key).getAsString();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     public static class PromptedButton {
@@ -483,6 +667,6 @@ public class Application {
      * Window wrapper interface
      */
     public interface IOpenWindow {
-        void creation(JFrame parentFrame);
+        void creation(ApplicationFrame parentFrame);
     }
 }

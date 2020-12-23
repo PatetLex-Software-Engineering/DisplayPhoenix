@@ -5,6 +5,7 @@ import net.displayphoenix.blockly.elements.workspace.Field;
 import net.displayphoenix.blockly.elements.workspace.ImplementedBlock;
 import net.displayphoenix.blockly.event.BlocklyEvent;
 import net.displayphoenix.blockly.event.IBlocklyListener;
+import net.displayphoenix.blockly.event.events.BlocklyChangeEvent;
 import net.displayphoenix.blockly.event.events.BlocklyCreateEvent;
 import net.displayphoenix.blockly.event.events.BlocklyDeleteEvent;
 import net.displayphoenix.exception.AppNotCreatedException;
@@ -42,7 +43,7 @@ public class BlocklyDependencyPanel extends JPanel {
         this.blocklyPanel.addBlocklyEventListener(new IBlocklyListener() {
             @Override
             public void onBlocklyEvent(BlocklyEvent event) {
-                if (event instanceof BlocklyCreateEvent || event instanceof BlocklyDeleteEvent) {
+                if (event instanceof BlocklyCreateEvent || event instanceof BlocklyDeleteEvent || event instanceof BlocklyChangeEvent) {
                     updateDependencies();
                 }
             }

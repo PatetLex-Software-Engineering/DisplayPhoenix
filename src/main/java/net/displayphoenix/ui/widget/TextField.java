@@ -9,7 +9,6 @@ import java.awt.*;
  * @author TBroski
  */
 public class TextField extends JTextField {
-
     public TextField() {
         super();
         this.setFont(Application.getTheme().getFont());

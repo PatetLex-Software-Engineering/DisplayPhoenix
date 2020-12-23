@@ -1,4 +1,6 @@
 {
+  "label.example.text": "Пример",
+
   "widget.provisions_on_right_click.text": "См. положения при щелчке правой кнопкой мыши",
 
   "blockly.dependency.text": "Зависимости:",
@@ -15,5 +17,9 @@
   "blockly.block.text_substring.text": "Получить подстроку %1 из индекса %2 в индекс %3",
   "blockly.block.print_text.text": "pаспечатать %1",
   "blockly.block.repeat.text": "повторить %1 раз %2 сделать %3",
-  "blockly.block.negate_logic.text": "не %1"
+  "blockly.block.negate_logic.text": "не %1",
+
+  "canvasly.font.setting.text": "Шрифт:",
+  "canvasly.point.setting.text": "Размер точки:",
+  "canvasly.tolerance.setting.text": "Tolerance:"
 }

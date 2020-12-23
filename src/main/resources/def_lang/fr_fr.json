@@ -1,4 +1,6 @@
 {
+  "label.example.text": "Exemple",
+
   "widget.provisions_on_right_click.text": "Voir les dispositions sur le clic droit",
 
   "blockly.dependency.text": "Dépendances:",
@@ -15,5 +17,9 @@
   "blockly.block.text_substring.text": "Récupère la sous-chaîne de %1 de l'index %2 vers l'index %3",
   "blockly.block.print_text.text": "imprimer %1",
   "blockly.block.repeat.text": "répéter %1 fois %2 faire %3",
-  "blockly.block.negate_logic.text": "pas %1"
+  "blockly.block.negate_logic.text": "pas %1",
+
+  "canvasly.font.setting.text": "Police:",
+  "canvasly.point.setting.text": "Taille du point:",
+  "canvasly.tolerance.setting.text": "Tolérance:"
 }

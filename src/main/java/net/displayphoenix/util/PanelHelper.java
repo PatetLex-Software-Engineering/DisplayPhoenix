@@ -1,5 +1,7 @@
 package net.displayphoenix.util;
 
+import net.displayphoenix.init.ColorInit;
+
 import javax.swing.*;
 import java.awt.*;
 
@@ -104,6 +106,21 @@ public class PanelHelper {
         panel.setBackground(color);
         panel.setPreferredSize(new Dimension(width, panel.getHeight()));
         panel.setBorder(BorderFactory.createEmptyBorder(0, seperation, 0, seperation));
+        return panel;
+    }
+
+    public static JPanel round(JPanel origin, int arcWidth, int arcHeight) {
+        JPanel panel = new JPanel(new BorderLayout()) {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                g.setColor(origin.getBackground());
+                g.fillRoundRect(0, 0, getWidth(), getHeight(), arcWidth, arcHeight);
+            }
+        };
+        panel.setBackground(ColorInit.TRANSPARENT);
+        panel.setOpaque(false);
+        panel.add(origin, BorderLayout.CENTER);
         return panel;
     }
 }

@@ -1,5 +1,14 @@
 {
+  "label.example.text": "Example",
+
   "widget.provisions_on_right_click.text": "See provisions on right click",
+
+  "file.file_dialog.title": "File %1 Browser",
+  "file.open.text": "Open",
+  "file.save.text": "Save",
+  "file.back.text": "Back",
+
+  "file.file_dialog.message.not_valid_file": "Pick a valid file(s).",
 
   "blockly.dependency.text": "Dependencies:",
   "blockly.provision.text": "Provisions:",
@@ -15,5 +24,9 @@
   "blockly.block.text_substring.text": "Get substring of %1 from index %2 to index %3",
   "blockly.block.print_text.text": "print %1",
   "blockly.block.repeat.text": "repeat %1 times %2 do %3",
-  "blockly.block.negate_logic.text": "not %1"
+  "blockly.block.negate_logic.text": "not %1",
+
+  "canvasly.font.setting.text": "Font:",
+  "canvasly.point.setting.text": "Point size:",
+  "canvasly.tolerance.setting.text": "Tolerance:"
 }

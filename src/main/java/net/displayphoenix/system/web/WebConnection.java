@@ -1,4 +1,4 @@
-package net.displayphoenix.web;
+package net.displayphoenix.system.web;
 
 import java.io.BufferedReader;
 import java.io.IOException;

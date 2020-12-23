@@ -4,13 +4,13 @@ import com.google.gson.Gson;
 import com.google.gson.TypeAdapter;
 import com.google.gson.reflect.TypeToken;
 import net.displayphoenix.Application;
+import net.displayphoenix.interfaces.FileIteration;
 import net.displayphoenix.lang.Local;
+import net.displayphoenix.ui.ColorTheme;
 import net.displayphoenix.util.FileHelper;
 import net.displayphoenix.util.StringHelper;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -21,6 +21,7 @@ public class Data {
 
     private static final Gson gson = new Gson();
 
+    private static boolean created;
     private static Map<String, Object> data;
 
     /**
@@ -52,15 +53,97 @@ public class Data {
         data.remove(key);
     }
 
+    /**
+     * Is key stored
+     *
+     * @param key  Key to object
+     */
     public static boolean has(String key) {
         return data.containsKey(key);
     }
 
+    /**
+     * Clear cache
+     */
+    public static void clearCache() {
+        File directory = new File(System.getProperty("user.home") + "/." + StringHelper.id(Application.getTitle()));
+        for (File subFile : directory.listFiles()) {
+            if (!subFile.isDirectory()) {
+                subFile.delete();
+            }
+        }
+        create();
+    }
+
+    /**
+     * Caches a file
+     *
+     * @param content  Content of file
+     * @param identifier  Identifier of file
+     */
+    public static File cache(byte[] content, String identifier) {
+        if (!created) {
+            create();
+        }
+        try {
+            File file = new File(System.getProperty("user.home") + "/." + StringHelper.id(Application.getTitle()) + "/cache/" + identifier);
+            if (content == null)
+                file.mkdir();
+            file.createNewFile();
+            if (content != null) {
+                OutputStream writer = new FileOutputStream(file);
+                writer.write(content);
+                writer.flush();
+                writer.close();
+            }
+            return file;
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    /**
+     * Finds a file
+     *
+     * @param identifier  Identifier of file
+     *
+     * @return  File from name
+     */
+    public static File find(String identifier) {
+        return new File(System.getProperty("user.home") + "/." + StringHelper.id(Application.getTitle()) + "/cache/" + identifier);
+    }
+
+    /**
+     * Iterates every cached file
+     *
+     * @param fileIterator  Iterator interface
+     */
+    public static void forCachedFile(FileIteration fileIterator) {
+        forCachedFile("", fileIterator);
+    }
+
+    /**
+     * Iterates every cached file in relative path
+     *
+     * @param extraPath  Relative path
+     * @param fileIterator  Iterator interface
+     */
+    public static void forCachedFile(String extraPath, FileIteration fileIterator) {
+        FileHelper.forEachSubFile(new File(System.getProperty("user.home") + "/." + StringHelper.id(Application.getTitle()) + "/cache/" + extraPath), fileIterator);
+    }
+
     public static void create() {
+        created = true;
         try {
             File dir = new File(System.getProperty("user.home") + "/." + StringHelper.id(Application.getTitle()));
             dir.mkdir();
             dir.createNewFile();
+            File cacheDir = new File(dir.getPath() + "/cache/");
+            cacheDir.mkdir();
+            cacheDir.createNewFile();
             File dataFile = new File(dir.getPath() + "/data.json");
             dataFile.createNewFile();
             Map<String, DataObject> dataObjectMap = gson.fromJson(FileHelper.readAllLines(dataFile), new TypeToken<Map<String, DataObject>>() {}.getType());
@@ -76,6 +159,10 @@ public class Data {
             if (prevDir != null) {
                 FileDialog.PREVIOUS_DIRECTORY = new File(prevDir);
             }
+            ColorTheme theme = (ColorTheme) get("color_theme");
+            if (theme != null) {
+                Application.switchTheme(theme);
+            }
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
         }
@@ -85,6 +172,7 @@ public class Data {
         try {
             store("local", Application.getSelectedLocal());
             store("prev_dir", FileDialog.PREVIOUS_DIRECTORY.getPath());
+            store("color_theme", Application.getTheme().getColorTheme());
             File dir = new File(System.getProperty("user.home") + "/." + StringHelper.id(Application.getTitle()));
             dir.mkdir();
             dir.createNewFile();

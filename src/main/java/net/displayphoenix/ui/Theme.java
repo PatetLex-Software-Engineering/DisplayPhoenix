@@ -25,7 +25,7 @@ public class Theme {
         this(colorTheme, widgetStyle, font, width, height, true);
     }
 
-    private Theme(ColorTheme colorTheme, WidgetStyle widgetStyle, Font font, int width, int height, boolean resizeable) {
+    public Theme(ColorTheme colorTheme, WidgetStyle widgetStyle, Font font, int width, int height, boolean resizeable) {
         this.colorTheme = colorTheme;
         this.widgetStyle = widgetStyle;
         this.font = font;

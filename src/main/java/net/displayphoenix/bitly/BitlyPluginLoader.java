@@ -1,14 +1,16 @@
 package net.displayphoenix.bitly;
 
+import net.displayphoenix.Application;
 import net.displayphoenix.file.DetailedFile;
 
 import java.io.File;
+
 public class BitlyPluginLoader {
 
     /**
-     * Iterates through all sub-files and registers each as JSON object
+     * Iterates through all sub-files and loads each as JSON object
      *
-     * @see Bitly#registerBit(File)
+     * @see Bitly#loadBit(File)
      *
      * @param directory  Directory of bits
      */
@@ -24,11 +26,14 @@ public class BitlyPluginLoader {
             }
             else {
                 // Check if the file is a JSON
-                if (new DetailedFile(subFile).getFileExtension().equalsIgnoreCase("json")) {
+                if (subFile.getName().endsWith(".json")) {
                     // Register JSON file
-                    Bitly.registerBit(subFile);
+                    Bitly.loadBit(subFile);
                 }
             }
+        }
+        if (Application.isCreated()) {
+            Bitly.load();
         }
     }
 }

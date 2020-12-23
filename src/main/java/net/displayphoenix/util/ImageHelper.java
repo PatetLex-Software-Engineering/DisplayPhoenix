@@ -1,11 +1,15 @@
 package net.displayphoenix.util;
 
 import net.displayphoenix.canvasly.effects.ImageEffect;
+import sun.awt.image.ToolkitImage;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.awt.image.RenderedImage;
 import java.io.File;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
@@ -25,10 +29,19 @@ public class ImageHelper {
         return fromResource("textures/" + identifier);
     }
 
-    public static ImageIcon resize(ImageIcon image, int width, int height) {
-        return new ImageIcon(cover(image.getImage(), new Dimension(width, height)));
+    public static ImageIcon resize(Icon image, int width, int height) {
+        return resize(convertIcon(image), width, height);
     }
-    public static ImageIcon resize(ImageIcon image, int sqWidth) {
+
+    public static ImageIcon resize(Icon image, int sqWidth) {
+        return resize(convertIcon(image), sqWidth);
+    }
+
+    public static ImageIcon resize(Image image, int width, int height) {
+        return new ImageIcon(cover(image, new Dimension(width, height)));
+    }
+
+    public static ImageIcon resize(Image image, int sqWidth) {
         return resize(image, sqWidth, sqWidth);
     }
 
@@ -89,20 +102,45 @@ public class ImageHelper {
     }
 
     public static ImageIcon fromPath(String path) {
-        try {
-            return fromPath(new File(path).toURI().toURL());
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        }
-        return null;
+        return fromPath(new File(path));
     }
-    public static ImageIcon fromPath(URL path) {
-        if (CACHE.get(path.getPath()) != null)
+
+    public static ImageIcon fromPath(File path) {
+        if (CACHE.get(path.getPath()) != null && CACHE.get(path.getPath()).getImage() != null)
             return CACHE.get(path);
         else {
-            ImageIcon newItem = new ImageIcon(Toolkit.getDefaultToolkit().createImage(path));
+            ImageIcon newItem = null;
+            try {
+                newItem = new ImageIcon(ImageIO.read(path));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             CACHE.put(path.getPath(), newItem);
             return newItem;
         }
+    }
+
+    public static Image convertIcon(Icon icon) {
+        if (icon instanceof ImageIcon) {
+            return ((ImageIcon) icon).getImage();
+        }
+        else {
+            GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+            GraphicsDevice gd = ge.getDefaultScreenDevice();
+            GraphicsConfiguration gc = gd.getDefaultConfiguration();
+            BufferedImage image = gc.createCompatibleImage(icon.getIconWidth(), icon.getIconHeight());
+            Graphics2D g = image.createGraphics();
+            icon.paintIcon(null, g, 0, 0);
+            g.dispose();
+            return image;
+        }
+    }
+
+    public static BufferedImage renderImage(Image image) {
+        BufferedImage bufferedImage = new BufferedImage(image.getWidth(null), image.getHeight(null), BufferedImage.TYPE_INT_ARGB);
+        Graphics graphics = bufferedImage.createGraphics();
+        graphics.drawImage(image, 0, 0, null);
+        graphics.dispose();
+        return bufferedImage;
     }
 }

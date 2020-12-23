@@ -5,9 +5,15 @@ import com.google.gson.GsonBuilder;
 import net.displayphoenix.canvasly.Pixel;
 import net.displayphoenix.canvasly.elements.impl.FontElement;
 import net.displayphoenix.canvasly.elements.impl.ImageElement;
+import net.displayphoenix.file.Data;
 import net.displayphoenix.util.ImageHelper;
 
+import javax.imageio.ImageIO;
+import javax.swing.*;
 import java.awt.*;
+import java.io.File;
+import java.io.IOException;
+import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -78,21 +84,27 @@ public class CanvasSave {
                 layer.setHidden(true);
             newElements.put(layer, new ArrayList<>());
             for (CanvasElement canvasElement : this.staticElements.get(layerString)) {
-                Element element = null;
-                if (canvasElement.type.equalsIgnoreCase("image")) {
-                    element = new ImageElement(ImageHelper.fromPath(canvasElement.defaultValue).getImage(), canvasElement.defaultValue);
-                } else if (canvasElement.type.equalsIgnoreCase("text")) {
-                    element = new FontElement(canvasElement.defaultValue, new Color(canvasElement.r, canvasElement.g, canvasElement.b, canvasElement.a), 1);
+                if (canvasElement != null) {
+                    Element element = null;
+                    if (canvasElement.type.equalsIgnoreCase("image")) {
+                        try {
+                            element = new ImageElement(ImageIO.read(Data.find("/bitly/elements/" + canvasElement.defaultValue)), canvasElement.defaultValue);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    } else if (canvasElement.type.equalsIgnoreCase("text")) {
+                        element = new FontElement(canvasElement.defaultValue, new Color(canvasElement.r, canvasElement.g, canvasElement.b, canvasElement.a), 1);
+                    }
+                    element.setScaleFactor(canvasElement.scale);
+                    StaticElement.Properties properties = new StaticElement.Properties();
+                    if (canvasElement.parse) {
+                        properties.setParse();
+                    }
+                    if (canvasElement.overlay) {
+                        properties.setOverlay();
+                    }
+                    newElements.get(layer).add(new StaticElement(element, canvasElement.staticElement.getX(), canvasElement.staticElement.getY(), properties));
                 }
-                element.setScaleFactor(canvasElement.scale);
-                StaticElement.Properties properties = new StaticElement.Properties();
-                if (canvasElement.parse) {
-                    properties.setParse();
-                }
-                if (canvasElement.overlay) {
-                    properties.setOverlay();
-                }
-                newElements.get(layer).add(new StaticElement(element, canvasElement.staticElement.getX(), canvasElement.staticElement.getY(), properties));
             }
         }
         this.cacheElements = newElements;

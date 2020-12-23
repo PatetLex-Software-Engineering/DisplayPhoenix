@@ -52,8 +52,13 @@ public class ColorHelper {
     }
 
     public static Color max(Color input) {
+        return max(input, 1F);
+    }
+
+    public static Color max(Color input, float ratio) {
         float v = input.getRed() > input.getBlue() ? input.getRed() : input.getBlue() > input.getGreen() ? input.getBlue() : input.getGreen();
         float r = 255 / v;
+        r *= ratio;
         Color color = new Color(Math.round(input.getRed() * r), Math.round(input.getGreen() * r), Math.round(input.getBlue() * r));
         return color;
     }
