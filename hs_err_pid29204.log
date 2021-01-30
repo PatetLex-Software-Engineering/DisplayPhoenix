@@ -99,8 +99,8 @@ j  com.sun.webkit.WebPage.<init>(Lcom/sun/webkit/WebPageClient;Lcom/sun/webkit/U
 j  javafx.scene.web.WebEngine.<init>(Ljava/lang/String;Z)V+275
 j  javafx.scene.web.WebEngine.<init>()V+3
 j  javafx.scene.web.WebView.<init>()V+56
-j  net.displayphoenix.blockly.ui.BlocklyPanel.lambda$load$6()V+5
-j  net.displayphoenix.blockly.ui.BlocklyPanel$$Lambda$63.run()V+4
+j  com.patetlex.displayphoenix.blockly.ui.BlocklyPanel.lambda$load$6()V+5
+j  com.patetlex.displayphoenix.blockly.ui.BlocklyPanel$$Lambda$63.run()V+4
 j  com.sun.javafx.application.PlatformImpl.lambda$null$5(Ljava/lang/Runnable;)Ljava/lang/Void;+1
 j  com.sun.javafx.application.PlatformImpl$$Lambda$69.run()Ljava/lang/Object;+4
 v  ~StubRoutines::call_stub
@@ -336,7 +336,7 @@ Dynamic libraries:
 
 VM Arguments:
 jvm_args: -agentlib:jdwp=transport=dt_socket,address=127.0.0.1:61689,suspend=y,server=n -javaagent:C:\Users\theba\AppData\Local\JetBrains\IdeaIC2020.2\captureAgent\debugger-agent.jar -Dfile.encoding=UTF-8 
-java_command: net.displayphoenix.Application
+java_command: com.patetlex.displayphoenix.Application
 java_class_path (initial): C:\Users\theba\Desktop\Coding\Libraries\DisplayPhoenix\jdk\jdk8_win_64\jre\lib\charsets.jar;C:\Users\theba\Desktop\Coding\Libraries\DisplayPhoenix\jdk\jdk8_win_64\jre\lib\ext\access-bridge-64.jar;C:\Users\theba\Desktop\Coding\Libraries\DisplayPhoenix\jdk\jdk8_win_64\jre\lib\ext\cldrdata.jar;C:\Users\theba\Desktop\Coding\Libraries\DisplayPhoenix\jdk\jdk8_win_64\jre\lib\ext\dnsns.jar;C:\Users\theba\Desktop\Coding\Libraries\DisplayPhoenix\jdk\jdk8_win_64\jre\lib\ext\jaccess.jar;C:\Users\theba\Desktop\Coding\Libraries\DisplayPhoenix\jdk\jdk8_win_64\jre\lib\ext\jfxrt.jar;C:\Users\theba\Desktop\Coding\Libraries\DisplayPhoenix\jdk\jdk8_win_64\jre\lib\ext\localedata.jar;C:\Users\theba\Desktop\Coding\Libraries\DisplayPhoenix\jdk\jdk8_win_64\jre\lib\ext\nashorn.jar;C:\Users\theba\Desktop\Coding\Libraries\DisplayPhoenix\jdk\jdk8_win_64\jre\lib\ext\sunec.jar;C:\Users\theba\Desktop\Coding\Libraries\DisplayPhoenix\jdk\jdk8_win_64\jre\lib\ext\sunjce_provider.jar;C:\Users\theba\Desktop\Coding\Libraries\DisplayPhoenix\jdk\jdk8_win_64\jre\lib\ext\sunmscapi.jar;C:\Users\theba\Desktop\Coding\Libraries\DisplayPhoenix\jdk\jdk8_win_64\jre\lib\ext\sunpkcs11.jar;C:\Users\theba\Desktop\Coding\Libraries\DisplayPhoenix\jdk\jdk8_win_64\jre\lib\ext\zipfs.jar;C:\Users\theba\Desktop\Coding\Libraries\DisplayPhoenix\jdk\jdk8_win_64\jre\lib\jce.jar;C:\Users\theba\Desktop\Coding\Libraries\DisplayPhoenix\jdk\jdk8_win_64\jre\lib\jfxswt.jar;C:\Users\theba\Desktop\Coding\Libraries\DisplayPhoenix\jdk\jdk8_win_64\jre\lib\jsse.jar;C:\Users\theba\Desktop\Coding\Libraries\DisplayPhoenix\jdk\jdk8_win_64\jre\lib\management-agent.jar;C:\Users\theba\Desktop\Coding\Libraries\DisplayPhoenix\jdk\jdk8_win_64\jre\lib\resources.jar;C:\Users\theba\Desktop\Coding\Libraries\DisplayPhoenix\jdk\jdk8_win_64\jre\lib\rt.jar;C:\Users\theba\Desktop\Coding\Libraries\DisplayPhoenix\out\production\main;C:\Users\theba\Desktop\Coding\Libraries\DisplayPhoenix\libs\gson-2.8.6.jar;C:\Program Files\JetBrains\I
 Launcher Type: SUN_STANDARD
 
