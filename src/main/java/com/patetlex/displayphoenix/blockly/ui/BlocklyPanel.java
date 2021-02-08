@@ -21,6 +21,7 @@ import org.cef.handler.CefLoadHandlerAdapter;
 import org.cef.ui.WebPanel;
 
 import java.awt.*;
+import java.lang.reflect.Method;
 import java.util.*;
 import java.util.List;
 import java.util.function.Consumer;
@@ -29,8 +30,6 @@ import java.util.function.Consumer;
  * @author TBroski
  */
 public class BlocklyPanel extends WebPanel implements BlocklyHtmlGenerator, BlocklyXmlParser {
-
-    private static final Gson gson = new Gson();
 
     private List<Runnable> runOnLoad = new ArrayList<>();
     private List<Runnable> runOnNextLoad = new ArrayList<>();
@@ -294,7 +293,14 @@ public class BlocklyPanel extends WebPanel implements BlocklyHtmlGenerator, Bloc
                             "   blocklypanel.fire(event.type, workspace.getBlockById(event.blockId) !== null ? workspace.getBlockById(event.blockId).type : '', event.element, event.name, event.oldValue, event.newValue, event.newCoordinate != null ? event.newCoordinate.x : 0, event.newCoordinate != null ? event.newCoordinate.y : 0, event.oldCoordinate != null ? event.oldCoordinate.x : 0, event.oldCoordinate != null ? event.oldCoordinate.y : 0);" +
                             "}" +
                             "workspace.addChangeListener(onBlocklyEvent);";
-                    browser.executeJavaScript(testForJavaScriptMembers(code) + code, browser.getURL(), 1);
+                    browser.executeJavaScript(generateMembers() + code, browser.getURL(), 1);
+                    for (Category category : Blockly.getBlocklyCategories()) {
+                        for (Block block : Blockly.getBlocksFromCategory(category)) {
+                            if (block.getBlocklyJson() != null && block.getBlocklyJson().get("script") != null) {
+                                executeScript(block.getBlocklyJson().get("script").getAsString());
+                            }
+                        }
+                    }
                     for (Runnable runnable : BlocklyPanel.this.runOnLoad) {
                         runnable.run();
                     }
@@ -366,11 +372,11 @@ public class BlocklyPanel extends WebPanel implements BlocklyHtmlGenerator, Bloc
         }
 
         BlocklyEvent finalEvent = event;
-        executeScript("Blockly.Xml.domToText(Blockly.Xml.workspaceToDom(workspace, true))", new Consumer<Object>() {
+        executeScript("return Blockly.Xml.domToText(Blockly.Xml.workspaceToDom(workspace, true))", new Consumer<Object>() {
             @Override
             public void accept(Object o) {
-                currentXml = (String) o;
-                for (IBlocklyListener listener : eventListeners) {
+                BlocklyPanel.this.currentXml = (String) o;
+                for (IBlocklyListener listener : BlocklyPanel.this.eventListeners) {
                     listener.onBlocklyEvent(finalEvent);
                 }
             }
@@ -595,5 +601,10 @@ public class BlocklyPanel extends WebPanel implements BlocklyHtmlGenerator, Bloc
             }
         }
         return Blockly.getBlockFromType(type);
+    }
+
+    @Override
+    public boolean shouldAddDependentMethod(Method method) {
+        return super.shouldAddDependentMethod(method);
     }
 }

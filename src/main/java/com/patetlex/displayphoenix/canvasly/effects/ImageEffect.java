@@ -15,17 +15,21 @@ public class ImageEffect {
         this.image = image;
     }
 
-    public Image flip(int axis) {
+    public Image draw() {
+        return image;
+    }
+
+    public ImageEffect flip(int axis) {
         BufferedImage newImage = new BufferedImage(this.image.getWidth(null), this.image.getHeight(null), BufferedImage.TYPE_INT_ARGB);
         Graphics2D graphics2D = newImage.createGraphics();
 
         graphics2D.drawImage(this.image, axis == HORIZONTAL ? this.image.getWidth(null) : 0, axis == VERTICAL ? this.image.getHeight(null) : 0, axis == HORIZONTAL ? -this.image.getWidth(null) : this.image.getWidth(null), axis == VERTICAL ? -this.image.getHeight(null) : this.image.getHeight(null), null);
 
         this.image = newImage;
-        return newImage;
+        return this;
     }
 
-    public Image overlay(Color color, float opacity) {
+    public ImageEffect overlay(Color color, float opacity) {
         BufferedImage newImage = new BufferedImage(this.image.getWidth(null), this.image.getHeight(null), BufferedImage.TYPE_INT_ARGB);
         Graphics2D graphics2D = newImage.createGraphics();
 
@@ -47,10 +51,10 @@ public class ImageEffect {
         }
 
         this.image = newImage;
-        return newImage;
+        return this;
     }
 
-    public Image rotate(float angle) {
+    public ImageEffect rotate(float angle) {
         BufferedImage newImage = new BufferedImage(this.image.getWidth(null), this.image.getHeight(null), BufferedImage.TYPE_INT_ARGB);
         Graphics2D graphics2D = newImage.createGraphics();
 
@@ -58,7 +62,58 @@ public class ImageEffect {
         graphics2D.drawImage(this.image, 0, 0, newImage.getWidth(), newImage.getHeight(), null);
 
         this.image = newImage;
-        return newImage;
+        return this;
+    }
+
+    public ImageEffect clip(int u1, int v1, int u2, int v2) {
+        BufferedImage bufferImage = new BufferedImage(this.image.getWidth(null), this.image.getHeight(null), BufferedImage.TYPE_INT_ARGB);
+        Graphics2D graphics2D = bufferImage.createGraphics();
+
+        graphics2D.drawImage(this.image, 0, 0, this.image.getWidth(null), this.image.getHeight(null),null);
+
+        BufferedImage newImage = new BufferedImage(u2 - u1, v2 - v1, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D newGraphics = newImage.createGraphics();
+
+        Color[][] imagePixels = getImagePixels(bufferImage);
+        int x = 0;
+        int tx = 0;
+        for (Color[] px : imagePixels) {
+            int y = 0;
+            int ty = 0;
+            if (x <= u2 && x >= u1) {
+                for (Color py : px) {
+                    if (y <= v2 && y >= v1) {
+                        newGraphics.setColor(py);
+                        newGraphics.fillRect(tx, ty, 1, 1);
+                        ty++;
+                    }
+                    y++;
+                }
+                tx++;
+            }
+            x++;
+        }
+
+        this.image = newImage;
+        return this;
+    }
+
+    public ImageEffect expandCanvas(int u, int v) {
+        return expandCanvas(u, v, new Insets(0,0,0,0));
+    }
+
+    public ImageEffect expandCanvas(int u, int v, Insets hangingInsets) {
+        BufferedImage newImage = new BufferedImage(this.image.getWidth(null) + u, this.image.getHeight(null) + v, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D graphics2D = newImage.createGraphics();
+
+        if (hangingInsets != null) {
+            graphics2D.drawImage(this.image, hangingInsets.right > 0 ? newImage.getWidth() - this.image.getWidth(null) : 0, hangingInsets.bottom > 0 ? newImage.getHeight() - this.image.getHeight(null) : 0, this.image.getWidth(null), this.image.getHeight(null), null);
+        } else {
+            graphics2D.drawImage(this.image, Math.round((newImage.getWidth() - this.image.getWidth(null)) / 2F), Math.round((newImage.getHeight() - this.image.getHeight(null)) / 2F), this.image.getWidth(null), this.image.getHeight(null), null);
+        }
+
+        this.image = newImage;
+        return this;
     }
 
     private static Color[][] getImagePixels(BufferedImage image) {

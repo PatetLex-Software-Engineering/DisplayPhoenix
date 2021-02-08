@@ -12,7 +12,8 @@
   "category": "logic",
   "code": {
     "java": "!($[value%BOOL])",
-    "javascript": "!($[value%BOOL])"
+    "javascript": "!($[value%BOOL])",
+    "lua": "not($[value%BOOL])"
   },
   "escape": {
     "java": true,

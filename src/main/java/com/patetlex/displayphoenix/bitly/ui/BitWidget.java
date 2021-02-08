@@ -1,68 +1,36 @@
 package com.patetlex.displayphoenix.bitly.ui;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.internal.LinkedTreeMap;
-import com.patetlex.displayphoenix.Application;
+import com.patetlex.displayphoenix.bitly.Bitly;
 import com.patetlex.displayphoenix.bitly.elements.Bit;
-import com.patetlex.displayphoenix.bitly.enums.BitWidgetStyle;
-import com.patetlex.displayphoenix.blockly.Blockly;
-import com.patetlex.displayphoenix.blockly.elements.Block;
-import com.patetlex.displayphoenix.blockly.elements.workspace.ImplementedBlock;
-import com.patetlex.displayphoenix.blockly.ui.BlocklyDependencyPanel;
-import com.patetlex.displayphoenix.blockly.ui.BlocklyPanel;
-import com.patetlex.displayphoenix.canvasly.CanvasPanel;
-import com.patetlex.displayphoenix.canvasly.ElementPanel;
-import com.patetlex.displayphoenix.canvasly.LayerViewPanel;
-import com.patetlex.displayphoenix.canvasly.ToolPanel;
-import com.patetlex.displayphoenix.canvasly.elements.CanvasSave;
-import com.patetlex.displayphoenix.canvasly.elements.Element;
-import com.patetlex.displayphoenix.canvasly.elements.StaticElement;
-import com.patetlex.displayphoenix.canvasly.elements.impl.FontElement;
-import com.patetlex.displayphoenix.canvasly.elements.impl.ImageElement;
-import com.patetlex.displayphoenix.canvasly.tools.Tool;
-import com.patetlex.displayphoenix.file.Data;
-import com.patetlex.displayphoenix.file.DetailedFile;
-import com.patetlex.displayphoenix.file.FileDialog;
+import com.patetlex.displayphoenix.bitly.elements.BitWidgetStyle;
 import com.patetlex.displayphoenix.lang.Localizer;
-import com.patetlex.displayphoenix.ui.widget.*;
-import com.patetlex.displayphoenix.ui.widget.TextField;
 import com.patetlex.displayphoenix.util.*;
 import com.patetlex.displayphoenix.system.web.Website;
 
-import javax.imageio.ImageIO;
-import javax.script.Invocable;
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
-import javax.script.ScriptException;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.util.*;
 import java.util.List;
-import java.util.function.Consumer;
 
 public class BitWidget {
 
-    private static transient final Random rand = new Random();
-    private static transient final Gson gson = new GsonBuilder().setPrettyPrinting().create();
-    private static transient Map<String, Integer> colorCache = new HashMap<>();
+    private transient BitWidgetStyle styleCache;
 
-    private BitWidgetStyle style;
+    private String style;
     private String flag;
     private String helpUrl;
-    private String[] provisions;
-    private String[] options;
-    private String path;
-    private String headBlock;
-    private int width;
-    private int height;
-    private String[] tools;
-    private List<CanvasElement> canvasElements;
+    public  String[] provisions;
+    public String[] options;
+    public String path;
+    public String headBlock;
+    public int width;
+    public int height;
+    public String[] tools;
+    public List<CanvasElement> canvasElements;
     private String script;
 
     /**
@@ -73,7 +41,8 @@ public class BitWidget {
      * @see BitWidgetStyle
      */
     public BitWidget(BitWidgetStyle style, String flag) {
-        this.style = style;
+        this.style = style.getName();
+        this.styleCache = style;
         this.flag = flag;
     }
 
@@ -84,7 +53,9 @@ public class BitWidget {
      * @see BitWidgetStyle
      */
     public BitWidgetStyle getStyle() {
-        return style;
+        if (this.styleCache == null)
+            this.styleCache = Bitly.getStyleFromName(this.style);
+        return this.styleCache;
     }
 
     /**
@@ -97,20 +68,20 @@ public class BitWidget {
     }
 
     /**
+     * JavaScript of widget
+     *
+     * @return
+     */
+    public String getScript() {
+        return script;
+    }
+
+    /**
      * Creates the main component and panel component
      *
      * @return Component array of both panel and component
      */
     public Component[] create() {
-        ScriptEngineManager manager = new ScriptEngineManager();
-        ScriptEngine engine = manager.getEngineByExtension("js");
-        Invocable invocable = (Invocable) engine;
-        try {
-            engine.eval(this.script != null ? this.script : "");
-        } catch (ScriptException e) {
-            e.printStackTrace();
-        }
-
         // Widget comment
         JLabel label = new JLabel(Localizer.translate("bitly.widget." + flag.toLowerCase() + ".text"));
 
@@ -129,255 +100,9 @@ public class BitWidget {
         ComponentHelper.themeComponent(label);
         ComponentHelper.deriveFont(label, 25F);
 
-        // Checks for each individual style
-        switch (style) {
-            case TOGGLE:
-                Toggle toggle = new Toggle();
-                toggle.setPreferredSize(new Dimension(150, 75));
-                return new Component[]{PanelHelper.northAndCenterElements(PanelHelper.join(label), PanelHelper.join(toggle)), toggle};
-            case TEXT:
-                TextField textField = new TextField();
-                textField.setPreferredSize(new Dimension(150, 75));
-                ComponentHelper.deriveFont(textField, 25);
-                textField.setHorizontalAlignment(SwingConstants.CENTER);
-                return new Component[]{PanelHelper.northAndCenterElements(PanelHelper.join(label), PanelHelper.join(textField)), textField};
-            case NUMBER:
-                TextField numField = new TextField();
-                numField.addKeyListener(new KeyAdapter() {
-                    @Override
-                    public void keyTyped(KeyEvent e) {
-                        char c = e.getKeyChar();
-                        boolean flag = false;
-                        try {
-                            Double.parseDouble(Character.toString(c));
-                        } catch (NumberFormatException ex) {
-                            flag = true;
-                        }
-                        if (flag)
-                            e.consume();
-                    }
-                });
-                numField.setPreferredSize(new Dimension(150, 75));
-                ComponentHelper.deriveFont(numField, 25);
-                numField.setHorizontalAlignment(SwingConstants.CENTER);
-                return new Component[]{PanelHelper.northAndCenterElements(PanelHelper.join(label), PanelHelper.join(numField)), numField};
-            case BLOCKLY: {
-                ProvisionWidget provisionWidget = new ProvisionWidget(this.provisions, headBlock != null ? headBlock : "event_wrapper");
-                engine.put("widget", provisionWidget);
-                provisionWidget.addMouseListener(new MouseAdapter() {
-                    @Override
-                    public void mouseClicked(MouseEvent e) {
-                        if (e.getButton() == MouseEvent.BUTTON1 && e.getClickCount() == 2) {
-                            Application.openWindow(JFrame.DO_NOTHING_ON_CLOSE, parentFrame -> {
-                                BlocklyPanel blockly = new BlocklyPanel();
-                                engine.put("blocklyPanel", blockly);
-                                if (provisionWidget.getFieldProvisions() != null) {
-                                    for (String extensionKey : provisionWidget.getFieldProvisions().keySet()) {
-                                        blockly.addFieldExtensions(extensionKey, provisionWidget.getFieldProvisions().get(extensionKey));
-                                    }
-                                }
-                                BlocklyDependencyPanel dependencyPanel = new BlocklyDependencyPanel(blockly);
-                                if (provisions != null) {
-                                    for (String provision : provisions) {
-                                        dependencyPanel.addProvision(provision);
-                                    }
-                                }
-                                if (provisionWidget.getXml() != null) {
-                                    dependencyPanel.getBlocklyPanel().addBlocks(provisionWidget.getXml());
-                                } else {
-                                    Block event = Blockly.getBlockFromType(headBlock != null ? headBlock : "event_wrapper");
-                                    if (event == null) {
-                                        event = Blockly.getBlockFromType("event_wrapper");
-                                        event.persist();
-                                    }
-                                    dependencyPanel.getBlocklyPanel().addBlocks(new ImplementedBlock(event, 50, 50, false, true));
-                                }
-                                parentFrame.addWindowListener(new WindowAdapter() {
-                                    @Override
-                                    public void windowClosing(WindowEvent e) {
-                                        super.windowClosing(e);
-                                        if (dependencyPanel.getUnsatisfiedDependencies().isEmpty()) {
-                                            parentFrame.dispose();
-                                            provisionWidget.setXml(dependencyPanel.getBlocklyPanel().getRawWorkspace());
-                                            try {
-                                                invocable.invokeFunction("onClose");
-                                            } catch (ScriptException scriptException) {
-                                                scriptException.printStackTrace();
-                                            } catch (NoSuchMethodException noSuchMethodException) {
-                                                noSuchMethodException.printStackTrace();
-                                            }
-                                        } else {
-                                            Application.openWindow(JFrame.DISPOSE_ON_CLOSE, parentFrame -> {
-                                                JLabel label = new JLabel(Localizer.translate("blockly.unsatisfied_dependencies.text"));
-                                                ComponentHelper.themeComponent(label);
-                                                ComponentHelper.deriveFont(label, 20);
-                                                JPanel list = PanelHelper.join();
-                                                for (String unsatisfiedDependency : dependencyPanel.getUnsatisfiedDependencies()) {
-                                                    JLabel unsatisfyLabel = new JLabel(unsatisfiedDependency);
-                                                    ComponentHelper.themeComponent(unsatisfyLabel);
-                                                    ComponentHelper.deriveFont(unsatisfyLabel, 17);
-                                                    if (!colorCache.containsKey(unsatisfiedDependency))
-                                                        colorCache.put(unsatisfiedDependency, rand.nextInt(360));
-                                                    float hue = colorCache.get(unsatisfiedDependency);
-                                                    label.setForeground(Color.getHSBColor(hue / 360F, 0.45F, 0.65F));
-                                                    JPanel labelPanel = PanelHelper.join(label);
-                                                    labelPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
-                                                    list = PanelHelper.northAndCenterElements(list, labelPanel);
-                                                }
-                                                parentFrame.add(PanelHelper.northAndCenterElements(PanelHelper.join(label), list));
-                                            }, Math.round(Application.getTheme().getWidth() * 0.3F), Math.round(Application.getTheme().getHeight() * 0.5F));
-                                        }
-                                    }
-                                });
-                                try {
-                                    invocable.invokeFunction("onOpen");
-                                } catch (ScriptException scriptException) {
-                                    scriptException.printStackTrace();
-                                } catch (NoSuchMethodException noSuchMethodException) {
-                                    noSuchMethodException.printStackTrace();
-                                }
-                                parentFrame.add(PanelHelper.centerAndEastElements(blockly, dependencyPanel));
-                                blockly.setPreferredSize(new Dimension(Math.round(parentFrame.getWidth() * 0.85F), parentFrame.getHeight()));
-                                dependencyPanel.setPreferredSize(new Dimension(Math.round(parentFrame.getWidth() * 0.15F), parentFrame.getHeight()));
-                            });
-                        }
-                    }
-                });
-                ComponentHelper.deriveFont(provisionWidget, 25);
-                provisionWidget.setPreferredSize(new Dimension(150, 75));
-                return new Component[]{PanelHelper.northAndCenterElements(PanelHelper.join(label), PanelHelper.join(provisionWidget)), provisionWidget};
-            }
-            case RESOURCE:
-                ResourceWidget resourceWidget = new ResourceWidget();
-                engine.put("widget", resourceWidget);
-                resourceWidget.addMouseListener(new MouseAdapter() {
-                    @Override
-                    public void mouseClicked(MouseEvent e) {
-                        FileDialog.openFile(new Consumer<DetailedFile>() {
-                            @Override
-                            public void accept(DetailedFile detailedFile) {
-                                if (width != 0 && height != 0) {
-                                    if (detailedFile.getFileExtension().equalsIgnoreCase("png")) {
-                                        try {
-                                            ImageIcon icon = new ImageIcon(Toolkit.getDefaultToolkit().createImage(detailedFile.getFile().toURI().toURL()));
-                                            if (icon != null && icon.getIconWidth() != width && icon.getIconHeight() != height) {
-                                                return;
-                                            }
-                                        } catch (MalformedURLException malformedURLException) {
-                                            malformedURLException.printStackTrace();
-                                        }
-                                    }
-                                }
-                                resourceWidget.setFile(detailedFile);
-                                try {
-                                    invocable.invokeFunction("fileSet", detailedFile);
-                                } catch (ScriptException scriptException) {
-                                    scriptException.printStackTrace();
-                                } catch (NoSuchMethodException noSuchMethodException) {
-                                }
-                            }
-                        }, options);
-                    }
-                });
-                resourceWidget.setPreferredSize(new Dimension(150, 150));
-                return new Component[]{PanelHelper.northAndCenterElements(PanelHelper.join(label), PanelHelper.join(resourceWidget)), resourceWidget};
-            case IMAGE:
-                JLabel label1 = new JLabel(ImageHelper.resize(ImageHelper.fromPath(this.path), this.width > 0 ? this.width : 150, this.height > 0 ? this.height : 150));
-                label1.setPreferredSize(new Dimension(this.width > 0 ? this.width : 150, this.height > 0 ? this.height : 150));
-                return new Component[]{PanelHelper.northAndCenterElements(PanelHelper.join(label), PanelHelper.join(label1)), label1};
-            case CANVAS:
-                CanvasWidget canvasWidget = new CanvasWidget();
-                engine.put("widget", canvasWidget);
-                canvasWidget.setToolTipText(this.width + " x " + this.height);
-                List<Tool> canvasTools = new ArrayList<>();
-                for (Tool tool : Tool.REGISTERED_TOOLS) {
-                    for (String toolName : this.tools) {
-                        if (tool.getName().equalsIgnoreCase(toolName)) {
-                            canvasTools.add(tool);
-                            break;
-                        }
-                    }
-                }
-                canvasWidget.addMouseListener(new MouseAdapter() {
-                    @Override
-                    public void mouseClicked(MouseEvent e) {
-                        super.mouseClicked(e);
-                        if (e.getButton() == MouseEvent.BUTTON1 && e.getClickCount() == 2) {
-                            Application.openWindow(JFrame.DISPOSE_ON_CLOSE, parentFrame -> {
-                                CanvasPanel canvas = new CanvasPanel(width, height);
-                                engine.put("canvasPanel", canvas);
-                                canvas.setPreferredSize(new Dimension(parentFrame.getWidth() - (canvasElements != null ? 600 : 400), parentFrame.getHeight()));
-                                ToolPanel toolkit = new ToolPanel(canvas, canvasTools.toArray(new Tool[canvasTools.size()]));
-                                toolkit.setPreferredSize(new Dimension(200, parentFrame.getHeight()));
-                                LayerViewPanel layerView = new LayerViewPanel(canvas);
-                                layerView.setPreferredSize(new Dimension(200, parentFrame.getHeight()));
-                                if (canvasWidget.getSave() != null) {
-                                    canvas.setCanvas(canvasWidget.getSave().getPixels(), canvasWidget.getSave().getStaticElements());
-                                }
-                                parentFrame.addWindowListener(new WindowAdapter() {
-                                    @Override
-                                    public void windowClosing(WindowEvent e) {
-                                        super.windowClosing(e);
-                                        canvasWidget.setSave(canvas.getSave());
-                                        try {
-                                            invocable.invokeFunction("onClose");
-                                        } catch (ScriptException scriptException) {
-                                            scriptException.printStackTrace();
-                                        } catch (NoSuchMethodException noSuchMethodException) {
-                                            noSuchMethodException.printStackTrace();
-                                        }
-                                    }
-                                });
-                                if (canvasElements != null) {
-                                    List<StaticElement> staticElements = new ArrayList<>();
-                                    for (CanvasElement canvasElement : canvasElements) {
-                                        Element element = null;
-                                        if (canvasElement.type.equalsIgnoreCase("image")) {
-                                            String[] paths = canvasElement.defaultValue.split("/");
-                                            try {
-                                                element = new ImageElement(ImageIO.read(Data.find("/bitly/elements/" + paths[paths.length - 1])), paths[paths.length - 1]);
-                                            } catch (IOException ioException) {
-                                                ioException.printStackTrace();
-                                            }
-                                        } else if (canvasElement.type.equalsIgnoreCase("text")) {
-                                            element = new FontElement(canvasElement.defaultValue, new Color(canvasElement.r, canvasElement.g, canvasElement.b, canvasElement.a), 1);
-                                        }
-                                        element.setScaleFactor(canvasElement.scale);
-                                        StaticElement.Properties properties = new StaticElement.Properties();
-                                        if (canvasElement.parse) {
-                                            properties.setParse();
-                                        }
-                                        if (canvasElement.overlay) {
-                                            properties.setOverlay();
-                                        }
-                                        staticElements.add(new StaticElement(element, 0, 0, properties));
-                                    }
-                                    ElementPanel elementPanel = new ElementPanel(canvas, staticElements.toArray(new StaticElement[staticElements.size()]));
-                                    elementPanel.setPreferredSize(new Dimension(200, parentFrame.getHeight()));
-                                    parentFrame.add(PanelHelper.westAndCenterElements(PanelHelper.westAndCenterElements(elementPanel, toolkit), PanelHelper.westAndCenterElements(canvas, layerView)));
-                                    return;
-                                }
-                                try {
-                                    invocable.invokeFunction("onOpen");
-                                } catch (ScriptException scriptException) {
-                                    scriptException.printStackTrace();
-                                } catch (NoSuchMethodException noSuchMethodException) {
-                                    noSuchMethodException.printStackTrace();
-                                }
-                                parentFrame.add(PanelHelper.westAndCenterElements(PanelHelper.westAndCenterElements(toolkit, canvas), layerView));
-                            });
-                        }
-                    }
-                });
-                canvasWidget.setPreferredSize(new Dimension(150, 150));
-                return new Component[]{PanelHelper.northAndCenterElements(PanelHelper.join(label), PanelHelper.join(canvasWidget)), canvasWidget};
-            case OPTIONS: {
-                JComboBox comboBox = new JComboBox(this.options);
-                comboBox.setPreferredSize(new Dimension(150, 75));
-                return new Component[]{PanelHelper.northAndCenterElements(PanelHelper.join(label), PanelHelper.join(comboBox)), comboBox};
-            }
-        }
-        return null;
+        Component component = this.getStyle().create(this);
+
+        return new Component[]{PanelHelper.northAndCenterElements(PanelHelper.join(label), PanelHelper.join(component)), component};
     }
 
     /**
@@ -388,41 +113,7 @@ public class BitWidget {
      * @see Bit#get(BitArgument...)
      */
     public void setValue(Component component, BitArgument argument) {
-
-        // Switch for each style
-        switch (style) {
-            case TOGGLE:
-                ((Toggle) component).setToggle(argument.getAsBoolean());
-                break;
-            case TEXT:
-            case NUMBER:
-                ((TextField) component).setText(argument.getAsString());
-                break;
-            case BLOCKLY:
-                ((ProvisionWidget) component).setXml(argument.getAsString());
-                break;
-            case RESOURCE: {
-                if (argument.get() instanceof DetailedFile) {
-                    ((ResourceWidget) component).setFile((DetailedFile) argument.get());
-                } else if (argument.get() instanceof File) {
-                    ((ResourceWidget) component).setFile(new DetailedFile((File) argument.get()));
-                } else {
-                    ((ResourceWidget) component).setFile(new DetailedFile(new File(argument.getAsString())));
-                }
-                break;
-            }
-            case CANVAS: {
-                Object arg = argument.get();
-                if (arg instanceof LinkedTreeMap) {
-                    arg = gson.fromJson(gson.toJson(arg), CanvasSave.class);
-                }
-                ((CanvasWidget) component).setSave((CanvasSave) arg);
-                break;
-            }
-            case OPTIONS: {
-                ((JComboBox) component).setSelectedItem(argument.getAsString());
-            }
-        }
+        this.getStyle().setValue(component, argument);
         component.repaint();
     }
 
@@ -432,25 +123,7 @@ public class BitWidget {
      * @param component Component to check
      */
     public Object getValue(Component component) {
-
-        // Switch for each style
-        switch (style) {
-            case TOGGLE:
-                return ((Toggle) component).isToggled();
-            case TEXT:
-            case NUMBER:
-                return ((TextField) component).getText();
-            case BLOCKLY:
-                return ((ProvisionWidget) component).getXml();
-            case RESOURCE:
-                return ((ResourceWidget) component).getFile();
-            case CANVAS:
-                return ((CanvasWidget) component).getSave();
-            case OPTIONS: {
-                return ((JComboBox) component).getSelectedItem();
-            }
-        }
-        return null;
+        return this.getStyle().getValue(component);
     }
 
     /**
@@ -488,7 +161,7 @@ public class BitWidget {
         return nameToContent;
     }
 
-    private static class CanvasElement {
+    public static class CanvasElement {
 
         public String type;
         public String defaultValue;

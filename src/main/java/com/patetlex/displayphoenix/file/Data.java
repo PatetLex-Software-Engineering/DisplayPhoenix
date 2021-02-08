@@ -10,6 +10,7 @@ import com.patetlex.displayphoenix.util.FileHelper;
 import com.patetlex.displayphoenix.util.StringHelper;
 
 import java.io.*;
+import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -71,6 +72,12 @@ public class Data {
                 subFile.delete();
             }
         }
+        FileHelper.forEachSubFile(new File(directory.getPath() + "\\cache\\"), new FileIteration() {
+            @Override
+            public void iterate(File file) {
+                file.delete();
+            }
+        });
         create();
     }
 
@@ -98,6 +105,15 @@ public class Data {
             return file;
         } catch (FileNotFoundException e) {
             e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static File cache(File file) {
+        try {
+            return cache(Files.readAllBytes(file.toPath()), new DetailedFile(file).getFileName());
         } catch (IOException e) {
             e.printStackTrace();
         }

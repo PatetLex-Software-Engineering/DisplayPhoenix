@@ -29,7 +29,7 @@ public class ImplementedBit {
     /**
      * An implemented bit, contains all widgets/fields.
      *
-     * @param bit  Base bit
+     * @param bit Base bit
      */
     public ImplementedBit(Bit bit) {
         this.bit = bit;
@@ -64,7 +64,7 @@ public class ImplementedBit {
     /**
      * Get value of specific bit
      *
-     * @param flag  Flag of bit widget
+     * @param flag Flag of bit widget
      * @return
      */
     public Object getValue(String flag) {
@@ -81,7 +81,7 @@ public class ImplementedBit {
     /**
      * Get component of specific bit
      *
-     * @param flag  Flag of bit widget
+     * @param flag Flag of bit widget
      * @return
      */
     public Component getComponent(String flag) {
@@ -98,35 +98,37 @@ public class ImplementedBit {
     public java.util.List<Component> getPageComponents(BitArgument[] arguments) {
         return getPageComponents(this.currentPage, arguments);
     }
+
     protected java.util.List<Component> getPageComponents(int page, BitArgument[] arguments) {
         int i = 0;
         java.util.List<Component> pageComponents = new ArrayList<>();
         for (BitWidget[] widgetArr : this.bit.getBits()) {
-            if (i == page) {
-                for (BitWidget widget : widgetArr) {
-                    if (!this.widgetToPanel.containsKey(widget)) {
-                        Component[] component = widget.create();
-                        this.widgetToPanel.put(widget, (JPanel) component[0]);
-                        this.widgetToRawComponent.put(widget, component[1]);
-                        for (Bit pluginBit : this.bit.getPlugins()) {
-                            ImplementedBit implementedPlugin = new ImplementedBit(pluginBit);
-                            for (BitWidget[] pluginPage : pluginBit.getBits()) {
-                                for (BitWidget pluginWidget : pluginPage) {
-                                    if (pluginWidget == widget) {
-                                        implementedPlugin.widgetToPanel.put(widget, (JPanel) component[0]);
-                                        implementedPlugin.widgetToRawComponent.put(widget, component[1]);
-                                    }
+            for (BitWidget widget : widgetArr) {
+                if (!this.widgetToPanel.containsKey(widget)) {
+                    Component[] component = widget.create();
+                    this.widgetToPanel.put(widget, (JPanel) component[0]);
+                    this.widgetToRawComponent.put(widget, component[1]);
+                    for (Bit pluginBit : this.bit.getPlugins()) {
+                        ImplementedBit implementedPlugin = new ImplementedBit(pluginBit);
+                        for (BitWidget[] pluginPage : pluginBit.getBits()) {
+                            for (BitWidget pluginWidget : pluginPage) {
+                                if (pluginWidget == widget) {
+                                    implementedPlugin.widgetToPanel.put(widget, (JPanel) component[0]);
+                                    implementedPlugin.widgetToRawComponent.put(widget, component[1]);
                                 }
                             }
                         }
+                    }
+                    if (i == page) {
                         pageComponents.add(component[0]);
-                        for (BitArgument argument : arguments) {
-                            if (argument.getFlag().equalsIgnoreCase(widget.getFlag())) {
-                                widget.setValue(component[1], argument);
-                            }
+                    }
+                    for (BitArgument argument : arguments) {
+                        if (argument.getFlag().equalsIgnoreCase(widget.getFlag())) {
+                            widget.setValue(component[1], argument);
                         }
                     }
-                    else {
+                } else {
+                    if (i == page) {
                         pageComponents.add(this.widgetToPanel.get(widget));
                     }
                 }
@@ -142,11 +144,9 @@ public class ImplementedBit {
         final JPanel[] pagePanel = {PanelHelper.grid(2, prevPage, nextPage)};
         if (this.currentPage == 0 && this.bit.getBits().size() == 1) {
             pagePanel[0] = PanelHelper.join();
-        }
-        else if (this.currentPage == 0) {
+        } else if (this.currentPage == 0) {
             pagePanel[0] = PanelHelper.grid(1, nextPage);
-        }
-        else if (this.currentPage == this.bit.getBits().size() - 1) {
+        } else if (this.currentPage == this.bit.getBits().size() - 1) {
             pagePanel[0] = PanelHelper.grid(1, prevPage);
         }
         if (prevPage != null) {
@@ -193,7 +193,7 @@ public class ImplementedBit {
                 pagePanel[0].repaint();
             }
         });
-        pagePanel[0].setLayout(new FlowLayout(FlowLayout.CENTER,0,0));
+        pagePanel[0].setLayout(new FlowLayout(FlowLayout.CENTER, 0, 0));
         return pagePanel[0];
     }
 }

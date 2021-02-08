@@ -13,7 +13,8 @@
   "colour": 165,
   "code": {
     "javascript": "$[value%TEXT].length",
-    "java": "$[value%TEXT].length()"
+    "java": "$[value%TEXT].length()",
+    "lua": "string.len($[value%TEXT])"
   },
   "tooltip": "",
   "helpUrl": ""

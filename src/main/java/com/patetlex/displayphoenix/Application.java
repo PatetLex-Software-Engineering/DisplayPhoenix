@@ -5,6 +5,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.patetlex.displayphoenix.bitly.Bitly;
+import com.patetlex.displayphoenix.bitly.elements.BitWidgetStyle;
 import com.patetlex.displayphoenix.blockly.Blockly;
 import com.patetlex.displayphoenix.canvasly.tools.Tool;
 import com.patetlex.displayphoenix.canvasly.tools.impl.*;
@@ -78,6 +79,14 @@ public class Application {
         Module.registerModule(Module.JAVA);
         Module.registerModule(Module.JAVASCRIPT);
         Module.registerModule(Module.LUA);
+        Bitly.registerWidgetStyle(BitWidgetStyle.TOGGLE);
+        Bitly.registerWidgetStyle(BitWidgetStyle.TEXT);
+        Bitly.registerWidgetStyle(BitWidgetStyle.NUMBER);
+        Bitly.registerWidgetStyle(BitWidgetStyle.BLOCKLY);
+        Bitly.registerWidgetStyle(BitWidgetStyle.RESOURCE);
+        Bitly.registerWidgetStyle(BitWidgetStyle.CANVAS);
+        Bitly.registerWidgetStyle(BitWidgetStyle.IMAGE);
+        Bitly.registerWidgetStyle(BitWidgetStyle.OPTIONS);
         Localizer.create();
         session = Data.create();
         Blockly.load();
@@ -108,27 +117,7 @@ public class Application {
         }
         openFrames.clear();
         for (ApplicationFrame frame : validFrames) {
-            ApplicationFrame newFrame = new ApplicationFrame(frame.getTitle(), frame.getDefaultCloseOperation(), frame.getWidth(), frame.getHeight(), frame.isResizable(), frame.getOpenListener());
-            newFrame.setBackground(frame.getBackground());
-            newFrame.setForeground(frame.getForeground());
-            ComponentHelper.forEachSubComponentOf(newFrame, new Consumer<Component>() {
-                @Override
-                public void accept(Component component) {
-                    Color lBColor = UIManager.getColor("Label.background");
-                    Color lFColor = UIManager.getColor("Label.foreground");
-                    Color bBColor = UIManager.getColor("Button.background");
-                    Color bFColor = UIManager.getColor("Button.foreground");
-                    if (lFColor.equals(component.getForeground()) || bFColor.equals(component.getForeground())) {
-                        component.setForeground(component instanceof JLabel || component instanceof JButton || component instanceof JComboBox ? theme.getColorTheme().getTextColor() : theme.getColorTheme().getSecondaryColor());
-                    }
-                    if (lBColor.equals(component.getBackground()) || bBColor.equals(component.getBackground())) {
-                        component.setBackground(theme.getColorTheme().getPrimaryColor());
-                    }
-                    if (component.getFont() == UIManager.getFont("Label.font") || component.getFont() == UIManager.getFont("Button.font") || component.getFont() == UIManager.getFont("defaultFont")) {
-                        component.setFont(component.getFont() != null ? theme.getFont().deriveFont(component.getFont().getSize()) : theme.getFont());
-                    }
-                }
-            });
+            ApplicationFrame newFrame = (ApplicationFrame) frame.clone();
             newFrame.addWindowListener(new WindowAdapter() {
                 @Override
                 public void windowClosed(WindowEvent e) {
@@ -219,8 +208,8 @@ public class Application {
         });
         frame.addWindowListener(new WindowAdapter() {
             @Override
-            public void windowClosing(WindowEvent e) {
-                super.windowClosing(e);
+            public void windowClosed(WindowEvent e) {
+                super.windowClosed(e);
                 openFrames.remove(frame);
             }
         });

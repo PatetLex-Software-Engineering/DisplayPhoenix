@@ -2,6 +2,7 @@ package com.patetlex.displayphoenix.util;
 
 import com.patetlex.displayphoenix.canvasly.effects.ImageEffect;
 
+import javax.imageio.IIOException;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
@@ -75,21 +76,21 @@ public class ImageHelper {
     }
 
     public static Image flip(Image image, int axis) {
-        return new ImageEffect(image).flip(axis);
+        return new ImageEffect(image).flip(axis).draw();
     }
 
     public static Image overlay(Image image, Color color, float opacity) {
-        return new ImageEffect(image).overlay(color, opacity);
+        return new ImageEffect(image).overlay(color, opacity).draw();
     }
 
     public static Image rotate(Image image, float angle) {
-        return new ImageEffect(image).rotate(angle);
+        return new ImageEffect(image).rotate(angle).draw();
     }
 
     private static ImageIcon fromResource(String path) {
-        if (CACHE.get(path) != null)
+        if (CACHE.get(path) != null) {
             return CACHE.get(path);
-        else {
+        } else {
             ImageIcon newItem = new ImageIcon(Toolkit.getDefaultToolkit().createImage(ClassLoader.getSystemClassLoader().getResource(path)));
             CACHE.put(path, newItem);
             return newItem;
@@ -101,9 +102,9 @@ public class ImageHelper {
     }
 
     public static ImageIcon fromPath(File path) {
-        if (CACHE.get(path.getPath()) != null && CACHE.get(path.getPath()).getImage() != null)
-            return CACHE.get(path);
-        else {
+        if (CACHE.get(path.getPath()) != null && CACHE.get(path.getPath()).getImage() != null) {
+            return CACHE.get(path.getPath());
+        } else {
             ImageIcon newItem = null;
             try {
                 newItem = new ImageIcon(ImageIO.read(path));
@@ -118,8 +119,7 @@ public class ImageHelper {
     public static Image convertIcon(Icon icon) {
         if (icon instanceof ImageIcon) {
             return ((ImageIcon) icon).getImage();
-        }
-        else {
+        } else {
             GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
             GraphicsDevice gd = ge.getDefaultScreenDevice();
             GraphicsConfiguration gc = gd.getDefaultConfiguration();

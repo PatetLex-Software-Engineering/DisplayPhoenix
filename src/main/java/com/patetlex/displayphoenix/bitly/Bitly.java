@@ -5,7 +5,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import com.patetlex.displayphoenix.bitly.elements.Bit;
-import com.patetlex.displayphoenix.bitly.enums.BitWidgetStyle;
+import com.patetlex.displayphoenix.bitly.elements.BitWidgetStyle;
 import com.patetlex.displayphoenix.bitly.ui.BitWidget;
 import com.patetlex.displayphoenix.file.Data;
 import com.patetlex.displayphoenix.file.DetailedFile;
@@ -32,6 +32,7 @@ public class Bitly {
 
     private static List<Bit> BITS = new ArrayList<>();
     private static List<Bit> BIT_PLUGINS = new ArrayList<>();
+    private static List<BitWidgetStyle> WIDGET_STYLES = new ArrayList<>();
 
     public static void load() {
         BITS.clear();
@@ -111,6 +112,15 @@ public class Bitly {
         return null;
     }
 
+    public static BitWidgetStyle getStyleFromName(String name) {
+        for (BitWidgetStyle style : WIDGET_STYLES) {
+            if (style.getName().equalsIgnoreCase(name)) {
+                return style;
+            }
+        }
+        return null;
+    }
+
     /**
      * Returns all registered bits, unmodifiable
      * <p>
@@ -122,6 +132,17 @@ public class Bitly {
      */
     public static List<Bit> getRegisteredBits() {
         return Collections.unmodifiableList(BITS);
+    }
+
+    public static List<BitWidgetStyle> getRegisteredWidgetStyles() {
+        return Collections.unmodifiableList(WIDGET_STYLES);
+    }
+
+    public static void registerWidgetStyle(BitWidgetStyle style) {
+        if (WIDGET_STYLES.contains(style)) {
+            WIDGET_STYLES.remove(style);
+        }
+        WIDGET_STYLES.add(style);
     }
 
     private static void registerBit(DetailedFile file) {

@@ -22,7 +22,8 @@
   "category": "text",
   "code": {
     "javascript": "$[value%TEXT].substr($[value%SINDEX], $[value%EINDEX])",
-    "java": "$[value%TEXT].substring($[value%SINDEX], $[value%EINDEX])"
+    "java": "$[value%TEXT].substring($[value%SINDEX], $[value%EINDEX])",
+    "lua": "string.sub($[value%TEXT], $[value%SINDEX], $[value%EINDEX])"
   },
   "colour": 165,
   "tooltip": "",

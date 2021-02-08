@@ -14,8 +14,7 @@ import com.patetlex.displayphoenix.util.BlocklyHelper;
 import java.io.*;
 import java.util.*;
 
-import static com.patetlex.displayphoenix.generation.Module.JAVA;
-import static com.patetlex.displayphoenix.generation.Module.JAVASCRIPT;
+import static com.patetlex.displayphoenix.generation.Module.*;
 
 /**
  * @author TBroski
@@ -459,10 +458,11 @@ public class Blockly {
             JAVA.registerBlockCode(ifBlock, "if ($[value%IF0]) {\n$[statement%DO0]\n}");
             JAVA.escapeSyntax(ifBlock);
             JAVA.attachMutator(ifBlock, (mutation, index) -> {
+                System.out.println(mutation);
                 if (mutation.equalsIgnoreCase("elseif")) {
-                    return "else if ($[value%IF" + index + "]) {\n$[statement%DO" + index + "]\n}";
+                    return "\nelse if ($[value%IF" + index + "]) {\n$[statement%DO" + index + "]\n}";
                 } else if (mutation.equalsIgnoreCase("else")) {
-                    return "else {\n$[statement%ELSE]\n}";
+                    return "\nelse {\n$[statement%ELSE]\n}";
                 }
                 return null;
             });
@@ -470,9 +470,19 @@ public class Blockly {
             JAVASCRIPT.escapeSyntax(ifBlock);
             JAVASCRIPT.attachMutator(ifBlock, (mutation, index) -> {
                 if (mutation.equalsIgnoreCase("elseif")) {
-                    return "else if ($[value%IF" + index + "]) {\n$[statement%DO" + index + "]\n}";
+                    return "\nelse if ($[value%IF" + index + "]) {\n$[statement%DO" + index + "]\n}";
                 } else if (mutation.equalsIgnoreCase("else")) {
-                    return "else {\n$[statement%ELSE]\n}";
+                    return "\nelse {\n$[statement%ELSE]\n}";
+                }
+                return null;
+            });
+            LUA.registerBlockCode(ifBlock, "if ($[value%IF0]) then \n$[statement%DO0]");
+            LUA.escapeSyntax(ifBlock);
+            LUA.attachMutator(ifBlock, (mutation, index) -> {
+                if (mutation.equalsIgnoreCase("elseif")) {
+                    return "\nelseif ($[value%IF" + index + "]) then \n$[statement%DO" + index + "]";
+                } else if (mutation.equalsIgnoreCase("else")) {
+                    return "\nelse \n$[statement%ELSE]";
                 }
                 return null;
             });
@@ -518,6 +528,19 @@ public class Blockly {
                 return field.getValue();
             });
             JAVASCRIPT.escapeSyntax(compareBlock);
+            LUA.registerBlockCode(compareBlock, "($[value%A] $[field%OP] $[value%B])");
+            LUA.manipulateField(compareBlock, field -> {
+                if (field.getKey().equalsIgnoreCase("OP")) {
+                    if (field.getValue().equalsIgnoreCase("EQ")) return "==";
+                    if (field.getValue().equalsIgnoreCase("NEQ")) return "~=";
+                    if (field.getValue().equalsIgnoreCase("LT")) return "<";
+                    if (field.getValue().equalsIgnoreCase("LTE")) return "<=";
+                    if (field.getValue().equalsIgnoreCase("GT")) return ">";
+                    if (field.getValue().equalsIgnoreCase("GTE")) return ">=";
+                }
+                return field.getValue();
+            });
+            LUA.escapeSyntax(compareBlock);
 
             Block booleanBlock = new Block("logic_boolean");
             BLOCKS.get(logic).add(booleanBlock);
@@ -527,6 +550,9 @@ public class Blockly {
             JAVASCRIPT.registerBlockCode(booleanBlock, "$[field%BOOL]");
             JAVASCRIPT.manipulateField(booleanBlock, field -> field.getValue().toLowerCase());
             JAVASCRIPT.escapeSyntax(booleanBlock);
+            LUA.registerBlockCode(booleanBlock, "$[field%BOOL]");
+            LUA.manipulateField(booleanBlock, field -> field.getValue().toLowerCase());
+            LUA.escapeSyntax(booleanBlock);
         });
 
         //Blockly.registerBlock("negate_logic", gson.fromJson(BlocklyHelper.getBlockJson("negate_logic"), JsonObject.class), logic);
@@ -549,6 +575,8 @@ public class Blockly {
             JAVA.escapeSyntax(numberBlock);
             JAVASCRIPT.registerBlockCode(numberBlock, "$[field%NUM]");
             JAVASCRIPT.escapeSyntax(numberBlock);
+            LUA.registerBlockCode(numberBlock, "$[field%NUM]");
+            LUA.escapeSyntax(numberBlock);
 
             Block arithmeticBlock = Blockly.getBlockFromType("math_arithmetic_custom");
             JAVA.registerBlockCode(arithmeticBlock, "($[value%A] $[field%OP] $[value%B])");
@@ -561,7 +589,7 @@ public class Blockly {
                 }
                 return field.getValue();
             });
-            JAVASCRIPT.escapeSyntax(arithmeticBlock);
+            JAVA.escapeSyntax(arithmeticBlock);
             JAVASCRIPT.registerBlockCode(arithmeticBlock, "($[value%A] $[field%OP] $[value%B])");
             JAVASCRIPT.manipulateField(arithmeticBlock, field -> {
                 if (field.getKey().equalsIgnoreCase("OP")) {
@@ -573,6 +601,16 @@ public class Blockly {
                 return field.getValue();
             });
             JAVASCRIPT.escapeSyntax(arithmeticBlock);
+            LUA.registerBlockCode(arithmeticBlock, "($[value%A] $[field%OP] $[value%B])");
+            LUA.manipulateField(arithmeticBlock, field -> {
+                if (field.getKey().equalsIgnoreCase("OP")) {
+                    if (field.getValue().equalsIgnoreCase("ADD")) return "+";
+                    if (field.getValue().equalsIgnoreCase("MINUS")) return "-";
+                    if (field.getValue().equalsIgnoreCase("MULTIPLY")) return "*";
+                    if (field.getValue().equalsIgnoreCase("DIVIDE")) return "/";
+                }
+                return field.getValue();
+            });
         });
 
         //Blockly.registerBlock("math_arithmetic_custom", gson.fromJson(BlocklyHelper.getBlockJson("math_arithmetic_custom"), JsonObject.class), math);
@@ -593,6 +631,8 @@ public class Blockly {
             JAVA.escapeSyntax(textBlock);
             JAVASCRIPT.registerBlockCode(textBlock, "'$[field%TEXT]'");
             JAVASCRIPT.escapeSyntax(textBlock);
+            LUA.registerBlockCode(textBlock, "\"$[field%TEXT]\"");
+            LUA.escapeSyntax(textBlock);
             JAVASCRIPT.manipulateField(textBlock, field -> {
                 if (field.getKey().equalsIgnoreCase("TEXT")) {
                     return field.getValue().replaceAll("'", "\\\\'");
@@ -602,6 +642,12 @@ public class Blockly {
             JAVA.manipulateField(textBlock, field -> {
                 if (field.getKey().equalsIgnoreCase("TEXT")) {
                     return field.getValue().replaceAll("\"", "\\\"").replaceAll("'", "\\\\'");
+                }
+                return null;
+            });
+            LUA.manipulateField(textBlock, field -> {
+                if (field.getKey().equalsIgnoreCase("TEXT")) {
+                    return field.getValue().replace("\"", "\\\"").replaceAll("'", "\\\\'");
                 }
                 return null;
             });

@@ -213,6 +213,7 @@ public class Module implements BlocklyXmlParser {
         String[] fieldInputs = StringHelper.substringsBetween(code, getFlags("field")[0], getFlags("field")[1]);
         String[] statementInputs = StringHelper.substringsBetween(code, getFlags("statement")[0], getFlags("statement")[1]);
         String[] valueInputs = StringHelper.substringsBetween(code, getFlags("value")[0], getFlags("value")[1]);
+
         if (!doesBlockContainFields(block)) {
             throw new InvalidParameterException();
         }
@@ -264,30 +265,7 @@ public class Module implements BlocklyXmlParser {
     }
 
     protected String getValueOfWidget(ImplementedBit bit, BitWidget widget) {
-        switch (widget.getStyle()) {
-            case TOGGLE:
-                return Boolean.toString(((Toggle) bit.getRawComponent(widget)).isToggled());
-            case TEXT:
-            case NUMBER:
-                return ((TextField) bit.getRawComponent(widget)).getText();
-            case BLOCKLY:
-                ProvisionWidget provisionWidget = ((ProvisionWidget) bit.getRawComponent(widget));
-                if (provisionWidget.getXml() == null)
-                    return null;
-                ImplementedBlock[] implementedBlocks = fromWorkspaceXml(provisionWidget.getXml());
-                for (ImplementedBlock implementedBlock : implementedBlocks) {
-                    if (implementedBlock.getBlock().getType().equalsIgnoreCase(provisionWidget.getHeadBlock())) {
-                        return this.getCodeFromBlock(implementedBlock);
-                    }
-                }
-                break;
-            case RESOURCE:
-                return ((ResourceWidget) bit.getRawComponent(widget)).getFile().getFile().getPath();
-            case OPTIONS: {
-                return String.valueOf(((JComboBox) bit.getRawComponent(widget)).getSelectedItem());
-            }
-        }
-        return null;
+        return widget.getStyle().getCode(this, bit.getRawComponent(widget));
     }
 
     public String getRawCode(Block block) {

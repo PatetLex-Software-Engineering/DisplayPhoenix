@@ -13,7 +13,8 @@
   "category": "text",
   "code": {
     "javascript": "console.log($[value%TEXT])",
-    "java": "System.out.println($[value%TEXT])"
+    "java": "System.out.println($[value%TEXT])",
+    "lua": "print($[value%TEXT])"
   },
   "tooltip": "",
   "helpUrl": ""

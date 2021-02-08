@@ -12,7 +12,8 @@
   "colour": 285,
   "code": {
     "javascript": "$[statement%EVENT]",
-    "java": "$[statement%EVENT]"
+    "java": "$[statement%EVENT]",
+    "lua": "$[statement%EVENT]"
   },
   "category": "flow_control",
   "tooltip": "",

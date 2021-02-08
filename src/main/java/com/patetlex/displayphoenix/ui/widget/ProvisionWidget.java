@@ -2,6 +2,7 @@ package com.patetlex.displayphoenix.ui.widget;
 
 import com.patetlex.displayphoenix.Application;
 import com.patetlex.displayphoenix.blockly.elements.workspace.Field;
+import com.patetlex.displayphoenix.blockly.ui.BlocklyPanel;
 import com.patetlex.displayphoenix.lang.Localizer;
 import com.patetlex.displayphoenix.util.ComponentHelper;
 import com.patetlex.displayphoenix.util.ImageHelper;
@@ -11,9 +12,12 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.function.Consumer;
 
 public class ProvisionWidget extends JButton {
 
@@ -22,6 +26,7 @@ public class ProvisionWidget extends JButton {
     private Map<String, Field[]> fieldProvisions = new HashMap<>();
     private String[] provisions;
     private String headBlock;
+    private List<Consumer<BlocklyPanel>> blocklyListeners = new ArrayList<>();
 
     private String xml;
 
@@ -85,6 +90,16 @@ public class ProvisionWidget extends JButton {
 
     public void setFieldProvisions(Map<String, Field[]> fieldProvisions) {
         this.fieldProvisions = fieldProvisions;
+    }
+
+    public void addBlocklyPanelListener(Consumer<BlocklyPanel> panel) {
+        this.blocklyListeners.add(panel);
+    }
+
+    public void invoke(BlocklyPanel panel) {
+        for (Consumer<BlocklyPanel> listener : this.blocklyListeners) {
+            listener.accept(panel);
+        }
     }
 
     @Override

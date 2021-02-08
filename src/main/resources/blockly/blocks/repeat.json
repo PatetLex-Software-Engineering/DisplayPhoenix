@@ -20,8 +20,9 @@
   "colour": 120,
   "category": "flow_control",
   "code": {
-    "java": "for (int $[increment%repeat] = 0; $[increment%repeat] < $[value%TIMES]; $[increment%repeat]++) {\n$[statement%DO]\n}",
-    "javascript": "var $[increment%repeat]; for ($[increment%repeat] = 0; $[increment%repeat] < $[value%TIMES]; $[increment%repeat]++) {\n$[statement%DO]\n}"
+    "java": "for (int $[increment%_repeat] = 0; $[increment%_repeat] < $[value%TIMES]; $[increment%_repeat]++) {\n$[statement%DO]\n}",
+    "javascript": "var $[increment%_repeat]; for ($[increment%_repeat] = 0; $[increment%_repeat] < $[value%TIMES]; $[increment%_repeat]++) {\n$[statement%DO]\n}",
+    "lua": "for $[increment%_repeat] = 1, $[value%TIMES], 1 do \n[statement%DO]\nend"
   },
   "escape": {
     "java": true,

@@ -3,14 +3,16 @@ package com.patetlex.displayphoenix.ui;
 
 import com.patetlex.displayphoenix.Application;
 import com.patetlex.displayphoenix.init.ColorInit;
+import com.patetlex.displayphoenix.util.ComponentHelper;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
-public class ApplicationFrame extends JFrame implements ComponentListener {
+public class ApplicationFrame extends JFrame implements ComponentListener, Cloneable {
 
     private List<JWindow> topLayers = new ArrayList<>();
     private int topLayerOffX;
@@ -62,8 +64,8 @@ public class ApplicationFrame extends JFrame implements ComponentListener {
         if (frame.closeActionCache == JFrame.EXIT_ON_CLOSE) {
             frame.addWindowListener(new WindowAdapter() {
                 @Override
-                public void windowClosed(WindowEvent e) {
-                    super.windowClosed(e);
+                public void windowClosing(WindowEvent e) {
+                    super.windowClosing(e);
                     Application.close();
                 }
             });
@@ -227,5 +229,32 @@ public class ApplicationFrame extends JFrame implements ComponentListener {
         for (Runnable runnable : this.revalidationListeners) {
             runnable.run();
         }
+    }
+
+    @Override
+    public Object clone() {
+        ApplicationFrame newFrame = new ApplicationFrame(this.getTitle(), this.getDefaultCloseOperation(), this.getWidth(), this.getHeight(), this.isResizable(), this.getOpenListener());
+        newFrame.setBackground(this.getBackground());
+        newFrame.setForeground(this.getForeground());
+        ComponentHelper.forEachSubComponentOf(newFrame, new Consumer<Component>() {
+            @Override
+            public void accept(Component component) {
+                Color lBColor = UIManager.getColor("Label.background");
+                Color lFColor = UIManager.getColor("Label.foreground");
+                Color bBColor = UIManager.getColor("Button.background");
+                Color bFColor = UIManager.getColor("Button.foreground");
+                if (lFColor.equals(component.getForeground()) || bFColor.equals(component.getForeground())) {
+                    component.setForeground(component instanceof JLabel || component instanceof JButton || component instanceof JComboBox ? Application.getTheme().getColorTheme().getTextColor() : Application.getTheme().getColorTheme().getSecondaryColor());
+                }
+                if (lBColor.equals(component.getBackground()) || bBColor.equals(component.getBackground())) {
+                    component.setBackground(Application.getTheme().getColorTheme().getPrimaryColor());
+                }
+                if (component.getFont() == UIManager.getFont("Label.font") || component.getFont() == UIManager.getFont("Button.font") || component.getFont() == UIManager.getFont("defaultFont")) {
+                    component.setFont(component.getFont() != null ? Application.getTheme().getFont().deriveFont(component.getFont().getSize()) : Application.getTheme().getFont());
+                }
+            }
+        });
+        newFrame.setLocation(this.getLocation());
+        return newFrame;
     }
 }
