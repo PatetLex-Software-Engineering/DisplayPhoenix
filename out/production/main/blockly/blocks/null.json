@@ -1,0 +1,19 @@
+{
+  "message0": "null",
+  "inputsInline": true,
+  "output": null,
+  "colour": 210,
+  "category": "logic",
+  "code": {
+    "java": "null",
+    "javascript": "undefined",
+    "lua": "nil"
+  },
+  "escape": {
+    "java": true,
+    "javascript": true,
+    "lua": true
+  },
+  "tooltip": "",
+  "helpUrl": ""
+}

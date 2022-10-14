@@ -6,6 +6,7 @@ import com.patetlex.displayphoenix.canvasly.elements.Element;
 import com.patetlex.displayphoenix.canvasly.elements.Layer;
 import com.patetlex.displayphoenix.canvasly.elements.StaticElement;
 import com.patetlex.displayphoenix.canvasly.interfaces.LayerListener;
+import com.patetlex.displayphoenix.canvasly.util.CanvasHelper;
 
 import javax.swing.*;
 import java.awt.*;
@@ -14,6 +15,7 @@ import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.util.*;
 import java.util.List;
+import java.util.function.Consumer;
 
 public class CanvasPanel extends JPanel implements MouseWheelListener, MouseMotionListener, MouseListener, KeyListener {
 
@@ -71,8 +73,7 @@ public class CanvasPanel extends JPanel implements MouseWheelListener, MouseMoti
                 }
                 j++;
             }
-        }
-        else {
+        } else {
             g.setColor(Color.LIGHT_GRAY);
             g.fillRect(0, 0, Math.round(convergeZoom(getCanvasWidth())), Math.round(convergeZoom(getCanvasHeight())));
         }
@@ -260,6 +261,16 @@ public class CanvasPanel extends JPanel implements MouseWheelListener, MouseMoti
                 return layer;
             }
         }
+        for (Layer layer : this.elements.keySet()) {
+            if (layer.getIndex() == index) {
+                return layer;
+            }
+        }
+        for (Layer layer : this.staticElements.keySet()) {
+            if (layer.getIndex() == index) {
+                return layer;
+            }
+        }
         return new Layer(index);
     }
 
@@ -289,27 +300,7 @@ public class CanvasPanel extends JPanel implements MouseWheelListener, MouseMoti
     }
 
     public BufferedImage getImage() {
-        BufferedImage image = new BufferedImage(this.canvasWidth, this.canvasHeight, BufferedImage.TYPE_INT_ARGB);
-        Graphics2D graphics2D = image.createGraphics();
-
-        List<Layer> layers = Arrays.asList(this.layerToPixels.keySet().toArray(new Layer[this.layerToPixels.keySet().size()]));
-        Collections.sort(layers, Comparator.comparingInt(Layer::getIndex));
-        for (Layer layer : layers) {
-            if (!layer.isHidden()) {
-                for (Pixel[] x : this.layerToPixels.get(layer)) {
-                    for (Pixel y : x) {
-                        if (y != null) {
-                            y.draw(graphics2D);
-                        }
-                        graphics2D.translate(0, 1);
-                    }
-                    graphics2D.translate(1, -this.canvasHeight);
-                }
-                graphics2D.translate(-this.canvasWidth, 0);
-            }
-        }
-
-        return image;
+        return CanvasHelper.draw(this.layerToPixels, this.canvasWidth, this.canvasHeight);
     }
 
     public int getCanvasX() {
@@ -359,6 +350,33 @@ public class CanvasPanel extends JPanel implements MouseWheelListener, MouseMoti
         addStaticElement(layer, new StaticElement(element, offX,  offY, properties));
     }
 
+    public void removeStaticElement(StaticElement staticElement) {
+        Layer layerToRemoveFrom = null;
+        StaticElement staticElementToRemove = null;
+        for (Layer layer : this.staticElements.keySet()) {
+            for (StaticElement staticElement1 : this.staticElements.get(layer)) {
+                if (staticElement.equals(staticElement1)) {
+                    layerToRemoveFrom = layer;
+                    staticElementToRemove = staticElement1;
+                }
+            }
+        }
+        if (layerToRemoveFrom != null && staticElementToRemove != null) {
+            this.staticElements.get(layerToRemoveFrom).remove(staticElementToRemove);
+            return;
+        }
+        for (Layer layer : this.elements.keySet()) {
+            if (this.elements.get(layer).staticElement != null && this.elements.get(layer).staticElement.equals(staticElement)) {
+                layerToRemoveFrom = layer;
+                staticElementToRemove = this.elements.get(layer).staticElement;
+            }
+        }
+        if (layerToRemoveFrom != null && staticElementToRemove != null) {
+            this.elements.remove(layerToRemoveFrom);
+            return;
+        }
+    }
+
     public CanvasSave getSave() {
         return new CanvasSave(this.getLayers(), this.getStaticElements());
     }
@@ -383,21 +401,28 @@ public class CanvasPanel extends JPanel implements MouseWheelListener, MouseMoti
                 addStaticElement(layerFromIndex(layer.getIndex()), staticElement.getElement().clone(), staticElement.getX(), staticElement.getY(), staticElement.getProperties());
             }
         }
-        for (Layer layer : staticElements.keySet()) {
-            if (this.elements.containsKey(layer)) {
-                CanvasElement cElement = this.elements.get(layer);
-                if (cElement.staticElement == null || cElement.staticElement.getProperties().shouldParse()) {
-                    cElement.element.parse(this, Math.round((float) Math.floor(cElement.offX)), Math.round((float) Math.floor(cElement.offY)));
+        for (Layer layer : this.elements.keySet()) {
+            CanvasElement canvasElement = this.elements.get(layer);
+            if (canvasElement.staticElement != null) {
+                if (!this.staticElements.containsKey(layer)) {
+                    this.staticElements.put(layer, new ArrayList<>());
                 }
-                this.elements.remove(layer);
+                this.staticElements.get(layer).add(canvasElement.staticElement);
             }
         }
+        this.elements.clear();
         for (LayerListener layerListener : this.layerListeners) {
             layerListener.onLayerSet(pixels.keySet());
         }
         this.setLayer(0);
         repaint();
         return this;
+    }
+
+    public void getStaticElementAt(int x, int y, Consumer<StaticElement> future) {
+        this.renderAttachers.add(g -> {
+            future.accept(rayTraceStaticElement(this.staticElements.get(this.getSelectedLayer()), new Point(x, y), (Graphics2D) g));
+        });
     }
 
     private CanvasElement rayTraceElement(Point point, Graphics2D graphics) {
@@ -462,7 +487,7 @@ public class CanvasPanel extends JPanel implements MouseWheelListener, MouseMoti
             if (this.staticElements.containsKey(this.getSelectedLayer())) {
                 StaticElement staticElement = rayTraceStaticElement(this.staticElements.get(this.getSelectedLayer()), e.getPoint(), (Graphics2D) g);
                 if (staticElement != null) {
-                    if (e.getButton() == MouseEvent.BUTTON1 && e.getClickCount() == 1) {
+                    if (e.getButton() == MouseEvent.BUTTON1 && e.getClickCount() == 2) {
                         this.staticElements.get(this.getSelectedLayer()).remove(staticElement);
                         addStaticElement(this.getSelectedLayer(), staticElement);
                     }
@@ -531,8 +556,7 @@ public class CanvasPanel extends JPanel implements MouseWheelListener, MouseMoti
             }
             this.cachedPoint = e.getPoint();
             repaint();
-        }
-        else if (this.cachedButton == MouseEvent.BUTTON2) {
+        } else if (this.cachedButton == MouseEvent.BUTTON2) {
             setCursor(new Cursor(Cursor.MOVE_CURSOR));
             this.canvasMoveX += dx;
             this.canvasMoveY += dy;

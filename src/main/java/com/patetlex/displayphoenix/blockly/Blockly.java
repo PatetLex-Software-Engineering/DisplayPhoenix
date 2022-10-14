@@ -70,7 +70,7 @@ public class Blockly {
      */
     public static void loadCategory(File categoryJson) {
         DetailedFile file = new DetailedFile(categoryJson);
-        loadCategory(file.getFileName(), file.getFileContents());
+        loadCategory(file.getFileName(), file.read());
     }
 
     /**
@@ -92,7 +92,7 @@ public class Blockly {
      */
     public static void loadBlock(File blockJson) {
         DetailedFile file = new DetailedFile(blockJson);
-        loadBlock(file.getFileName(), file.getFileContents());
+        loadBlock(file.getFileName(), file.read());
     }
 
 /*    *//**
@@ -290,7 +290,7 @@ public class Blockly {
     }
 
     private static void registerBlock(DetailedFile file) {
-        JsonObject blockObject = gson.fromJson(file.getFileContents(), JsonObject.class);
+        JsonObject blockObject = file.readAsJson();
 
         // Registering block
         Category category = getCategoryFromType(blockObject.get("category").getAsString());

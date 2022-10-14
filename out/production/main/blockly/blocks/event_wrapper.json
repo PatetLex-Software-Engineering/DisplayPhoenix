@@ -1,0 +1,21 @@
+{
+  "message0": "On event %1 %2",
+  "args0": [
+    {
+      "type": "input_dummy"
+    },
+    {
+      "type": "input_statement",
+      "name": "EVENT"
+    }
+  ],
+  "colour": 285,
+  "code": {
+    "javascript": "$[statement%EVENT]",
+    "java": "$[statement%EVENT]",
+    "lua": "$[statement%EVENT]"
+  },
+  "category": "flow_control",
+  "tooltip": "",
+  "helpUrl": ""
+}

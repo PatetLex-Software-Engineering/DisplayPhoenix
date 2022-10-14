@@ -4,16 +4,21 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.patetlex.displayphoenix.Application;
+import com.patetlex.displayphoenix.file.Data;
+import com.patetlex.displayphoenix.interfaces.FileIteration;
 
 import java.io.*;
+import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 /**
  * @author TBroski
  */
 public class Localizer {
 
+    private static Random rand = new Random();
     private static Gson gson = new GsonBuilder().setPrettyPrinting().create();
     private static Map<Local, Map<String, String>> TRANSLATED_VALUES_LOCAL = new HashMap<>();
 
@@ -32,23 +37,21 @@ public class Localizer {
     public static void create() {
         loadValues();
         loadDefaultValues();
+        loadCachedValues();
     }
 
     public static void loadLangFromDirectory(File directory) {
         try {
+            int i = 0;
             for (Local local : Local.values()) {
                 File file = new File(directory.getPath() + "/" + local.getTag() + ".json");
 
                 if (!file.createNewFile()) {
-                    FileReader reader = new FileReader(file);
+                    Data.cache(null, "/lang/");
+                    Data.cache(Files.readAllBytes(file.toPath()), "/lang/" + local.getTag() + i + System.currentTimeMillis() + ".json");
 
-                    TRANSLATED_VALUES_LOCAL.put(local, gson.fromJson(reader, new TypeToken<Map<String, String>>() {}.getType()));
-                    if (TRANSLATED_VALUES_LOCAL.get(local) == null)
-                        TRANSLATED_VALUES_LOCAL.put(local, new HashMap<>());
-
-                    reader.close();
-                }
-                else {
+                    loadStream(local, new FileInputStream(file));
+                } else {
                     FileWriter writer = new FileWriter(file);
                     Map<String, String> example = new HashMap<>();
                     example.put("key.example.test", "Example");
@@ -61,6 +64,7 @@ public class Localizer {
                     writer.flush();
                     writer.close();
                 }
+                i++;
             }
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -104,6 +108,24 @@ public class Localizer {
         for (Local local : Local.values()) {
             loadStream(local, ClassLoader.getSystemClassLoader().getResourceAsStream("def_lang/" + local.getTag() + ".json"));
         }
+    }
+
+    private static void loadCachedValues() {
+        Data.cache(null, "/lang/");
+        Data.forCachedFile("lang", new FileIteration() {
+            @Override
+            public void iterate(File file) {
+                for (Local local : Local.values()) {
+                    if (file.getName().startsWith(local.getTag())) {
+                        try {
+                            loadStream(local, new FileInputStream(file));
+                        } catch (FileNotFoundException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            }
+        });
     }
 
     private static void loadStream(Local local, InputStream inputStream) {

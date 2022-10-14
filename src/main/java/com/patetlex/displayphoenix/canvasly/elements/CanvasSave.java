@@ -1,110 +1,48 @@
 package com.patetlex.displayphoenix.canvasly.elements;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import com.google.gson.*;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import com.patetlex.displayphoenix.bitly.elements.BitSave;
 import com.patetlex.displayphoenix.canvasly.Pixel;
 import com.patetlex.displayphoenix.canvasly.elements.impl.FontElement;
 import com.patetlex.displayphoenix.canvasly.elements.impl.ImageElement;
+import com.patetlex.displayphoenix.canvasly.util.CanvasHelper;
 import com.patetlex.displayphoenix.file.Data;
+import com.patetlex.displayphoenix.util.GsonHelper;
+import com.patetlex.displayphoenix.util.ListHelper;
+import jdk.nashorn.internal.ir.annotations.Ignore;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.lang.reflect.Type;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
 
+@JsonAdapter(CanvasSave.Adapter.class)
 public class CanvasSave {
 
     private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
-    private transient Map<Layer, List<StaticElement>> cacheElements;
-    private transient Map<Layer, Pixel[][]> cachedPixels;
-    private List<String> hiddenLayers;
-    private Map<String, Pixel[][]> pixels;
-    private Map<String, List<CanvasElement>> staticElements;
+    private Map<Layer, List<StaticElement>> elements;
+    private Map<Layer, Pixel[][]> pixels;
 
     public CanvasSave(Map<Layer, Pixel[][]> pixels, Map<Layer, List<StaticElement>> staticElements) {
-        this.pixels = new HashMap<>();
-        this.staticElements = new HashMap<>();
-        this.hiddenLayers = new ArrayList<>();
-        for (Layer layer : pixels.keySet()) {
-            String layerString = convertLayer(layer);
-            if (layer.isHidden())
-                this.hiddenLayers.add(layerString);
-            this.pixels.put(layerString, new Pixel[pixels.get(layer).length][pixels.get(layer)[0].length]);
-            for (int i = 0; i < pixels.get(layer).length; i++) {
-                for (int j = 0; j < pixels.get(layer)[0].length; j++) {
-                    this.pixels.get(layerString)[i][j] = pixels.get(layer)[i][j];
-                }
-            }
-        }
-        for (Layer layer : staticElements.keySet()) {
-            String layerString = convertLayer(layer);
-            this.staticElements.put(layerString, new ArrayList<>());
-            for (StaticElement staticElement : staticElements.get(layer)) {
-                this.staticElements.get(layerString).add(new CanvasElement(staticElement));
-            }
-        }
+        this.pixels = pixels;
+        this.elements = staticElements;
     }
 
     public Map<Layer, Pixel[][]> getPixels() {
-        if (this.cachedPixels != null) {
-            return this.cachedPixels;
-        }
-        Map<Layer, Pixel[][]> newPixels = new HashMap<>();
-        for (String layerString : this.pixels.keySet()) {
-            Layer layer = convertString(layerString);
-            if (this.hiddenLayers.contains(layerString))
-                layer.setHidden(true);
-            newPixels.put(layer, new Pixel[this.pixels.get(layerString).length][this.pixels.get(layerString)[0].length]);
-            for (int i = 0; i < this.pixels.get(layerString).length; i++) {
-                for (int j = 0; j < this.pixels.get(layerString)[0].length; j++) {
-                    newPixels.get(layer)[i][j] = this.pixels.get(layerString)[i][j];
-                }
-            }
-        }
-        this.cachedPixels = newPixels;
-        return newPixels;
+        return this.pixels;
     }
 
     public Map<Layer, List<StaticElement>> getStaticElements() {
-        if (this.cacheElements != null) {
-            return this.cacheElements;
-        }
-        Map<Layer, List<StaticElement>> newElements = new HashMap<>();
-        for (String layerString : this.staticElements.keySet()) {
-            Layer layer = convertString(layerString);
-            if (this.hiddenLayers.contains(layerString))
-                layer.setHidden(true);
-            newElements.put(layer, new ArrayList<>());
-            for (CanvasElement canvasElement : this.staticElements.get(layerString)) {
-                if (canvasElement != null) {
-                    Element element = null;
-                    if (canvasElement.type.equalsIgnoreCase("image")) {
-                        try {
-                            element = new ImageElement(ImageIO.read(Data.find("/bitly/elements/" + canvasElement.defaultValue)), canvasElement.defaultValue);
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    } else if (canvasElement.type.equalsIgnoreCase("text")) {
-                        element = new FontElement(canvasElement.defaultValue, new Color(canvasElement.r, canvasElement.g, canvasElement.b, canvasElement.a), 1);
-                    }
-                    element.setScaleFactor(canvasElement.scale);
-                    StaticElement.Properties properties = new StaticElement.Properties();
-                    if (canvasElement.parse) {
-                        properties.setParse();
-                    }
-                    if (canvasElement.overlay) {
-                        properties.setOverlay();
-                    }
-                    newElements.get(layer).add(new StaticElement(element, canvasElement.staticElement.getX(), canvasElement.staticElement.getY(), properties));
-                }
-            }
-        }
-        this.cacheElements = newElements;
-        return newElements;
+        return this.elements;
     }
 
     public String toSave() {
@@ -113,19 +51,96 @@ public class CanvasSave {
 
     @Override
     public String toString() {
-        return gson.toJson(this);
-    }
+        JsonObject object = new JsonObject();
 
-    private String convertLayer(Layer layer) {
-        return String.valueOf(layer.getIndex());
-    }
+        JsonArray layerArray = new JsonArray();
+        for (Layer layer : this.pixels.keySet()) {
+            JsonObject layerObject = new JsonObject();
+            layerObject.addProperty("layer", layer.getIndex());
+            layerObject.addProperty("hidden", layer.isHidden());
+            JsonArray elements = new JsonArray();
+            for (Layer layer1 : this.elements.keySet()) {
+                if (layer.getIndex() == layer1.getIndex()) {
+                    for (StaticElement staticElement : this.elements.get(layer1)) {
+                        CanvasElement canvasElement = new CanvasElement(staticElement);
+                        elements.add(gson.fromJson(gson.toJson(canvasElement), JsonObject.class));
+                    }
+                    break;
+                }
+            }
+            layer.setHidden(false);
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            try {
+                ImageIO.write(CanvasHelper.draw(this.pixels.get(layer)), "PNG", outputStream);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            byte[] image = outputStream.toByteArray();
+            layerObject.addProperty("pixels", Base64.getEncoder().encodeToString(image));
+            layerObject.add("elements", elements);
+            layerArray.add(layerObject);
+        }
+        object.add("layers", layerArray);
 
-    private Layer convertString(String string) {
-        return new Layer(Integer.parseInt(string));
+        return gson.toJson(object);
     }
 
     public static CanvasSave fromSave(String string) {
-        return gson.fromJson(string, CanvasSave.class);
+        JsonObject object = gson.fromJson(string, JsonObject.class);
+
+        Map<Layer, List<StaticElement>> elements = new HashMap<>();
+        Map<Layer, Pixel[][]> pixels = new HashMap<>();
+        for (JsonElement element : object.get("layers").getAsJsonArray()) {
+            JsonObject elementObject = element.getAsJsonObject();
+            Layer layer = new Layer(elementObject.get("layer").getAsInt());
+            layer.setHidden(elementObject.get("hidden").getAsBoolean());
+
+            List<StaticElement> parsedElements = new ArrayList<>();
+            for (JsonElement staticElement : elementObject.get("elements").getAsJsonArray()) {
+                JsonObject staticElementObject = staticElement.getAsJsonObject();
+                CanvasElement canvasElement = gson.fromJson(staticElementObject, CanvasElement.class);
+                Element cElement = null;
+                if (canvasElement.type.equalsIgnoreCase("image")) {
+                    try {
+                        cElement = new ImageElement(ImageIO.read(Data.find("/bitly/elements/" + canvasElement.defaultValue)), canvasElement.defaultValue);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                } else if (canvasElement.type.equalsIgnoreCase("text")) {
+                    cElement = new FontElement(canvasElement.defaultValue, new Color(canvasElement.r, canvasElement.g, canvasElement.b, canvasElement.a), 1);
+                }
+                cElement.setScaleFactor(canvasElement.scale);
+                StaticElement.Properties properties = new StaticElement.Properties();
+                if (canvasElement.parse) {
+                    properties.setParse();
+                }
+                if (canvasElement.overlay) {
+                    properties.setOverlay();
+                }
+                parsedElements.add(new StaticElement(cElement, canvasElement.staticElement.getX(), canvasElement.staticElement.getY(), properties));
+            }
+            elements.put(layer, parsedElements);
+
+            byte[] image = Base64.getDecoder().decode(elementObject.get("pixels").getAsString());
+            ByteArrayInputStream inputStream = new ByteArrayInputStream(image);
+            try {
+                BufferedImage bufferedImage = ImageIO.read(inputStream);
+                Pixel[][] pixelArray = new Pixel[bufferedImage.getWidth()][bufferedImage.getHeight()];
+                for (int i = 0; i < bufferedImage.getWidth(); i++) {
+                    for (int j = 0; j < bufferedImage.getHeight(); j++) {
+                        Color color = new Color(bufferedImage.getRGB(i, j));
+                        if (color.getRed() > 0 || color.getGreen() > 0 || color.getBlue() > 0) {
+                            pixelArray[i][j] = new Pixel(color);
+                        }
+                    }
+                }
+                pixels.put(layer, pixelArray);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return new CanvasSave(pixels, elements);
     }
 
     private static class CanvasElement {
@@ -153,6 +168,18 @@ public class CanvasSave {
             }
             this.parse = staticElement.getProperties().shouldParse();
             this.overlay = staticElement.getProperties().isOverlay();
+        }
+    }
+
+    public static class Adapter extends TypeAdapter<CanvasSave> {
+        @Override
+        public void write(JsonWriter jsonWriter, CanvasSave canvasSave) throws IOException {
+            jsonWriter.jsonValue(canvasSave.toSave());
+        }
+
+        @Override
+        public CanvasSave read(JsonReader jsonReader) throws IOException {
+            return CanvasSave.fromSave(GsonHelper.read(jsonReader));
         }
     }
 }

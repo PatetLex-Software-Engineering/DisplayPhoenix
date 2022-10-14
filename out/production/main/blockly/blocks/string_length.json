@@ -1,0 +1,21 @@
+{
+  "message0": "Length of %1",
+  "args0": [
+    {
+      "type": "input_value",
+      "name": "TEXT",
+      "check": "String"
+    }
+  ],
+  "inputsInline": false,
+  "output": "Number",
+  "category": "text",
+  "colour": 165,
+  "code": {
+    "javascript": "$[value%TEXT].length",
+    "java": "$[value%TEXT].length()",
+    "lua": "string.len($[value%TEXT])"
+  },
+  "tooltip": "",
+  "helpUrl": ""
+}

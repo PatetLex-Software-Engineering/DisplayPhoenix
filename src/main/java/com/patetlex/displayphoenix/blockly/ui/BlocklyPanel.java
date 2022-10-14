@@ -1,6 +1,5 @@
 package com.patetlex.displayphoenix.blockly.ui;
 
-import com.google.gson.Gson;
 import com.patetlex.displayphoenix.Application;
 import com.patetlex.displayphoenix.blockly.Blockly;
 import com.patetlex.displayphoenix.blockly.elements.Block;
@@ -21,7 +20,6 @@ import org.cef.handler.CefLoadHandlerAdapter;
 import org.cef.ui.WebPanel;
 
 import java.awt.*;
-import java.lang.reflect.Method;
 import java.util.*;
 import java.util.List;
 import java.util.function.Consumer;
@@ -30,6 +28,8 @@ import java.util.function.Consumer;
  * @author TBroski
  */
 public class BlocklyPanel extends WebPanel implements BlocklyHtmlGenerator, BlocklyXmlParser {
+
+    private static List<Consumer<BlocklyPanel>> runEveryPanel = new ArrayList<>();
 
     private List<Runnable> runOnLoad = new ArrayList<>();
     private List<Runnable> runOnNextLoad = new ArrayList<>();
@@ -52,6 +52,10 @@ public class BlocklyPanel extends WebPanel implements BlocklyHtmlGenerator, Bloc
      */
     public BlocklyPanel() {
         load();
+    }
+
+    public static void runOnEveryPanel(Consumer<BlocklyPanel> runnable) {
+        runEveryPanel.add(runnable);
     }
 
     /**
@@ -145,7 +149,7 @@ public class BlocklyPanel extends WebPanel implements BlocklyHtmlGenerator, Bloc
         FileDialog.openFile(new Consumer<DetailedFile>() {
             @Override
             public void accept(DetailedFile detailedFile) {
-                addBlocks(detailedFile.getFileContents());
+                addBlocks(detailedFile.read());
             }
         });
     }
@@ -254,6 +258,8 @@ public class BlocklyPanel extends WebPanel implements BlocklyHtmlGenerator, Bloc
      * Reloads the blockly panel, resizes etc.
      */
     public void reload() {
+        if (!cachedVars.isEmpty())
+            cachedVars.pop();
         StringBuilder html = new StringBuilder();
         this.appendTopWrapper(html);
         Blockly.appendCategories(html, getCategories());
@@ -270,6 +276,9 @@ public class BlocklyPanel extends WebPanel implements BlocklyHtmlGenerator, Bloc
     private void load() {
         this.isLoaded = false;
         setScale(0.8);
+        for (Consumer<BlocklyPanel> runnable : runEveryPanel) {
+            runnable.accept(this);
+        }
 
         StringBuilder html = new StringBuilder();
         this.appendTopWrapper(html);
@@ -289,8 +298,8 @@ public class BlocklyPanel extends WebPanel implements BlocklyHtmlGenerator, Bloc
                         BlocklyPanel.this.futureXml = null;
                     }
                     String code = " function onBlocklyEvent(event) {" +
-                            "if (typeof blocklypanel !== \"undefined\")" +
-                            "   blocklypanel.fire(event.type, workspace.getBlockById(event.blockId) !== null ? workspace.getBlockById(event.blockId).type : '', event.element, event.name, event.oldValue, event.newValue, event.newCoordinate != null ? event.newCoordinate.x : 0, event.newCoordinate != null ? event.newCoordinate.y : 0, event.oldCoordinate != null ? event.oldCoordinate.x : 0, event.oldCoordinate != null ? event.oldCoordinate.y : 0);" +
+                            "if (blocklypanel !== null && typeof blocklypanel !== \"undefined\" && event != null)" +
+                            "blocklypanel.fire((event.type !== null && typeof event.type !== \"undefined\") ? event.type.toString() : '', (workspace.getBlockById(event.blockId) !== null && typeof workspace.getBlockById(event.blockId) !== \"undefined\") ? workspace.getBlockById(event.blockId).type.toString() : '', (event.element !== null && typeof event.element !== \"undefined\") ? event.element.toString() : '', (event.name !== null && typeof event.name !== \"undefined\") ? event.name.toString() : '', (event.oldValue !== null && typeof event.oldValue !== \"undefined\") ? event.oldValue.toString() : '', (event.newValue !== null && typeof event.newValue !== \"undefined\") ? event.newValue.toString() : '', (event.newCoordinate !== null && typeof event.newCoordinate !== \"undefined\") ? event.newCoordinate.x : 0, (event.newCoordinate !== null && typeof event.newCoordinate !== \"undefined\") ? event.newCoordinate.y : 0, (event.oldCoordinate !== null && typeof event.oldCoordinate !== \"undefined\") ? event.oldCoordinate.x : 0, (event.oldCoordinate !== null && typeof event.oldCoordinate !== \"undefined\") ? event.oldCoordinate.y : 0);" +
                             "}" +
                             "workspace.addChangeListener(onBlocklyEvent);";
                     browser.executeJavaScript(generateMembers() + code, browser.getURL(), 1);
@@ -601,10 +610,5 @@ public class BlocklyPanel extends WebPanel implements BlocklyHtmlGenerator, Bloc
             }
         }
         return Blockly.getBlockFromType(type);
-    }
-
-    @Override
-    public boolean shouldAddDependentMethod(Method method) {
-        return super.shouldAddDependentMethod(method);
     }
 }

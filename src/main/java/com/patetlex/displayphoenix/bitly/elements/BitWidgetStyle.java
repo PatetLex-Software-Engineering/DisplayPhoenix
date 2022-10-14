@@ -7,6 +7,7 @@ import com.patetlex.displayphoenix.bitly.ui.BitArgument;
 import com.patetlex.displayphoenix.bitly.ui.BitWidget;
 import com.patetlex.displayphoenix.blockly.Blockly;
 import com.patetlex.displayphoenix.blockly.elements.Block;
+import com.patetlex.displayphoenix.blockly.elements.workspace.Field;
 import com.patetlex.displayphoenix.blockly.elements.workspace.ImplementedBlock;
 import com.patetlex.displayphoenix.blockly.ui.BlocklyDependencyPanel;
 import com.patetlex.displayphoenix.blockly.ui.BlocklyPanel;
@@ -27,9 +28,8 @@ import com.patetlex.displayphoenix.generation.Module;
 import com.patetlex.displayphoenix.lang.Localizer;
 import com.patetlex.displayphoenix.ui.widget.*;
 import com.patetlex.displayphoenix.ui.widget.TextField;
-import com.patetlex.displayphoenix.util.ComponentHelper;
-import com.patetlex.displayphoenix.util.ImageHelper;
-import com.patetlex.displayphoenix.util.PanelHelper;
+import com.patetlex.displayphoenix.util.*;
+import com.sun.istack.internal.NotNull;
 
 import javax.imageio.ImageIO;
 import javax.script.Invocable;
@@ -42,6 +42,7 @@ import java.awt.event.*;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -179,15 +180,61 @@ public abstract class BitWidgetStyle {
                                 public void windowClosing(WindowEvent e) {
                                     super.windowClosing(e);
                                     if (dependencyPanel.getUnsatisfiedDependencies().isEmpty()) {
-                                        parentFrame.dispose();
-                                        provisionWidget.setXml(dependencyPanel.getBlocklyPanel().getRawWorkspace());
-                                        try {
-                                            invocable.invokeFunction("onClose");
-                                        } catch (ScriptException scriptException) {
-                                            scriptException.printStackTrace();
-                                        } catch (NoSuchMethodException noSuchMethodException) {
-                                            noSuchMethodException.printStackTrace();
-                                        }
+                                        List<ImplementedBlock> unsatisfiedBlocks = new ArrayList<>();
+                                        BlocklyHelper.forEachBlock(new Consumer<ImplementedBlock>() {
+                                            @Override
+                                            public void accept(ImplementedBlock implementedBlock) {
+                                                for (String value : implementedBlock.getValueBlocks().keySet()) {
+                                                    if (implementedBlock.getValueBlocks().get(value).size() == 0) {
+                                                        unsatisfiedBlocks.add(implementedBlock);
+                                                    }
+                                                }
+                                                for (Field field : implementedBlock.getFields()) {
+                                                    if (field.getValue() == null || field.getValue().isEmpty()) {
+                                                        unsatisfiedBlocks.add(implementedBlock);
+                                                    }
+                                                }
+                                            }
+                                        }, new Object() {
+                                            public ImplementedBlock getHeadBlock() {
+                                                for (ImplementedBlock block : dependencyPanel.getBlocklyPanel().getWorkspace()) {
+                                                    if (block.getBlock().getType().equalsIgnoreCase(provisionWidget.getHeadBlock())) {
+                                                        return block;
+                                                    }
+                                                }
+                                                return null;
+                                            }
+                                        }.getHeadBlock());
+                                        if (unsatisfiedBlocks.size() == 0) {
+                                            parentFrame.dispose();
+                                            provisionWidget.setXml(dependencyPanel.getBlocklyPanel().getRawWorkspace());
+                                            try {
+                                                invocable.invokeFunction("onClose");
+                                            } catch (ScriptException scriptException) {
+                                                scriptException.printStackTrace();
+                                            } catch (NoSuchMethodException noSuchMethodException) {
+                                            }
+                                        } else {
+                                            Application.openWindow(JFrame.DISPOSE_ON_CLOSE, parentFrame -> {
+                                                JLabel label = new JLabel(Localizer.translate("blockly.unsatisfied_values.text"));
+                                                ComponentHelper.themeComponent(label);
+                                                ComponentHelper.deriveFont(label, 20);
+                                                JPanel list = PanelHelper.join();
+                                                for (ImplementedBlock unsatisfiedBlock : unsatisfiedBlocks) {
+                                                    String unsatisfiedValue = unsatisfiedBlock.getBlock().getType();
+                                                    JLabel unsatisfyLabel = new JLabel(unsatisfiedValue);
+                                                    ComponentHelper.themeComponent(unsatisfyLabel);
+                                                    ComponentHelper.deriveFont(unsatisfyLabel, 17);
+                                                    if (!colorCache.containsKey(unsatisfiedValue))
+                                                        colorCache.put(unsatisfiedValue, rand.nextInt(360));
+                                                    float hue = colorCache.get(unsatisfiedValue);
+                                                    label.setForeground(Color.getHSBColor(hue / 360F, 0.45F, 0.65F));
+                                                    JPanel labelPanel = PanelHelper.join(label);
+                                                    labelPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
+                                                    list = PanelHelper.northAndCenterElements(list, labelPanel);
+                                                }
+                                                parentFrame.add(PanelHelper.northAndCenterElements(PanelHelper.join(label), list));
+                                            }, Math.round(Application.getTheme().getWidth() * 0.3F), Math.round(Application.getTheme().getHeight() * 0.5F));                                        }
                                     } else {
                                         Application.openWindow(JFrame.DISPOSE_ON_CLOSE, parentFrame -> {
                                             JLabel label = new JLabel(Localizer.translate("blockly.unsatisfied_dependencies.text"));
@@ -217,7 +264,6 @@ public abstract class BitWidgetStyle {
                             } catch (ScriptException scriptException) {
                                 scriptException.printStackTrace();
                             } catch (NoSuchMethodException noSuchMethodException) {
-                                noSuchMethodException.printStackTrace();
                             }
                             parentFrame.add(PanelHelper.centerAndEastElements(blockly, dependencyPanel));
                             blockly.setPreferredSize(new Dimension(Math.round(parentFrame.getWidth() * 0.85F), parentFrame.getHeight()));
@@ -252,7 +298,7 @@ public abstract class BitWidgetStyle {
                     return module.getCodeFromBlock(implementedBlock);
                 }
             }
-            return null;
+            return "";
         }
     };
     public static final BitWidgetStyle RESOURCE = new BitWidgetStyle("RESOURCE") {
@@ -387,7 +433,6 @@ public abstract class BitWidgetStyle {
                                     } catch (ScriptException scriptException) {
                                         scriptException.printStackTrace();
                                     } catch (NoSuchMethodException noSuchMethodException) {
-                                        noSuchMethodException.printStackTrace();
                                     }
                                 }
                             });
@@ -445,9 +490,33 @@ public abstract class BitWidgetStyle {
         public void setValue(Component component, BitArgument argument) {
             Object arg = argument.get();
             if (arg instanceof LinkedTreeMap) {
-                arg = gson.fromJson(gson.toJson(arg), CanvasSave.class);
+                arg = CanvasSave.fromSave(gson.toJson(arg));
             }
             ((CanvasWidget) component).setSave((CanvasSave) arg);
+        }
+
+        @Override
+        public Map<String, byte[]> loadExternalFiles(BitWidget widget, boolean isNative, File relativePath) {
+            Map<String, byte[]> files = super.loadExternalFiles(widget, isNative, relativePath);
+            for (BitWidget.CanvasElement canvasElement : widget.canvasElements) {
+                byte[] bytes = null;
+                if (isNative) {
+                    bytes = FileHelper.readAllBytesFromStream(ClassLoader.getSystemClassLoader().getResourceAsStream("textures/bitly/" + canvasElement.defaultValue));
+                } else {
+                    try {
+                        bytes = Files.readAllBytes(new File(relativePath.getPath() + "/" + canvasElement.defaultValue).toPath());
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+                if (canvasElement.defaultValue.contains("/")) {
+                    String[] paths = canvasElement.defaultValue.split("/");
+                    files.put(paths[paths.length - 1], bytes);
+                } else {
+                    files.put(canvasElement.defaultValue, bytes);
+                }
+            }
+            return files;
         }
     };
     public static final BitWidgetStyle OPTIONS = new BitWidgetStyle("OPTIONS") {
@@ -479,6 +548,7 @@ public abstract class BitWidgetStyle {
     public abstract Object getValue(Component component);
     public abstract void setValue(Component component, BitArgument argument);
 
+    @NotNull
     public String getCode(Module module, Component component) {
         Object val = getValue(component);
         if (val == null)
@@ -488,6 +558,10 @@ public abstract class BitWidgetStyle {
 
     public String getName() {
         return name;
+    }
+
+    public Map<String, byte[]> loadExternalFiles(BitWidget widget, boolean isNative, File relativePath) {
+        return new HashMap<>();
     }
 
     @Override

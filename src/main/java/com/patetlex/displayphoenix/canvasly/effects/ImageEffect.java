@@ -1,21 +1,25 @@
 package com.patetlex.displayphoenix.canvasly.effects;
 
+import com.patetlex.displayphoenix.util.ImageHelper;
+
 import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
+import java.awt.image.ConvolveOp;
+import java.awt.image.Kernel;
 
 public class ImageEffect {
 
     public static final int HORIZONTAL = 0;
     public static final int VERTICAL = 1;
 
-    private Image image;
+    private BufferedImage image;
 
     public ImageEffect(Image image) {
-        this.image = image;
+        this.image = ImageHelper.renderImage(image);
     }
 
-    public Image draw() {
+    public BufferedImage draw() {
         return image;
     }
 
@@ -36,12 +40,12 @@ public class ImageEffect {
         graphics2D.drawImage(this.image, 0, 0, this.image.getWidth(null), this.image.getHeight(null),null);
 
         Color[][] imagePixels = getImagePixels(newImage);
+        graphics2D.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, opacity));
         int x = 0;
         for (Color[] px : imagePixels) {
             int y = 0;
             for (Color py : px) {
                 if (py.getRed() > 0 && py.getGreen() > 0 && py.getBlue() > 0) {
-                    graphics2D.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, opacity));
                     graphics2D.setColor(color);
                     graphics2D.fillRect(x, y, 1, 1);
                 }
@@ -49,6 +53,23 @@ public class ImageEffect {
             }
             x++;
         }
+
+        this.image = newImage;
+        return this;
+    }
+
+    public ImageEffect overlay(Image image, float opacity) {
+        return overlay(image, 0, 0, opacity);
+    }
+
+    public ImageEffect overlay(Image image, int x, int y, float opacity) {
+        BufferedImage newImage = new BufferedImage(this.image.getWidth(null), this.image.getHeight(null), BufferedImage.TYPE_INT_ARGB);
+        Graphics2D graphics2D = newImage.createGraphics();
+
+        graphics2D.drawImage(this.image, 0, 0, this.image.getWidth(null), this.image.getHeight(null),null);
+
+        graphics2D.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, opacity));
+        graphics2D.drawImage(image, x, y, null);
 
         this.image = newImage;
         return this;
@@ -83,8 +104,10 @@ public class ImageEffect {
             if (x <= u2 && x >= u1) {
                 for (Color py : px) {
                     if (y <= v2 && y >= v1) {
-                        newGraphics.setColor(py);
-                        newGraphics.fillRect(tx, ty, 1, 1);
+                        if (py.getRed() > 0 && py.getGreen() > 0 && py.getBlue() > 0) {
+                            newGraphics.setColor(py);
+                            newGraphics.fillRect(tx, ty, 1, 1);
+                        }
                         ty++;
                     }
                     y++;

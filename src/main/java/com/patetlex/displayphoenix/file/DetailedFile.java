@@ -1,13 +1,20 @@
 package com.patetlex.displayphoenix.file;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import com.patetlex.displayphoenix.util.FileHelper;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 
 /**
  * @author TBroski
  */
 public class DetailedFile {
+
+    private static transient final Gson gson = new Gson();
 
     private String fileName;
     private File file;
@@ -31,8 +38,29 @@ public class DetailedFile {
         return fileName;
     }
 
-    public String getFileContents() {
+    public String read() {
         return FileHelper.readAllLines(this.getFile());
+    }
+
+    public JsonObject readAsJson() {
+        return gson.fromJson(read(), JsonObject.class);
+    }
+
+    public void write(String s) {
+        write(s.getBytes());
+    }
+
+    public void write(byte[] b) {
+        try {
+            FileOutputStream outputStream = new FileOutputStream(this.getFile());
+            outputStream.write(b);
+            outputStream.flush();
+            outputStream.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private static String getExtensionOfFile(File file) {
