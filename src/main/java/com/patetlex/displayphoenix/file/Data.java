@@ -5,10 +5,13 @@ import com.google.gson.reflect.TypeToken;
 import com.patetlex.displayphoenix.Application;
 import com.patetlex.displayphoenix.interfaces.FileIteration;
 import com.patetlex.displayphoenix.lang.Local;
+import com.patetlex.displayphoenix.lang.Localizer;
 import com.patetlex.displayphoenix.ui.ColorTheme;
 import com.patetlex.displayphoenix.util.FileHelper;
 import com.patetlex.displayphoenix.util.StringHelper;
 
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.*;
 import java.nio.file.Files;
 import java.util.ArrayList;

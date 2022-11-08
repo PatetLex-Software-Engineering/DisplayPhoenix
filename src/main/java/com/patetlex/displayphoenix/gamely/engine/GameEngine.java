@@ -1,10 +1,18 @@
 package com.patetlex.displayphoenix.gamely.engine;
 
+<<<<<<< HEAD
+=======
+import com.patetlex.displayphoenix.file.Data;
+>>>>>>> 47a47a09d2902902588a944b173e5c8c191c9a2d
 import com.patetlex.displayphoenix.gamely.Gamely;
 import com.patetlex.displayphoenix.gamely.obj.Camera;
 import com.patetlex.displayphoenix.gamely.obj.GameObject;
 import com.patetlex.displayphoenix.gamely.physics.GamePhysics;
 import com.patetlex.displayphoenix.gamely.ui.GamePanel;
+<<<<<<< HEAD
+=======
+import sun.security.krb5.internal.PAData;
+>>>>>>> 47a47a09d2902902588a944b173e5c8c191c9a2d
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -28,7 +36,10 @@ public abstract class GameEngine {
     private int tickRate;
     private int ticksExisted;
 
+<<<<<<< HEAD
     private boolean isRunning;
+=======
+>>>>>>> 47a47a09d2902902588a944b173e5c8c191c9a2d
     public boolean shouldTick;
 
     private List<Wait> waitList = new ArrayList<>();
@@ -64,7 +75,10 @@ public abstract class GameEngine {
     public void start(GamePanel panel) {
         this.panel = panel;
 
+<<<<<<< HEAD
         this.isRunning = true;
+=======
+>>>>>>> 47a47a09d2902902588a944b173e5c8c191c9a2d
         this.shouldTick = true;
 
         // Start Game Thread
@@ -72,7 +86,11 @@ public abstract class GameEngine {
             long lastTime = System.nanoTime();
             final double ns = 1000000000D / this.tickRate;
             double delta = 0;
+<<<<<<< HEAD
             while (panel.isVisible() || GameEngine.this.shouldBreak()) {
+=======
+            while (panel.isVisible()) {
+>>>>>>> 47a47a09d2902902588a944b173e5c8c191c9a2d
                 long now = System.nanoTime();
                 delta += (now - lastTime) / ns;
                 lastTime = now;
@@ -87,6 +105,7 @@ public abstract class GameEngine {
                 }
                 panel.repaint();
             }
+<<<<<<< HEAD
             GameEngine.this.end();
         }).start();
     }
@@ -95,6 +114,11 @@ public abstract class GameEngine {
 
     }
 
+=======
+        }).start();
+    }
+
+>>>>>>> 47a47a09d2902902588a944b173e5c8c191c9a2d
     protected void tickEngine() {
         this.physics.moveObjects(new ArrayList<>(this.objs.values()));
         this.physics.moveCamera(this.camera);
@@ -177,6 +201,7 @@ public abstract class GameEngine {
         return camera;
     }
 
+<<<<<<< HEAD
     public boolean shouldBreak() {
         return false;
     }
@@ -185,6 +210,8 @@ public abstract class GameEngine {
         return this.isRunning;
     }
 
+=======
+>>>>>>> 47a47a09d2902902588a944b173e5c8c191c9a2d
     protected static class Wait {
         protected int ticksRemaining;
         protected Consumer<GameEngine> consumer;

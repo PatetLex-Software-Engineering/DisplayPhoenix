@@ -2,7 +2,11 @@ package com.patetlex.displayphoenix.gamely.obj;
 
 import com.patetlex.displayphoenix.gamely.Gamely;
 import com.patetlex.displayphoenix.gamely.engine.GameEngine;
+<<<<<<< HEAD
 import org.joml.Vector3f;
+=======
+import com.patetlex.displayphoenix.gamely.util.Vector3f;
+>>>>>>> 47a47a09d2902902588a944b173e5c8c191c9a2d
 
 import java.awt.*;
 import java.lang.reflect.Constructor;
@@ -85,6 +89,7 @@ public class GameObject {
         save.putString("class", this.getClass().getTypeName());
         save.putInteger("id", this.id);
 
+<<<<<<< HEAD
         save.putFloat("positionX", this.getPosition().x);
         save.putFloat("positionY", this.getPosition().y);
         save.putFloat("positionZ", this.getPosition().z);
@@ -100,6 +105,23 @@ public class GameObject {
         save.putFloat("rotationX", this.getRotation().x);
         save.putFloat("rotationY", this.getRotation().y);
         save.putFloat("rotationZ", this.getRotation().z);
+=======
+        save.putFloat("positionX", this.getPosition().getX());
+        save.putFloat("positionY", this.getPosition().getY());
+        save.putFloat("positionZ", this.getPosition().getZ());
+
+        save.putFloat("motionX", this.getMotion().getX());
+        save.putFloat("motionY", this.getMotion().getY());
+        save.putFloat("motionZ", this.getMotion().getZ());
+
+        save.putFloat("boundingX", this.getBoundingSize().getX());
+        save.putFloat("boundingY", this.getBoundingSize().getY());
+        save.putFloat("boundingZ", this.getBoundingSize().getZ());
+
+        save.putFloat("rotationX", this.getRotation().getX());
+        save.putFloat("rotationY", this.getRotation().getY());
+        save.putFloat("rotationZ", this.getRotation().getZ());
+>>>>>>> 47a47a09d2902902588a944b173e5c8c191c9a2d
 
         save.put("data", this.data);
     }

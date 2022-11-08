@@ -10,6 +10,9 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="libs" level="project" />
     <orderEntry type="library" name="net.sourceforge.tess4j:tess4j:4.5.4" level="project" />
+<<<<<<< HEAD
     <orderEntry type="library" name="lwjgl" level="project" />
+=======
+>>>>>>> 47a47a09d2902902588a944b173e5c8c191c9a2d
   </component>
 </module>

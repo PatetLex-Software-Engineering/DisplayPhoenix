@@ -1,7 +1,10 @@
 package com.patetlex.displayphoenix.gamely.ui;
 
 import com.patetlex.displayphoenix.gamely.engine.GameEngine;
+<<<<<<< HEAD
 import org.apache.xmlgraphics.java2d.DefaultGraphics2D;
+=======
+>>>>>>> 47a47a09d2902902588a944b173e5c8c191c9a2d
 
 import javax.swing.*;
 import java.awt.*;
@@ -26,6 +29,10 @@ public class GamePanel extends JPanel implements MouseListener, MouseMotionListe
         this.setBackground(Color.BLACK);
 
         this.resolution = resolution;
+<<<<<<< HEAD
+=======
+        engine.start(this);
+>>>>>>> 47a47a09d2902902588a944b173e5c8c191c9a2d
         this.engine = engine;
 
         this.addMouseListener(this);
@@ -48,11 +55,19 @@ public class GamePanel extends JPanel implements MouseListener, MouseMotionListe
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
+<<<<<<< HEAD
 
 
         double r = this.getScalingFactor();
         ((Graphics2D) g).translate((double) Math.round((this.getWidth() - this.getScaledResolution().getWidth()) / 2F), (double) Math.round((this.getHeight() - this.getScaledResolution().getHeight()) / 2F));
         ((Graphics2D) g).scale(r, r);
+=======
+        double r = this.getScalingFactor();
+
+        ((Graphics2D) g).translate((double) Math.round((this.getWidth() - this.getScaledResolution().getWidth()) / 2F), (double) Math.round((this.getHeight() - this.getScaledResolution().getHeight()) / 2F));
+        ((Graphics2D) g).scale(r, r);
+
+>>>>>>> 47a47a09d2902902588a944b173e5c8c191c9a2d
         int size = (int) (this.resolution.getHeight() / Math.min(100, this.getResolution().getHeight()));
         int j = 0;
         for (int xp = 0; xp < this.resolution.getWidth(); xp += size) {
@@ -65,6 +80,7 @@ public class GamePanel extends JPanel implements MouseListener, MouseMotionListe
             }
             j++;
         }
+<<<<<<< HEAD
         ((Graphics2D) g).setClip(0, 0, (int) this.resolution.getWidth(), (int) this.resolution.getHeight());
 
         renderEngine(g);
@@ -74,6 +90,10 @@ public class GamePanel extends JPanel implements MouseListener, MouseMotionListe
         if (!this.engine.isRunning()) {
             this.engine.start(this);
         }
+=======
+
+        ((Graphics2D) g).setClip(0, 0, (int) this.resolution.getWidth(), (int) this.resolution.getHeight());
+>>>>>>> 47a47a09d2902902588a944b173e5c8c191c9a2d
         this.engine.render((Graphics2D) g);
     }
 
