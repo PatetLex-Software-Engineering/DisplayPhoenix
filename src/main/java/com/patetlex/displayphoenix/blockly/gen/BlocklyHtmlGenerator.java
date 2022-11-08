@@ -19,6 +19,7 @@ public interface BlocklyHtmlGenerator {
                 "    <meta charset=\"utf-8\">\n" +
                 "    <title>Blockly</title>\n" +
                 "    <script>window.onerror = function(message, url, lineNumber) {return true};</script>\n" +
+                "    <script>console.log = function(message) {return true};</script>\n" +
                 "    <script>" + BlocklyJS.getBlocklyCompressedContent() + "</script>\n" +
                 "    <script>" + BlocklyJS.getBlocksCompressedContent() + "</script>\n" +
                 "    <script>" + BlocklyJS.getLangENContent() + "</script>\n" +

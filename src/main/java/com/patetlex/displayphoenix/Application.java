@@ -9,13 +9,26 @@ import com.patetlex.displayphoenix.bitly.elements.BitWidgetStyle;
 import com.patetlex.displayphoenix.blockly.Blockly;
 import com.patetlex.displayphoenix.canvasly.tools.Tool;
 import com.patetlex.displayphoenix.canvasly.tools.impl.*;
+import com.patetlex.displayphoenix.enums.WidgetStyle;
 import com.patetlex.displayphoenix.exception.AppNotCreatedException;
 import com.patetlex.displayphoenix.file.Data;
 import com.patetlex.displayphoenix.file.indexly.Indexly;
+import com.patetlex.displayphoenix.gamely.Gamely;
+import com.patetlex.displayphoenix.gamely.engine.GameEngine;
+import com.patetlex.displayphoenix.gamely.engine.impl.GameEngine3D;
+import com.patetlex.displayphoenix.gamely.physics.impl.GamePhysics2D;
+import com.patetlex.displayphoenix.gamely.ui.GamePanel;
+import com.patetlex.displayphoenix.gamely.ui.ext.GameGLFWPanel;
 import com.patetlex.displayphoenix.generation.Module;
 import com.patetlex.displayphoenix.init.ColorInit;
+import com.patetlex.displayphoenix.interfaces.FileIteration;
 import com.patetlex.displayphoenix.lang.Local;
 import com.patetlex.displayphoenix.lang.Localizer;
+import com.patetlex.displayphoenix.maps.Maps;
+import com.patetlex.displayphoenix.maps.event.IMapListener;
+import com.patetlex.displayphoenix.maps.event.MapEvent;
+import com.patetlex.displayphoenix.maps.event.events.MarkerClickEvent;
+import com.patetlex.displayphoenix.maps.ui.MapPanel;
 import com.patetlex.displayphoenix.system.exe.SystemProcessor;
 import com.patetlex.displayphoenix.ui.ApplicationFrame;
 import com.patetlex.displayphoenix.ui.ColorTheme;
@@ -25,18 +38,24 @@ import com.patetlex.displayphoenix.ui.widget.OverlayOnHoverWidget;
 import com.patetlex.displayphoenix.ui.widget.RoundedButton;
 import com.patetlex.displayphoenix.util.*;
 import org.cef.CefApp;
+import org.cef.ui.WebPanel;
+import org.jnativehook.GlobalScreen;
+import org.jnativehook.NativeHookException;
+import org.lwjgl.Version;
+import org.lwjgl.glfw.GLFWErrorCallback;
+import org.lwjgl.opengl.GL11;;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.function.Consumer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * @author TBroski
@@ -76,9 +95,33 @@ public class Application {
         version = readAppProperty("version");
         CREATED = true;
 
+        CefApp.getInstance().dispose();
+        Runtime.getRuntime().addShutdownHook(new Thread() {
+            @Override
+            public void run() {
+                dispose();
+            }
+        });
+
+        Logger logger = Logger.getLogger(GlobalScreen.class.getPackage().getName());
+        logger.setLevel(Level.WARNING);
+        logger.setUseParentHandlers(false);
+        try {
+            GlobalScreen.registerNativeHook();
+        } catch (NativeHookException e) {
+            e.printStackTrace();
+        }
+        System.out.println("- Native hook registered");
+
+        OpenCVHelper.create();
+        System.out.println("- OpenCV registered");
+
+
         Module.registerModule(Module.JAVA);
         Module.registerModule(Module.JAVASCRIPT);
         Module.registerModule(Module.LUA);
+        System.out.println("- Code (Module) generators registered");
+
         Bitly.registerWidgetStyle(BitWidgetStyle.TOGGLE);
         Bitly.registerWidgetStyle(BitWidgetStyle.TEXT);
         Bitly.registerWidgetStyle(BitWidgetStyle.NUMBER);
@@ -87,20 +130,46 @@ public class Application {
         Bitly.registerWidgetStyle(BitWidgetStyle.CANVAS);
         Bitly.registerWidgetStyle(BitWidgetStyle.IMAGE);
         Bitly.registerWidgetStyle(BitWidgetStyle.OPTIONS);
+        System.out.println("- Bitly widget styles registered");
+
         Localizer.create();
+        System.out.println("- Translations loaded");
+
         session = Data.create();
+        System.out.println("- Saved values loaded");
+
         Blockly.load();
+        System.out.println("- Blockly loaded");
+
         Bitly.load();
+        System.out.println("- Bitly loaded");
+
+        Gamely.load();
+        System.out.println("- Gamely loaded");
+
         Indexly.registerExtension(StringHelper.id(title), appIcon);
+
         Tool.REGISTERED_TOOLS.add(new BucketTool());
         Tool.REGISTERED_TOOLS.add(new EraserTool());
         Tool.REGISTERED_TOOLS.add(new ImageTool());
         Tool.REGISTERED_TOOLS.add(new PencilTool());
         Tool.REGISTERED_TOOLS.add(new PickerTool());
         Tool.REGISTERED_TOOLS.add(new TextTool());
+        System.out.println("- Canvasly tools registered");
+
         for (Runnable runnable : runOnCreate) {
             runnable.run();
         }
+    }
+
+    /**
+     * Safely exit the application.
+     *
+     * @param status  Exit status
+     */
+    public static void exit(int status) {
+        CefApp.getInstance().dispose();
+        System.exit(status);
     }
 
     /**
@@ -138,24 +207,32 @@ public class Application {
         File exe = getExecutable();
         if (!exe.isDirectory()) {
             session--;
-            close(() -> getSystemProcessor().executeFile(exe));
-        } else {
-            softRestart();
+            getSystemProcessor().executeFile(exe);
         }
+        exit(0);
     }
 
-    /**
-     * Safely exits the app.
-     */
-    public static void close() {
-        close(() -> {});
-    }
-
-    private static void close(Runnable runnable) {
-        Data.save();
+    private static void dispose() {
         CefApp.getInstance().dispose();
-        runnable.run();
-        System.exit(0);
+        try {
+            GlobalScreen.unregisterNativeHook();
+        } catch (NativeHookException var1) {
+            var1.printStackTrace();
+        }
+        Data.save();
+        String tmp = System.getProperty("java.io.tmpdir");
+        if (tmp != null) {
+            FileHelper.forEachSubFile(new File(tmp), new FileIteration() {
+                public void iterate(File file) {
+                    if (file != null && file.getName() != null) {
+                        if (file.getName().contains("JNativeHook")) {
+                            file.delete();
+                        }
+                    }
+                }
+            });
+        }
+        System.out.println(getTitle() + " safely exited.");
     }
 
     /**
@@ -186,7 +263,7 @@ public class Application {
      * @param height Height of window
      * @return Returns the frame for additional manipulation
      */
-    public static JFrame openWindow(String title, int closeAction, IOpenWindow windowCreation, int width, int height, boolean resizable) {
+    public static ApplicationFrame openWindow(String title, int closeAction, IOpenWindow windowCreation, int width, int height, boolean resizable) {
         ApplicationFrame frame = new ApplicationFrame(title, closeAction, width, height, resizable, windowCreation);
         ComponentHelper.forEachSubComponentOf(frame, new Consumer<Component>() {
             @Override
@@ -202,7 +279,8 @@ public class Application {
                     component.setBackground(theme.getColorTheme().getPrimaryColor());
                 }
                 if (component.getFont() == UIManager.getFont("Label.font") || component.getFont() == UIManager.getFont("Button.font") || component.getFont() == UIManager.getFont("defaultFont")) {
-                    component.setFont(component.getFont() != null ? theme.getFont().deriveFont(component.getFont().getSize()) : theme.getFont());
+                    if (theme.getFont() != null)
+                        component.setFont(component.getFont() != null ? theme.getFont().deriveFont((float) component.getFont().getSize()) : theme.getFont());
                 }
             }
         });
@@ -217,22 +295,22 @@ public class Application {
         openFrames.add(frame);
         return frame;
     }
-    public static JFrame openWindow(int closeAction, IOpenWindow windowCreation) {
+    public static ApplicationFrame openWindow(int closeAction, IOpenWindow windowCreation) {
         return openWindow(title, closeAction, windowCreation, theme.getWidth(), theme.getHeight(), theme.isResizeable());
     }
-    public static JFrame openWindow(String title, IOpenWindow windowCreation) {
+    public static ApplicationFrame openWindow(String title, IOpenWindow windowCreation) {
         return openWindow(title, JFrame.EXIT_ON_CLOSE, windowCreation, theme.getWidth(), theme.getHeight(), theme.isResizeable());
     }
-    public static JFrame openWindow(String title, int closeAction, IOpenWindow windowCreation) {
+    public static ApplicationFrame openWindow(String title, int closeAction, IOpenWindow windowCreation) {
         return openWindow(title, closeAction, windowCreation, theme.getWidth(), theme.getHeight(), theme.isResizeable());
     }
-    public static JFrame openWindow(int closeAction, IOpenWindow windowCreation, int width, int height) {
+    public static ApplicationFrame openWindow(int closeAction, IOpenWindow windowCreation, int width, int height) {
         return openWindow(title, closeAction, windowCreation, width, height, theme.isResizeable());
     }
-    public static JFrame openWindow(String title, int closeAction, IOpenWindow windowCreation, int width, int height) {
+    public static ApplicationFrame openWindow(String title, int closeAction, IOpenWindow windowCreation, int width, int height) {
         return openWindow(title, closeAction, windowCreation, width, height, theme.isResizeable());
     }
-    public static JFrame openWindow(IOpenWindow windowCreation) {
+    public static ApplicationFrame openWindow(IOpenWindow windowCreation) {
         return openWindow(JFrame.EXIT_ON_CLOSE, windowCreation);
     }
 
@@ -397,10 +475,10 @@ public class Application {
      * @param noListener Adds a listener to no button
      */
     public static void promptYesOrNo(String title, String text, boolean isWarning, MouseListener yesListener, MouseListener noListener) {
-        promptWithButtons(title, text, isWarning, new PromptedButton("Yes", yesListener).closeWindow(), new PromptedButton("No", noListener).closeWindow());
+        promptWithButtons(title, text, isWarning, new PromptedButton(Localizer.translate("yes"), yesListener).closeWindow(), new PromptedButton(Localizer.translate("no"), noListener).closeWindow());
     }
     public static void promptYesOrNo(String title, String text, boolean isWarning, MouseListener yesListener) {
-        promptWithButtons(title, text, isWarning, new PromptedButton("Yes", yesListener).closeWindow(), new PromptedButton("No", new MouseAdapter() {
+        promptWithButtons(title, text, isWarning, new PromptedButton(Localizer.translate("yes"), yesListener).closeWindow(), new PromptedButton(Localizer.translate("no"), new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
@@ -460,7 +538,7 @@ public class Application {
         labelPanel.setBorder(BorderFactory.createEmptyBorder(30, 0, 10, 0));
         labelPanel.setOpaque(false);
         JLabel textLabel = new JLabel(text);
-        textLabel.setForeground(theme.getColorTheme().getAccentColor());
+        textLabel.setForeground(theme.getColorTheme().getTextColor());
         textLabel.setHorizontalAlignment(SwingConstants.CENTER);
         textLabel.setFont(theme.getFont());
         if (dialogBox != null)
@@ -484,7 +562,7 @@ public class Application {
                     }
                 });
             button.addMouseListener(promptedButton.getActionListener());
-            button.setForeground(theme.getColorTheme().getAccentColor());
+            button.setForeground(theme.getColorTheme().getTextColor());
             button.setHorizontalAlignment(SwingConstants.CENTER);
             button.setFont(theme.getFont());
             button.setPreferredSize(new Dimension(BUTTON_WIDTH, BUTTON_HEIGHT));

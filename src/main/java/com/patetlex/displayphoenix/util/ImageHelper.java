@@ -1,5 +1,6 @@
 package com.patetlex.displayphoenix.util;
 
+import com.patetlex.displayphoenix.Application;
 import com.patetlex.displayphoenix.canvasly.effects.ImageEffect;
 
 import javax.imageio.IIOException;
@@ -18,6 +19,10 @@ import java.util.concurrent.ConcurrentHashMap;
 public class ImageHelper {
 
     private static final Map<String, ImageIcon> CACHE = new ConcurrentHashMap<>();
+
+    public static ImageIcon nativeIcon(String identifier) {
+        return getImage(Application.getTheme().getWidgetStyle().getName() + "_" + identifier);
+    }
 
     public static ImageIcon getImage(String identifier) {
         if (!(identifier.endsWith(".png") || identifier.endsWith(".gif")))

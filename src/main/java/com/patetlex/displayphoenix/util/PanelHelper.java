@@ -118,7 +118,6 @@ public class PanelHelper {
                 g.fillRoundRect(0, 0, getWidth(), getHeight(), arcWidth, arcHeight);
             }
         };
-        panel.setBackground(ColorInit.TRANSPARENT);
         panel.setOpaque(false);
         origin.setOpaque(false);
         panel.add(origin, BorderLayout.CENTER);

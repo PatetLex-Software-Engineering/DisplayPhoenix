@@ -7,6 +7,7 @@ import com.patetlex.displayphoenix.util.PanelHelper;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,6 +20,7 @@ public class Bit {
     private String pluginFlag;
     private String type;
     private String script;
+    private File sourceFile;
 
     /**
      * Main element of Bitly, used to bridge UI to syntax code
@@ -29,13 +31,14 @@ public class Bit {
      * @param icon  Bit's icon
      * @param widgets  All widgets within bit
      */
-    public Bit(String type, String plugin, String pluginFlag, ImageIcon icon, List<BitWidget[]> widgets, String script) {
+    public Bit(String type, String plugin, String pluginFlag, ImageIcon icon, List<BitWidget[]> widgets, String script, File sourceFile) {
         this.widgets = widgets;
         this.icon = icon;
         this.pluginFlag = pluginFlag;
         this.type = type;
         this.plugin = plugin;
         this.script = script;
+        this.sourceFile = sourceFile;
     }
 
     /**
@@ -78,6 +81,13 @@ public class Bit {
      */
     public String getScript() {
         return this.script;
+    }
+
+    /**
+     * @return If the bit was loaded as native. InputStream
+     */
+    public File sourceFile() {
+        return this.sourceFile;
     }
 
     /**

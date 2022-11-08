@@ -29,4 +29,8 @@ public class Website {
             e.printStackTrace();
         }
     }
+
+    public String html() {
+        return WebConnection.streamHtml(this.url);
+    }
 }

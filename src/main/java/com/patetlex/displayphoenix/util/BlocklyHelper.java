@@ -6,12 +6,14 @@ import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import com.patetlex.displayphoenix.blockly.Blockly;
 import com.patetlex.displayphoenix.blockly.elements.Block;
+import com.patetlex.displayphoenix.blockly.elements.workspace.ImplementedBlock;
 import com.patetlex.displayphoenix.generation.Module;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Map;
+import java.util.function.Consumer;
 
 public class BlocklyHelper {
 
@@ -167,6 +169,18 @@ public class BlocklyHelper {
             Blockly.loadCategory(identifier, output.toString());
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    public static void forEachBlock(Consumer<ImplementedBlock> forEachBlock, ImplementedBlock... blocks) {
+        for (ImplementedBlock implementedBlock : blocks) {
+            forEachBlock.accept(implementedBlock);
+            for (String statement : implementedBlock.getStatementBlocks().keySet()) {
+                forEachBlock(forEachBlock, implementedBlock.getStatementBlocks().get(statement).toArray(new ImplementedBlock[implementedBlock.getStatementBlocks().get(statement).size()]));
+            }
+            for (String value : implementedBlock.getValueBlocks().keySet()) {
+                forEachBlock(forEachBlock, implementedBlock.getValueBlocks().get(value).toArray(new ImplementedBlock[implementedBlock.getValueBlocks().get(value).size()]));
+            }
         }
     }
 }

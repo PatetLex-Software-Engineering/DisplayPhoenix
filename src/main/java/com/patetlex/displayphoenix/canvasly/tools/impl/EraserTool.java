@@ -2,6 +2,7 @@ package com.patetlex.displayphoenix.canvasly.tools.impl;
 
 import com.patetlex.displayphoenix.canvasly.CanvasPanel;
 import com.patetlex.displayphoenix.canvasly.ToolPanel;
+import com.patetlex.displayphoenix.canvasly.elements.StaticElement;
 import com.patetlex.displayphoenix.canvasly.interfaces.ISettingComponent;
 import com.patetlex.displayphoenix.canvasly.tools.Setting;
 import com.patetlex.displayphoenix.canvasly.tools.Tool;
@@ -9,6 +10,7 @@ import com.patetlex.displayphoenix.canvasly.util.CanvasHelper;
 
 import javax.swing.*;
 import java.util.List;
+import java.util.function.Consumer;
 
 public class EraserTool extends Tool {
 
@@ -35,6 +37,15 @@ public class EraserTool extends Tool {
                 }
             }
         }
+        canvas.getStaticElementAt(x, y, new Consumer<StaticElement>() {
+            @Override
+            public void accept(StaticElement staticElement) {
+                if (staticElement != null) {
+                    canvas.removeStaticElement(staticElement);
+                    canvas.repaint();
+                }
+            }
+        });
         canvas.repaint();
     }
 

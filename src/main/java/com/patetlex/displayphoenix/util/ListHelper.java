@@ -3,6 +3,7 @@ package com.patetlex.displayphoenix.util;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Function;
 
 /**
  * @author TBroski
@@ -12,6 +13,16 @@ public class ListHelper {
         List<T> newList = new ArrayList<>();
         for (T element : list) {
             if (!newList.contains(element)) {
+                newList.add(element);
+            }
+        }
+        return newList;
+    }
+
+    public static <T> List<T> remove(List<T> list, Function<T, Boolean> function) {
+        List<T> newList = new ArrayList<>();
+        for (T element : list) {
+            if (function.apply(element)) {
                 newList.add(element);
             }
         }

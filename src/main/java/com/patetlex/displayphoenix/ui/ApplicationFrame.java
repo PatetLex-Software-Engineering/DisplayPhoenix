@@ -4,6 +4,7 @@ package com.patetlex.displayphoenix.ui;
 import com.patetlex.displayphoenix.Application;
 import com.patetlex.displayphoenix.init.ColorInit;
 import com.patetlex.displayphoenix.util.ComponentHelper;
+import org.cef.ui.WebPanel;
 
 import javax.swing.*;
 import java.awt.*;
@@ -55,27 +56,26 @@ public class ApplicationFrame extends JFrame implements ComponentListener, Clone
 
     public static void open(ApplicationFrame frame) {
         frame.setIconImage(Application.getIcon().getImage());
-        frame.setDefaultCloseOperation(frame.closeActionCache);
+        frame.setDefaultCloseOperationSuper(frame.closeActionCache == JFrame.EXIT_ON_CLOSE ? JFrame.DISPOSE_ON_CLOSE : frame.closeActionCache);
         frame.setBounds(0, 0, frame.widthCache, frame.heightCache);
         frame.getContentPane().setBackground(Application.getTheme().getColorTheme().getPrimaryColor());
 
         frame.openListener.creation(frame);
 
-        if (frame.closeActionCache == JFrame.EXIT_ON_CLOSE) {
-            frame.addWindowListener(new WindowAdapter() {
-                @Override
-                public void windowClosing(WindowEvent e) {
-                    super.windowClosing(e);
-                    Application.close();
+        frame.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosed(WindowEvent e) {
+                super.windowClosed(e);
+                if (frame.closeActionCache == JFrame.EXIT_ON_CLOSE) {
+                    Application.exit(0);
                 }
-            });
-        }
+            }
+        });
 
         frame.setResizable(frame.resizableCache);
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
     }
-
 
     public void addTopLayer(Component component) {
         addTopLayer(component, 0, 0);
@@ -190,6 +190,16 @@ public class ApplicationFrame extends JFrame implements ComponentListener, Clone
     }
 
     @Override
+    public void setDefaultCloseOperation(int operation) {
+        super.setDefaultCloseOperation(operation);
+        this.closeActionCache = operation;
+    }
+
+    protected void setDefaultCloseOperationSuper(int operation) {
+        super.setDefaultCloseOperation(operation);
+    }
+
+    @Override
     public boolean isResizable() {
         return this.resizableCache;
     }
@@ -197,6 +207,7 @@ public class ApplicationFrame extends JFrame implements ComponentListener, Clone
     @Override
     public void setResizable(boolean resizable) {
         this.resizableCache = resizable;
+        super.setResizable(resizable);
     }
 
     @Override

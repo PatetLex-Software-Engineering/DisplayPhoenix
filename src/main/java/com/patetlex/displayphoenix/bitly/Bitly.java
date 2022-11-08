@@ -38,6 +38,7 @@ public class Bitly {
         BITS.clear();
         BIT_PLUGINS.clear();
         Data.cache(null, "/bitly/");
+        Data.cache(null, "/bitly/elements/");
         Data.forCachedFile("/bitly/", new FileIteration() {
             @Override
             public void iterate(File file) {
@@ -46,6 +47,27 @@ public class Bitly {
                 }
             }
         });
+        for (Bit bit : BITS) {
+            Object o = new Object() {
+                @Override
+                public boolean equals(Object obj) {
+                    Bit bit1 = (Bit) obj;
+                    for (BitWidget[] page : bit1.getBits()) {
+                        for (BitWidget widget : page) {
+                            Map<String, byte[]> externalFiles = widget.getExternalFiles(bit1.sourceFile() == null, bit1.sourceFile() != null ? bit1.sourceFile().getParentFile() : null);
+                            for (String name : externalFiles.keySet()) {
+                                Data.cache(externalFiles.get(name), "/bitly/elements/" + name);
+                            }
+                        }
+                    }
+                    return false;
+                }
+            };
+            o.equals(bit);
+            for (Bit plugin : bit.getPlugins()) {
+                o.equals(plugin);
+            }
+        }
     }
 
     /**
@@ -56,22 +78,12 @@ public class Bitly {
      */
     public static void loadBit(File file) {
         DetailedFile detailedFile = new DetailedFile(file);
+        JsonObject bitObject = detailedFile.readAsJson();
+        bitObject.addProperty("source_file", file.getPath());
         try {
-            loadBit(detailedFile.getFileName(), detailedFile.getFileContents(), ImageIO.read(new File(file.getParentFile().getPath() + "\\" + detailedFile.getFileName() + ".png")));
+            loadBit(detailedFile.getFileName(), gson.toJson(bitObject), ImageIO.read(new File(file.getParentFile().getPath() + "\\" + detailedFile.getFileName() + ".png")));
         } catch (IOException e) {
             e.printStackTrace();
-        }
-        Data.cache(null, "/bitly/elements/");
-        JsonObject bitObject = gson.fromJson(FileHelper.readAllLines(file), JsonObject.class);
-        List<BitWidget[]> widgets = gson.fromJson(bitObject.get("widgets").toString(), new TypeToken<List<BitWidget[]>>() {}.getType());
-        for (BitWidget[] page : widgets) {
-            for (BitWidget widget : page) {
-                if (widget.getStyle() == BitWidgetStyle.CANVAS) {
-                    for (String fileName : widget.getExternalFiles(false, file.getParentFile()).keySet()) {
-                        Data.cache(widget.getExternalFiles(false, file.getParentFile()).get(fileName), "/bitly/elements/" + fileName);
-                    }
-                }
-            }
         }
     }
 
@@ -146,7 +158,7 @@ public class Bitly {
     }
 
     private static void registerBit(DetailedFile file) {
-        String json = file.getFileContents();
+        String json = file.read();
         String type = file.getFileName();
         ImageIcon icon = null;
         try {
@@ -160,7 +172,7 @@ public class Bitly {
 
         // Creating Bit object
         Bit bit = new Bit(type, bitObject.get("plugin") != null ? bitObject.get("plugin").getAsString() : null, bitObject.get("pluginFlag") != null ? bitObject.get("pluginFlag").getAsString() : null, icon, gson.fromJson(bitObject.get("widgets").toString(), new TypeToken<List<BitWidget[]>>() {
-        }.getType()), bitObject.get("script") != null ? bitObject.get("script").getAsString() : null);
+        }.getType()), bitObject.get("script") != null ? bitObject.get("script").getAsString() : null, bitObject.get("source_file") != null ? new File(bitObject.get("source_file").getAsString()) : null);
 
         // Registering code
         if (bitObject.get("code") != null) {

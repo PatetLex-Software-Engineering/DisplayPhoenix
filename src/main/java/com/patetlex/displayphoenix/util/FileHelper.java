@@ -23,8 +23,7 @@ public class FileHelper {
         for (File subFile : directory.listFiles()) {
             if (subFile.isDirectory()) {
                 forEachSubFile(subFile, iterator);
-            }
-            else {
+            } else {
                 iterator.iterate(subFile);
             }
         }
@@ -34,8 +33,7 @@ public class FileHelper {
         for (File subFile : directory.listFiles()) {
             if (subFile.isDirectory()) {
                 deleteFolder(subFile);
-            }
-            else {
+            } else {
                 subFile.delete();
             }
         }
@@ -55,8 +53,7 @@ public class FileHelper {
                     newDir.mkdir();
                     newDir.createNewFile();
                     copyFilesFromFolderToFolder(subFile, newDir, replace);
-                }
-                else {
+                } else {
                     File newFile = new File(outputDirectory.getPath() + "/" + file.getFile().getName());
                     if (newFile.createNewFile() || replace) {
                         OutputStream writer = new FileOutputStream(newFile);
@@ -186,12 +183,15 @@ public class FileHelper {
             e.printStackTrace();
         }
     }
+
     public static DetailedFile storeTemporaryFile(InputStream inputStream, String name) {
         return storeTemporaryFile(readAllBytesFromStream(inputStream), name);
     }
+
     public static DetailedFile storeTemporaryFile(String content, String name) {
         return storeTemporaryFile(content.getBytes(), name);
     }
+
     public static DetailedFile storeTemporaryFile(byte[] content, String name) {
         try {
             File tempFile = new File(TEMP_DIRECTORY.getPath() + "/" + name);

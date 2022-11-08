@@ -87,6 +87,9 @@ public class Module implements BlocklyXmlParser {
     }
 
     public void registerBlockCode(Block block, String codeInput) {
+        if (this.blockCode.containsKey(block)) {
+            this.blockCode.remove(block);
+        }
         this.blockCode.put(block, codeInput);
     }
 
@@ -149,7 +152,7 @@ public class Module implements BlocklyXmlParser {
                             ScriptEngine engine = manager.getEngineByExtension("js");
                             Invocable invocable = (Invocable) engine;
                             try {
-                                engine.eval(bit.getBit().getScript());
+                                engine.eval(bit.getBit().getScript() != null ? bit.getBit().getScript() : "");
                             } catch (ScriptException e) {
                                 e.printStackTrace();
                             }

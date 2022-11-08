@@ -40,35 +40,22 @@ public class BitlyHelper {
                 output.append(out + "\n");
             }
             Bitly.loadBit(identifier, output.toString(), ImageHelper.renderImage(ImageHelper.getImage("bitly/" + identifier + ".png").getImage()));
-            JsonObject bitObject = gson.fromJson(output.toString(), JsonObject.class);
-            List<BitWidget[]> widgets = gson.fromJson(bitObject.get("widgets").toString(), new TypeToken<List<BitWidget[]>>() {}.getType());
-            Data.cache(null, "/bitly/");
-            Data.cache(null, "/bitly/elements/");
-            for (BitWidget[] page : widgets) {
-                for (BitWidget widget : page) {
-                    if (widget.getStyle() == BitWidgetStyle.CANVAS) {
-                        for (String fileName : widget.getExternalFiles(true, null).keySet()) {
-                            Data.cache(widget.getExternalFiles(true, null).get(fileName), "/bitly/elements/" + fileName);
-                        }
-                    }
-                }
-            }
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public static JPanel getBitSelectionPanel(ApplicationFrame frame, List<BitSave> bits) {
+    public static JList<BitSave> getBitSelectionPanel(ApplicationFrame frame, List<BitSave> bits) {
         return getBitSelectionPanel(frame, bits, new MouseAdapter() {});
     }
-    public static JPanel getBitSelectionPanel(ApplicationFrame frame, List<BitSave> bits, MouseListener mouseListener) {
+    public static JList<BitSave> getBitSelectionPanel(ApplicationFrame frame, List<BitSave> bits, MouseListener mouseListener) {
         class Renderer extends JLabel implements ListCellRenderer<BitSave> {
             @Override
             public Component getListCellRendererComponent(JList<? extends BitSave> list, BitSave value, int index, boolean isSelected, boolean cellHasFocus) {
                 setIcon(ImageHelper.resize(value.getImplementedBit().getBit().getIcon(), 48));
                 setText(String.valueOf(value.getImplementedBit().getValue("NAME")));
-                float r = frame.getWidth() * 0.15F;
-                setPreferredSize(new Dimension(Math.round(r), Math.round(r / 4)));
+                float r = Application.getTheme().getWidth() * 0.15F;
+                setPreferredSize(new Dimension(Math.round(r), Math.round(r / 3.5F)));
                 setBackground(isSelected ? Application.getTheme().getColorTheme().getAccentColor() : Application.getTheme().getColorTheme().getSecondaryColor());
                 setFont(Application.getTheme().getFont());
                 setHorizontalAlignment(SwingConstants.CENTER);
@@ -86,7 +73,7 @@ public class BitlyHelper {
         }
         return getBitSelectionPanel(frame, bits, new Renderer(), mouseListener);
     }
-    public static JPanel getBitSelectionPanel(ApplicationFrame frame, List<BitSave> bits, ListCellRenderer<BitSave> renderer, MouseListener mouseListener) {
+    public static JList<BitSave> getBitSelectionPanel(ApplicationFrame frame, List<BitSave> bits, ListCellRenderer<BitSave> renderer, MouseListener mouseListener) {
         JList<BitSave> bitJList = ComponentHelper.createJList(renderer, bits);
         bitJList.setLayoutOrientation(JList.HORIZONTAL_WRAP);
         bitJList.setVisibleRowCount(-1);
@@ -117,8 +104,6 @@ public class BitlyHelper {
                 }
             }
         });
-        JScrollPane scrollBar = new JScrollPane(bitJList);
-        scrollBar.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-        return PanelHelper.join(bitJList);
+        return bitJList;
     }
 }

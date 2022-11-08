@@ -138,25 +138,9 @@ public class BitWidget {
 
     public Map<String, byte[]> getExternalFiles(boolean isNative, File relativePath) {
         Map<String, byte[]> nameToContent = new HashMap<>();
-        for (CanvasElement canvasElement : this.canvasElements) {
-            byte[] bytes = null;
-            if (isNative) {
-                bytes = FileHelper.readAllBytesFromStream(ClassLoader.getSystemClassLoader().getResourceAsStream("textures/bitly/" + canvasElement.defaultValue));
-            }
-            else {
-                try {
-                    bytes = Files.readAllBytes(new File(relativePath.getPath() + "/" + canvasElement.defaultValue).toPath());
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-            if (canvasElement.defaultValue.contains("/")) {
-                String[] paths = canvasElement.defaultValue.split("/");
-                nameToContent.put(paths[paths.length - 1], bytes);
-            }
-            else {
-                nameToContent.put(canvasElement.defaultValue, bytes);
-            }
+        Map<String, byte[]> styleFiles = getStyle().loadExternalFiles(this, isNative, relativePath);
+        for (String name : styleFiles.keySet()) {
+            nameToContent.put(name, styleFiles.get(name));
         }
         return nameToContent;
     }

@@ -1,0 +1,26 @@
+{
+  "message0": "%1 + %2",
+  "args0": [
+    {
+      "type": "input_value",
+      "name": "A",
+      "check": "String"
+    },
+    {
+      "type": "input_value",
+      "name": "B",
+      "check": "String"
+    }
+  ],
+  "inputsInline": true,
+  "output": "String",
+  "category": "text",
+  "code": {
+    "javascript": "($[value%A] + $[value%B])",
+    "java": "($[value%A] + $[value%B])",
+    "lua": "($[value%A] .. $[value%B])"
+  },
+  "colour": 165,
+  "tooltip": "",
+  "helpUrl": ""
+}
