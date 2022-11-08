@@ -88,46 +88,6 @@ public class Application {
     private static List<Runnable> runOnCreate = new ArrayList<>();
     private static List<ApplicationFrame> openFrames = new ArrayList<>();
 
-    public static void main(String[] args) {
-        title = "App";
-        theme = new Theme(new ColorTheme(Color.GRAY, Color.WHITE, Color.BLACK), WidgetStyle.POPPING, Font.getFont(Font.SERIF));
-        icon = ImageHelper.getImage("popping_warning");
-
-
-        create(Application.class, icon, theme);
-
-        Maps.loadApi("hvKEubROLS0focJTKrMOcwD5AOhZHNOH");
-        Application.openWindow(parentFrame -> {
-            MapPanel panel = new MapPanel();
-            parentFrame.add(panel);
-            panel.addMarker(Maps.Location.getPublicLocation().getLocation().getLatitude(), Maps.Location.getPublicLocation().getLocation().getLongitude());
-
-            panel.addMapEventListener(new IMapListener() {
-                @Override
-                public void onMapEvent(MapEvent event) {
-                    if (event instanceof MarkerClickEvent) {
-                        System.out.println("work");
-                    }
-                }
-            });
-        });
-
-/*        Application.openWindow(parentFrame -> {
-            JLabel t = new JLabel("Hey Annika you are so cute :) <3");
-            t.addMouseListener(new MouseAdapter() {
-                @Override
-                public void mouseClicked(MouseEvent e) {
-                    super.mouseClicked(e);
-                    if (e.getClickCount() == 2) {
-                        prompt(":)", "I love you!", false);
-                    }
-                }
-            });
-            t.getFont().deriveFont(25F);
-            parentFrame.add(PanelHelper.join(t));
-        });*/
-    }
-
     /**
      * Creates the app, used for organization and constants.
      *
