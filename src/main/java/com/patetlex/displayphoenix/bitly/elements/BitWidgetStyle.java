@@ -29,12 +29,8 @@ import com.patetlex.displayphoenix.lang.Localizer;
 import com.patetlex.displayphoenix.ui.widget.*;
 import com.patetlex.displayphoenix.ui.widget.TextField;
 import com.patetlex.displayphoenix.util.*;
-<<<<<<< HEAD
 import org.eclipse.jgit.annotations.NonNull;
 
-=======
-import com.sun.istack.internal.NotNull;
->>>>>>> 47a47a09d2902902588a944b173e5c8c191c9a2d
 
 import javax.imageio.ImageIO;
 import javax.script.Invocable;
@@ -553,11 +549,7 @@ public abstract class BitWidgetStyle {
     public abstract Object getValue(Component component);
     public abstract void setValue(Component component, BitArgument argument);
 
-<<<<<<< HEAD
     @NonNull
-=======
-    @NotNull
->>>>>>> 47a47a09d2902902588a944b173e5c8c191c9a2d
     public String getCode(Module module, Component component) {
         Object val = getValue(component);
         if (val == null)

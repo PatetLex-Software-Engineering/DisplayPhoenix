@@ -1,10 +1,7 @@
 package com.patetlex.displayphoenix.gamely.ui;
 
 import com.patetlex.displayphoenix.gamely.engine.GameEngine;
-<<<<<<< HEAD
 import org.apache.xmlgraphics.java2d.DefaultGraphics2D;
-=======
->>>>>>> 47a47a09d2902902588a944b173e5c8c191c9a2d
 
 import javax.swing.*;
 import java.awt.*;
@@ -21,6 +18,7 @@ public class GamePanel extends JPanel implements MouseListener, MouseMotionListe
 
     private Dimension resolution;
 
+    private Line2D.Float moveLine = new Line2D.Float(0, 0, 0, 0);
     private Map<Integer, Boolean> downKeys = new HashMap<>();
     private Map<Integer, Boolean> downMouse = new HashMap<>();
     private Map<Integer, Line2D.Float> draggedLines = new HashMap<>();
@@ -29,10 +27,6 @@ public class GamePanel extends JPanel implements MouseListener, MouseMotionListe
         this.setBackground(Color.BLACK);
 
         this.resolution = resolution;
-<<<<<<< HEAD
-=======
-        engine.start(this);
->>>>>>> 47a47a09d2902902588a944b173e5c8c191c9a2d
         this.engine = engine;
 
         this.addMouseListener(this);
@@ -55,19 +49,10 @@ public class GamePanel extends JPanel implements MouseListener, MouseMotionListe
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-<<<<<<< HEAD
-
 
         double r = this.getScalingFactor();
         ((Graphics2D) g).translate((double) Math.round((this.getWidth() - this.getScaledResolution().getWidth()) / 2F), (double) Math.round((this.getHeight() - this.getScaledResolution().getHeight()) / 2F));
         ((Graphics2D) g).scale(r, r);
-=======
-        double r = this.getScalingFactor();
-
-        ((Graphics2D) g).translate((double) Math.round((this.getWidth() - this.getScaledResolution().getWidth()) / 2F), (double) Math.round((this.getHeight() - this.getScaledResolution().getHeight()) / 2F));
-        ((Graphics2D) g).scale(r, r);
-
->>>>>>> 47a47a09d2902902588a944b173e5c8c191c9a2d
         int size = (int) (this.resolution.getHeight() / Math.min(100, this.getResolution().getHeight()));
         int j = 0;
         for (int xp = 0; xp < this.resolution.getWidth(); xp += size) {
@@ -80,7 +65,6 @@ public class GamePanel extends JPanel implements MouseListener, MouseMotionListe
             }
             j++;
         }
-<<<<<<< HEAD
         ((Graphics2D) g).setClip(0, 0, (int) this.resolution.getWidth(), (int) this.resolution.getHeight());
 
         renderEngine(g);
@@ -90,10 +74,6 @@ public class GamePanel extends JPanel implements MouseListener, MouseMotionListe
         if (!this.engine.isRunning()) {
             this.engine.start(this);
         }
-=======
-
-        ((Graphics2D) g).setClip(0, 0, (int) this.resolution.getWidth(), (int) this.resolution.getHeight());
->>>>>>> 47a47a09d2902902588a944b173e5c8c191c9a2d
         this.engine.render((Graphics2D) g);
     }
 
@@ -136,6 +116,7 @@ public class GamePanel extends JPanel implements MouseListener, MouseMotionListe
     public void mousePressed(MouseEvent e) {
         this.downMouse.put(e.getButton(), true);
         this.draggedLines.put(e.getButton(), new Line2D.Float(e.getX(), e.getY(), e.getX(), e.getY()));
+        this.moveLine = new Line2D.Float(this.moveLine.getP2(), new Point2D.Float(e.getX(), e.getY()));
     }
 
     @Override
@@ -146,6 +127,7 @@ public class GamePanel extends JPanel implements MouseListener, MouseMotionListe
             dragReleased(e, draggedLine);
             this.draggedLines.put(e.getButton(), null);
         }
+        this.moveLine = new Line2D.Float(this.moveLine.getP2(), new Point2D.Float(e.getX(), e.getY()));
     }
 
     public void dragReleased(MouseEvent e, Line2D.Float draggedLine) {
@@ -171,11 +153,12 @@ public class GamePanel extends JPanel implements MouseListener, MouseMotionListe
                 this.repaint();
             }
         }
+        this.moveLine = new Line2D.Float(this.moveLine.getP2(), new Point2D.Float(e.getX(), e.getY()));
     }
 
     @Override
     public void mouseMoved(MouseEvent e) {
-
+        this.moveLine = new Line2D.Float(this.moveLine.getP2(), new Point2D.Float(e.getX(), e.getY()));
     }
 
     public Map<Integer, Boolean> getDownKeys() {
@@ -188,5 +171,11 @@ public class GamePanel extends JPanel implements MouseListener, MouseMotionListe
 
     public Map<Integer, Line2D.Float> getDraggedLines() {
         return Collections.unmodifiableMap(this.draggedLines);
+    }
+
+    public Line2D.Float getMoveLine() {
+        Line2D.Float move = this.moveLine;
+        this.moveLine = new Line2D.Float(this.moveLine.getP2(), this.moveLine.getP2());
+        return move;
     }
 }

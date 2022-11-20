@@ -88,4 +88,11 @@ public class ColorHelper {
         }
         return b;
     }
+
+    public static Color mixColors(Color color1, Color color2, float factor) {
+        int red = (int) (color1.getRed() * (1 - factor) + color2.getRed() * factor);
+        int green = (int) (color1.getGreen() * (1 - factor) + color2.getGreen() * factor);
+        int blue = (int) (color1.getBlue() * (1 - factor) + color2.getBlue() * factor);
+        return new Color(red, green, blue);
+    }
 }

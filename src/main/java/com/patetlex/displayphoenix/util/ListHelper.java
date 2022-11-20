@@ -35,4 +35,12 @@ public class ListHelper {
         int ma = posB > posA ? posB : posA;
         Collections.rotate(list.subList(mi, ma + 1), d);
     }
+
+    public static float[] toFloatArray(List<Float> list) {
+        float[] arr = new float[list.size()];
+        for (int i = 0; i < list.size(); i++) {
+            arr[i] = list.get(i);
+        }
+        return arr;
+    }
 }

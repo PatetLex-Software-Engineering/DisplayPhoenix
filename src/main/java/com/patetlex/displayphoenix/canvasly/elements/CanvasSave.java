@@ -4,21 +4,12 @@ import com.google.gson.*;
 import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-<<<<<<< HEAD
-=======
-import com.patetlex.displayphoenix.bitly.elements.BitSave;
->>>>>>> 47a47a09d2902902588a944b173e5c8c191c9a2d
 import com.patetlex.displayphoenix.canvasly.Pixel;
 import com.patetlex.displayphoenix.canvasly.elements.impl.FontElement;
 import com.patetlex.displayphoenix.canvasly.elements.impl.ImageElement;
 import com.patetlex.displayphoenix.canvasly.util.CanvasHelper;
 import com.patetlex.displayphoenix.file.Data;
 import com.patetlex.displayphoenix.util.GsonHelper;
-<<<<<<< HEAD
-=======
-import com.patetlex.displayphoenix.util.ListHelper;
-import jdk.nashorn.internal.ir.annotations.Ignore;
->>>>>>> 47a47a09d2902902588a944b173e5c8c191c9a2d
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -26,10 +17,6 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-<<<<<<< HEAD
-=======
-import java.lang.reflect.Type;
->>>>>>> 47a47a09d2902902588a944b173e5c8c191c9a2d
 import java.util.*;
 import java.util.List;
 

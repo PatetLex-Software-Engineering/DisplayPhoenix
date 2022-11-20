@@ -9,7 +9,9 @@ import java.net.URI;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.attribute.PosixFilePermission;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -107,16 +109,17 @@ public class FileHelper {
 
     public static String readAllLines(File file) {
         try {
-            BufferedReader reader = new BufferedReader(new FileReader(file));
+            return readAllLines(new FileInputStream(file));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 
-            StringBuilder output = new StringBuilder();
-            String out;
-            while ((out = reader.readLine()) != null) {
-                output.append(out + "\n");
-            }
-            reader.close();
-            return output.toString();
-        } catch (IOException e) {
+    public static List<String> readToLines(File file) {
+        try {
+            return readToLines(new FileInputStream(file));
+        } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
         return null;
@@ -133,6 +136,23 @@ public class FileHelper {
             }
             reader.close();
             return output.toString();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static List<String> readToLines(InputStream inputStream) {
+        try {
+            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+
+            List<String> lines = new ArrayList<>();
+            String out;
+            while ((out = reader.readLine()) != null) {
+                lines.add(out);
+            }
+            reader.close();
+            return lines;
         } catch (IOException e) {
             e.printStackTrace();
         }

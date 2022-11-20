@@ -2,18 +2,16 @@ package com.patetlex.displayphoenix.gamely.obj;
 
 import com.patetlex.displayphoenix.gamely.Gamely;
 import com.patetlex.displayphoenix.gamely.engine.GameEngine;
-<<<<<<< HEAD
+import com.patetlex.displayphoenix.gamely.misc.Light;
 import org.joml.Vector3f;
-=======
-import com.patetlex.displayphoenix.gamely.util.Vector3f;
->>>>>>> 47a47a09d2902902588a944b173e5c8c191c9a2d
+import org.joml.Vector4f;
 
 import java.awt.*;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
 
-public class GameObject {
+public class GameObject implements Cloneable {
 
     public Gamely.Save data;
 
@@ -21,6 +19,12 @@ public class GameObject {
     private Vector3f motion;
     private Vector3f size;
     private Vector3f rotation;
+    private float scale;
+
+    private float opacity;
+
+    private Light light;
+    private float reflectance;
 
     private GameEngine engine;
     private int id;
@@ -28,20 +32,64 @@ public class GameObject {
     public GameObject(Vector3f position, Vector3f boundingSize) {
         this.position = position;
         this.size = boundingSize;
-        this.motion = new Vector3f(0, 0, 0);
-        this.rotation = new Vector3f(0, 0, 0);
+        this.motion = new Vector3f();
+        this.rotation = new Vector3f();
         this.data = new Gamely.Save();
+        this.scale = 1;
+        this.opacity = 1;
     }
 
     /**
      * Extension of GameObject must have empty constructor for saves
      */
     public GameObject() {
-        this.position = new Vector3f(0, 0, 0);
-        this.size = new Vector3f(0, 0, 0);
-        this.motion = new Vector3f(0, 0, 0);
-        this.rotation = new Vector3f(0, 0, 0);
+        this.position = new Vector3f();
+        this.size = new Vector3f();
+        this.motion = new Vector3f();
+        this.rotation = new Vector3f();
         this.data = new Gamely.Save();
+        this.scale = 1;
+        this.opacity = 1;
+
+    }
+
+    public void setLight(Vector4f light) {
+        if (this.light == null) {
+            this.setLight(light, new Vector3f(1, 0, 0));
+        } else {
+            this.setLight(light, this.getLight().getAttenuation());
+        }
+    }
+
+    public void setLight(Vector4f light, Vector3f attenuation) {
+        if (this.light == null) {
+            this.light = new Light(light, attenuation);
+            if (this.getEngine() != null)
+                this.getEngine().addLightSource(this);
+        } else {
+            this.light.setLight(light);
+            this.light.setAttenuation(attenuation);
+        }
+    }
+
+    public void setReflectance(float reflectance) {
+        this.reflectance = reflectance;
+    }
+
+    public float getOpacity() {
+        return opacity;
+    }
+
+    public void setOpacity(float opacity) {
+        this.opacity = opacity;
+    }
+
+    public void scale(float scale) {
+        this.scale = scale;
+    }
+
+    public float getScale() {
+        return scale;
     }
 
     public Vector3f getPosition() {
@@ -68,7 +116,15 @@ public class GameObject {
         return 0.5F;
     }
 
-    protected GameEngine getEngine() {
+    public Light getLight() {
+        return this.light;
+    }
+
+    public float getReflectance() {
+        return reflectance;
+    }
+
+    public GameEngine getEngine() {
         return this.engine;
     }
 
@@ -89,7 +145,6 @@ public class GameObject {
         save.putString("class", this.getClass().getTypeName());
         save.putInteger("id", this.id);
 
-<<<<<<< HEAD
         save.putFloat("positionX", this.getPosition().x);
         save.putFloat("positionY", this.getPosition().y);
         save.putFloat("positionZ", this.getPosition().z);
@@ -105,23 +160,23 @@ public class GameObject {
         save.putFloat("rotationX", this.getRotation().x);
         save.putFloat("rotationY", this.getRotation().y);
         save.putFloat("rotationZ", this.getRotation().z);
-=======
-        save.putFloat("positionX", this.getPosition().getX());
-        save.putFloat("positionY", this.getPosition().getY());
-        save.putFloat("positionZ", this.getPosition().getZ());
 
-        save.putFloat("motionX", this.getMotion().getX());
-        save.putFloat("motionY", this.getMotion().getY());
-        save.putFloat("motionZ", this.getMotion().getZ());
+        save.putFloat("scale", this.scale);
 
-        save.putFloat("boundingX", this.getBoundingSize().getX());
-        save.putFloat("boundingY", this.getBoundingSize().getY());
-        save.putFloat("boundingZ", this.getBoundingSize().getZ());
+        save.putFloat("opacity", this.opacity);
 
-        save.putFloat("rotationX", this.getRotation().getX());
-        save.putFloat("rotationY", this.getRotation().getY());
-        save.putFloat("rotationZ", this.getRotation().getZ());
->>>>>>> 47a47a09d2902902588a944b173e5c8c191c9a2d
+        if (this.light != null) {
+            save.putFloat("lightX", this.getLight().getLight().x);
+            save.putFloat("lightY", this.getLight().getLight().y);
+            save.putFloat("lightZ", this.getLight().getLight().z);
+            save.putFloat("lightW", this.getLight().getLight().w);
+
+            save.putFloat("lightAttenuationX", this.getLight().getAttenuation().x);
+            save.putFloat("lightAttenuationY", this.getLight().getAttenuation().y);
+            save.putFloat("lightAttenuationZ", this.getLight().getAttenuation().z);
+        }
+
+        save.putFloat("reflectance", this.getReflectance());
 
         save.put("data", this.data);
     }
@@ -133,6 +188,10 @@ public class GameObject {
         this.motion = new Vector3f(save.getFloat("motionX"), save.getFloat("motionY"), save.getFloat("motionZ"));
         this.size = new Vector3f(save.getFloat("boundingX"), save.getFloat("boundingY"), save.getFloat("boundingZ"));
         this.rotation = new Vector3f(save.getFloat("rotationX"), save.getFloat("rotationY"), save.getFloat("rotationZ"));
+        this.scale = save.getFloat("scale");
+        this.light = new Light(new Vector4f(save.getFloat("lightX"), save.getFloat("lightY"), save.getFloat("lightZ"), save.getFloat("lightW")), new Vector3f(save.getFloat("lightAttenuationX"), save.getFloat("lightAttenuationY"), save.getFloat("lightAttenuationZ")));
+        this.reflectance = save.getFloat("reflectance");
+        this.opacity = save.getFloat("opacity");
     }
 
     public static Gamely.Save handleWrite(GameObject gameObject) {
@@ -171,5 +230,18 @@ public class GameObject {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public GameObject clone() {
+        return GameObject.handleRead(GameObject.handleWrite(this));
+    }
+
+    public float distanceTo(GameObject obj) {
+        float dx = this.getPosition().x - obj.getPosition().x;
+        float dy = this.getPosition().y - obj.getPosition().y;
+        float dz = this.getPosition().z - obj.getPosition().z;
+        float xy = (float) Math.sqrt(dx * dx + dy * dy);
+        float xyz = (float) Math.sqrt(xy * xy + dz * dz);
+        return xyz;
     }
 }

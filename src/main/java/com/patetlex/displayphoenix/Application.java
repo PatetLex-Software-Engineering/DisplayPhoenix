@@ -9,29 +9,15 @@ import com.patetlex.displayphoenix.bitly.elements.BitWidgetStyle;
 import com.patetlex.displayphoenix.blockly.Blockly;
 import com.patetlex.displayphoenix.canvasly.tools.Tool;
 import com.patetlex.displayphoenix.canvasly.tools.impl.*;
-import com.patetlex.displayphoenix.enums.WidgetStyle;
 import com.patetlex.displayphoenix.exception.AppNotCreatedException;
 import com.patetlex.displayphoenix.file.Data;
 import com.patetlex.displayphoenix.file.indexly.Indexly;
 import com.patetlex.displayphoenix.gamely.Gamely;
-<<<<<<< HEAD
-import com.patetlex.displayphoenix.gamely.engine.GameEngine;
-import com.patetlex.displayphoenix.gamely.engine.impl.GameEngine3D;
-import com.patetlex.displayphoenix.gamely.physics.impl.GamePhysics2D;
-import com.patetlex.displayphoenix.gamely.ui.GamePanel;
-import com.patetlex.displayphoenix.gamely.ui.ext.GameGLFWPanel;
-=======
->>>>>>> 47a47a09d2902902588a944b173e5c8c191c9a2d
 import com.patetlex.displayphoenix.generation.Module;
 import com.patetlex.displayphoenix.init.ColorInit;
 import com.patetlex.displayphoenix.interfaces.FileIteration;
 import com.patetlex.displayphoenix.lang.Local;
 import com.patetlex.displayphoenix.lang.Localizer;
-import com.patetlex.displayphoenix.maps.Maps;
-import com.patetlex.displayphoenix.maps.event.IMapListener;
-import com.patetlex.displayphoenix.maps.event.MapEvent;
-import com.patetlex.displayphoenix.maps.event.events.MarkerClickEvent;
-import com.patetlex.displayphoenix.maps.ui.MapPanel;
 import com.patetlex.displayphoenix.system.exe.SystemProcessor;
 import com.patetlex.displayphoenix.ui.ApplicationFrame;
 import com.patetlex.displayphoenix.ui.ColorTheme;
@@ -41,16 +27,9 @@ import com.patetlex.displayphoenix.ui.widget.OverlayOnHoverWidget;
 import com.patetlex.displayphoenix.ui.widget.RoundedButton;
 import com.patetlex.displayphoenix.util.*;
 import org.cef.CefApp;
-import org.cef.ui.WebPanel;
 import org.jnativehook.GlobalScreen;
-<<<<<<< HEAD
 import org.jnativehook.NativeHookException;
-import org.lwjgl.Version;
-import org.lwjgl.glfw.GLFWErrorCallback;
-import org.lwjgl.opengl.GL11;;
-=======
-import org.jnativehook.NativeHookException;;
->>>>>>> 47a47a09d2902902588a944b173e5c8c191c9a2d
+;
 
 import javax.swing.*;
 import java.awt.*;
@@ -59,7 +38,6 @@ import java.io.*;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -87,46 +65,6 @@ public class Application {
 
     private static List<Runnable> runOnCreate = new ArrayList<>();
     private static List<ApplicationFrame> openFrames = new ArrayList<>();
-
-    public static void main(String[] args) {
-        title = "App";
-        theme = new Theme(new ColorTheme(Color.GRAY, Color.WHITE, Color.BLACK), WidgetStyle.POPPING, Font.getFont(Font.SERIF));
-        icon = ImageHelper.getImage("popping_warning");
-
-
-        create(Application.class, icon, theme);
-
-        Maps.loadApi("hvKEubROLS0focJTKrMOcwD5AOhZHNOH");
-        Application.openWindow(parentFrame -> {
-            MapPanel panel = new MapPanel();
-            parentFrame.add(panel);
-            panel.addMarker(Maps.Location.getPublicLocation().getLocation().getLatitude(), Maps.Location.getPublicLocation().getLocation().getLongitude());
-
-            panel.addMapEventListener(new IMapListener() {
-                @Override
-                public void onMapEvent(MapEvent event) {
-                    if (event instanceof MarkerClickEvent) {
-                        System.out.println("work");
-                    }
-                }
-            });
-        });
-
-/*        Application.openWindow(parentFrame -> {
-            JLabel t = new JLabel("Hey Annika you are so cute :) <3");
-            t.addMouseListener(new MouseAdapter() {
-                @Override
-                public void mouseClicked(MouseEvent e) {
-                    super.mouseClicked(e);
-                    if (e.getClickCount() == 2) {
-                        prompt(":)", "I love you!", false);
-                    }
-                }
-            });
-            t.getFont().deriveFont(25F);
-            parentFrame.add(PanelHelper.join(t));
-        });*/
-    }
 
     /**
      * Creates the app, used for organization and constants.
