@@ -1,0 +1,6 @@
+{
+    "parent": "block/grass_block_clovers_template",
+    "textures": {
+        "clovers": "block/grass_block_clovers2"
+    }
+}

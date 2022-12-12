@@ -1,0 +1,21 @@
+{
+	"credit": "Made with Blockbench",
+	"parent": "block/grass_block_template",
+	"textures": {
+		"particle": "block/dirt",
+		"dirt": "block/dirt",
+		"top": "block/grass_block_top",
+		"north_overlay": "block/grass_block_side_overlay3",
+		"east_overlay": "block/grass_block_side_overlay2",
+		"south_overlay": "block/grass_block_side_overlay0",
+		"west_overlay": "block/grass_block_side_overlay1",
+		"north": "block/grass_block_side3",
+		"east": "block/grass_block_side2",
+		"south": "block/grass_block_side0",
+		"west": "block/grass_block_side1",
+		"north_edge": "block/grass_edge",
+		"east_edge": "block/grass_edge",
+		"south_edge": "block/grass_edge1",
+		"west_edge": "block/grass_edge1"
+	}
+}

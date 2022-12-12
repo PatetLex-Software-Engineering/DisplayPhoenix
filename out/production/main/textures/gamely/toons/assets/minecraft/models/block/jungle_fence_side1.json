@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/fence_side1",
+  "textures": {
+    "texture": "minecraft:block/jungle_planks"
+  }
+}

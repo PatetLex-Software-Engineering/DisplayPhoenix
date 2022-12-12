@@ -1,0 +1,8 @@
+{
+	"parent": "minecraft:block/template_leaves_persistent01",
+	"textures": {
+		  "2": "block/acacia_leaves3",
+		  "3": "block/acacia_leaves2",
+		  "particle": "block/acacia_leaves0"
+	}
+  }

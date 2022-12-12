@@ -1,0 +1,35 @@
+{
+	"credit": "Made with Blockbench",
+	"parent": "block/grass_block_flowers_template",
+	"textures": {
+		"1": "block/grass_block_flower5",
+		"flowers": "block/grass_block_flowers4",
+		"particle": "block/grass_block_flower5"
+	},
+	"elements": [
+		{
+			"from": [0, 17.4, 0],
+			"to": [16, 17.4, 16],
+			"faces": {
+				"up": {"uv": [0, 0, 16, 16], "texture": "#flowers", "cullface": "up"}
+			}
+		},
+		{
+			"from": [2.3, 18.2, 1.5],
+			"to": [5.3, 18.2, 4.5],
+			"rotation": {"angle": 0, "axis": "y", "origin": [4.2, 18.4, 5.4]},
+			"faces": {
+				"up": {"uv": [0, 0, 16, 16], "rotation": 90, "texture": "#1"},
+				"down": {"uv": [16, 0, 0, 16], "rotation": 90, "texture": "#1"}
+			}
+		}
+	],
+	"groups": [
+		{
+			"name": "grass_block_flowers_template",
+			"origin": [8, 8, 8],
+			"color": 0,
+			"children": [0, 1]
+		}
+	]
+}

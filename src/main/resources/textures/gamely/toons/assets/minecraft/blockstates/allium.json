@@ -1,0 +1,78 @@
+{
+  "variants": {
+    "": [
+      {
+        "model": "minecraft:block/allium",
+        "weight": 32
+      },
+      {
+        "model": "minecraft:block/allium",
+        "y": 90,
+        "weight": 32
+      },
+      {
+        "model": "minecraft:block/allium",
+        "y": 180,
+        "weight": 32
+      },
+      {
+        "model": "minecraft:block/allium",
+        "y":270,
+        "weight": 32
+      },
+      {
+        "model": "minecraft:block/allium1",
+        "weight": 32
+      },
+      {
+        "model": "minecraft:block/allium1",
+        "y": 90,
+        "weight": 32
+      },
+      {
+        "model": "minecraft:block/allium1",
+        "y": 180,
+        "weight": 32
+      },
+      {
+        "model": "minecraft:block/allium1",
+        "y":270,
+        "weight": 32
+      },
+      {
+        "model": "minecraft:block/allium2",
+        "weight": 32
+      },
+      {
+        "model": "minecraft:block/allium2",
+        "y": 90,
+        "weight": 32
+      },
+      {
+        "model": "minecraft:block/allium2",
+        "y": 180,
+        "weight": 32
+      },
+      {
+        "model": "minecraft:block/allium2",
+        "y":270,
+        "weight": 32
+      },
+      {
+        "model": "minecraft:block/allium_butterfly"
+      },
+      {
+        "model": "minecraft:block/allium_butterfly",
+        "y": 90
+      },
+      {
+        "model": "minecraft:block/allium_butterfly",
+        "y": 180
+      },
+      {
+        "model": "minecraft:block/allium_butterfly",
+        "y":270
+      }
+    ]
+  }
+}

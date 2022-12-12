@@ -221,7 +221,7 @@ public class Application {
     }
 
     /**
-     * Opens a simple text window, non editable. Used for possible errors with no expectation
+     * Opens a simple text window, non-editable. Used for possible errors with no expectation
      *
      * @param paste Text in text field
      * @return Returns opened window

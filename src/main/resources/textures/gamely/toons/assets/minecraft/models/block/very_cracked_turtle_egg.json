@@ -1,0 +1,21 @@
+{
+    "parent": "block/block",
+    "textures": {
+		"all": "minecraft:block/turtle_egg_very_cracked",
+		"front": "minecraft:block/turtle_egg_very_cracked_front",
+        "particle": "#all"
+    },
+    "elements": [
+        {   "from": [ 5, 0, 4 ],
+            "to": [ 9, 7, 8 ],
+            "faces": {
+                "down":  { "uv": [  0, 0,  4, 4 ], "texture": "#all", "cullface": "down" },
+                "up":    { "uv": [  0, 0,  4, 4 ], "texture": "#all" },
+                "north": { "uv": [ 1, 4, 5, 11 ], "texture": "#front" },
+                "south": { "uv": [ 1, 4, 5, 11 ], "texture": "#all" },
+                "west":  { "uv": [ 1, 4, 5, 11 ], "texture": "#all" },
+                "east":  { "uv": [ 1, 4, 5, 11 ], "texture": "#all" }
+            }
+        }
+    ]
+}

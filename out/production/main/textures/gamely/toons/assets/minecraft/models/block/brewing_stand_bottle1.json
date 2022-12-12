@@ -1,0 +1,34 @@
+{
+	"credit": "Made with Blockbench",
+	"textures": {
+		"1": "block/brewing_stand_bottle1"
+	},
+	"elements": [
+		{
+			"from": [-0.03125, 2.75, 3.93751],
+			"to": [7.96875, 10.75, 3.93751],
+			"rotation": {"angle": 45, "axis": "y", "origin": [3.96875, 6.75, 3.93751]},
+			"faces": {
+				"north": {"uv": [0, 0, 16, 16], "texture": "#1"},
+				"south": {"uv": [0, 0, 16, 16], "texture": "#1"}
+			}
+		},
+		{
+			"from": [3.96875, 2.75, -0.06249],
+			"to": [3.96875, 10.75, 7.93751],
+			"rotation": {"angle": 45, "axis": "y", "origin": [3.96875, 6.75, 3.93751]},
+			"faces": {
+				"east": {"uv": [0, 0, 16, 16], "texture": "#1"},
+				"west": {"uv": [0, 0, 16, 16], "texture": "#1"}
+			}
+		}
+	],
+	"groups": [
+		{
+			"name": "brewing_stand_bottle0",
+			"origin": [8, 8, 8],
+			"color": 0,
+			"children": [0, 1]
+		}
+	]
+}

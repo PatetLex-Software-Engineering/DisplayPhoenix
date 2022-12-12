@@ -1,0 +1,12 @@
+{
+	"credit": "Made with Blockbench",
+	"elements": [
+		{
+			"from": [0, 17.4, 0],
+			"to": [16, 17.4, 16],
+			"faces": {
+				"up": {"uv": [0, 0, 16, 16], "texture": "#flowers", "cullface": "up"}
+			}
+		}
+	]
+}

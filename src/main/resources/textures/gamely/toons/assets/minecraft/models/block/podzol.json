@@ -1,0 +1,13 @@
+{
+	"credit": "Made with Blockbench",
+	"parent": "minecraft:block/cube",
+	"textures": {
+		"north": "block/podzol_side2",
+		"east": "block/podzol_side1",
+		"south": "block/podzol_side",
+		"west": "block/podzol_side3",
+		"up": "block/podzol_top",
+		"down": "block/dirt",
+		"particle": "#up"
+	}
+}

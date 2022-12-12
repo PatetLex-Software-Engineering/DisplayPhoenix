@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/template_compass",
+  "textures": {
+    "layer0": "minecraft:item/compass_16"
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/template_leaves_tinted_persistent01",
+  "textures": {
+    "0": "minecraft:block/oak_leaves0",
+    "1": "minecraft:block/oak_leaves1"
+  }
+}

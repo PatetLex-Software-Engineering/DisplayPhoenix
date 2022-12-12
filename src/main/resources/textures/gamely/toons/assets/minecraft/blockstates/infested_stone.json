@@ -1,0 +1,694 @@
+{
+	"variants": {
+	  "": [
+		{
+		  "model": "minecraft:block/stone"
+		},
+		{
+		  "model": "minecraft:block/stone",
+		  "y": 90
+		},
+		{
+		  "model": "minecraft:block/stone",
+		  "y": 180
+		},
+		{
+		  "model": "minecraft:block/stone",
+		  "y": 270
+		},
+		{
+		  "model": "minecraft:block/stone",
+		  "x": 90
+		},
+		{
+		  "model": "minecraft:block/stone",
+		  "x": 90,
+		  "y": 90
+		},
+		{
+		  "model": "minecraft:block/stone",
+		  "x": 90,
+		  "y": 180
+		},
+		{
+		  "model": "minecraft:block/stone",
+		  "x": 90,
+		  "y": 270
+		},
+		{
+		  "model": "minecraft:block/stone",
+		  "x": 180
+		},
+		{
+		  "model": "minecraft:block/stone",
+		  "x": 180,
+		  "y": 90
+		},
+		{
+		  "model": "minecraft:block/stone",
+		  "x": 180,
+		  "y": 180
+		},
+		{
+		  "model": "minecraft:block/stone",
+		  "x": 180,
+		  "y": 270
+		},
+		{
+		  "model": "minecraft:block/stone",
+		  "x": 270
+		},
+		{
+		  "model": "minecraft:block/stone",
+		  "x": 270,
+		  "y": 90
+		},
+		{
+		  "model": "minecraft:block/stone",
+		  "x": 270,
+		  "y": 180
+		},
+		{
+		  "model": "minecraft:block/stone",
+		  "x": 270,
+		  "y": 270
+		},
+  
+		
+		{
+		  "model": "minecraft:block/stone",
+		  "z": 90
+		},
+		{
+		  "model": "minecraft:block/stone",
+		  "y": 90,
+		  "z": 90
+		},
+		{
+		  "model": "minecraft:block/stone",
+		  "y": 180,
+		  "z": 90
+		},
+		{
+		  "model": "minecraft:block/stone",
+		  "y": 270,
+		  "z": 90
+		},
+		{
+		  "model": "minecraft:block/stone",
+		  "x": 90,
+		  "z": 90
+		},
+		{
+		  "model": "minecraft:block/stone",
+		  "x": 90,
+		  "y": 90,
+		  "z": 90
+		},
+		{
+		  "model": "minecraft:block/stone",
+		  "x": 90,
+		  "y": 180,
+		  "z": 90
+		},
+		{
+		  "model": "minecraft:block/stone",
+		  "x": 90,
+		  "y": 270,
+		  "z": 90
+		},
+		{
+		  "model": "minecraft:block/stone",
+		  "x": 180,
+		  "z": 90
+		},
+		{
+		  "model": "minecraft:block/stone",
+		  "x": 180,
+		  "y": 90,
+		  "z": 90
+		},
+		{
+		  "model": "minecraft:block/stone",
+		  "x": 180,
+		  "y": 180,
+		  "z": 90
+		},
+		{
+		  "model": "minecraft:block/stone",
+		  "x": 180,
+		  "y": 270,
+		  "z": 90
+		},
+		{
+		  "model": "minecraft:block/stone",
+		  "x": 270,
+		  "z": 90
+		},
+		{
+		  "model": "minecraft:block/stone",
+		  "x": 270,
+		  "y": 90,
+		  "z": 90
+		},
+		{
+		  "model": "minecraft:block/stone",
+		  "x": 270,
+		  "y": 180,
+		  "z": 90
+		},
+		{
+		  "model": "minecraft:block/stone",
+		  "x": 270,
+		  "y": 270,
+		  "z": 90
+		},
+  
+		
+		{
+		  "model": "minecraft:block/stone",
+		  "z": 180
+		},
+		{
+		  "model": "minecraft:block/stone",
+		  "y": 90,
+		  "z": 180
+		},
+		{
+		  "model": "minecraft:block/stone",
+		  "y": 180,
+		  "z": 180
+		},
+		{
+		  "model": "minecraft:block/stone",
+		  "y": 270,
+		  "z": 180
+		},
+		{
+		  "model": "minecraft:block/stone",
+		  "x": 90,
+		  "z": 180
+		},
+		{
+		  "model": "minecraft:block/stone",
+		  "x": 90,
+		  "y": 90,
+		  "z": 180
+		},
+		{
+		  "model": "minecraft:block/stone",
+		  "x": 90,
+		  "y": 180,
+		  "z": 180
+		},
+		{
+		  "model": "minecraft:block/stone",
+		  "x": 90,
+		  "y": 270,
+		  "z": 180
+		},
+		{
+		  "model": "minecraft:block/stone",
+		  "x": 180,
+		  "z": 180
+		},
+		{
+		  "model": "minecraft:block/stone",
+		  "x": 180,
+		  "y": 90,
+		  "z": 180
+		},
+		{
+		  "model": "minecraft:block/stone",
+		  "x": 180,
+		  "y": 180,
+		  "z": 180
+		},
+		{
+		  "model": "minecraft:block/stone",
+		  "x": 180,
+		  "y": 270,
+		  "z": 180
+		},
+		{
+		  "model": "minecraft:block/stone",
+		  "x": 270,
+		  "z": 180
+		},
+		{
+		  "model": "minecraft:block/stone",
+		  "x": 270,
+		  "y": 90,
+		  "z": 180
+		},
+		{
+		  "model": "minecraft:block/stone",
+		  "x": 270,
+		  "y": 180,
+		  "z": 180
+		},
+		{
+		  "model": "minecraft:block/stone",
+		  "x": 270,
+		  "y": 270,
+		  "z": 180
+		},
+  
+		
+		{
+		  "model": "minecraft:block/stone",
+		  "z": 270
+		},
+		{
+		  "model": "minecraft:block/stone",
+		  "y": 90,
+		  "z": 270
+		},
+		{
+		  "model": "minecraft:block/stone",
+		  "y": 180,
+		  "z": 270
+		},
+		{
+		  "model": "minecraft:block/stone",
+		  "y": 270,
+		  "z": 270
+		},
+		{
+		  "model": "minecraft:block/stone",
+		  "x": 90,
+		  "z": 270
+		},
+		{
+		  "model": "minecraft:block/stone",
+		  "x": 90,
+		  "y": 90,
+		  "z": 270
+		},
+		{
+		  "model": "minecraft:block/stone",
+		  "x": 90,
+		  "y": 180,
+		  "z": 270
+		},
+		{
+		  "model": "minecraft:block/stone",
+		  "x": 90,
+		  "y": 270,
+		  "z": 270
+		},
+		{
+		  "model": "minecraft:block/stone",
+		  "x": 180,
+		  "z": 270
+		},
+		{
+		  "model": "minecraft:block/stone",
+		  "x": 180,
+		  "y": 90,
+		  "z": 270
+		},
+		{
+		  "model": "minecraft:block/stone",
+		  "x": 180,
+		  "y": 180,
+		  "z": 270
+		},
+		{
+		  "model": "minecraft:block/stone",
+		  "x": 180,
+		  "y": 270,
+		  "z": 270
+		},
+		{
+		  "model": "minecraft:block/stone",
+		  "x": 270,
+		  "z": 270
+		},
+		{
+		  "model": "minecraft:block/stone",
+		  "x": 270,
+		  "y": 90,
+		  "z": 270
+		},
+		{
+		  "model": "minecraft:block/stone",
+		  "x": 270,
+		  "y": 180,
+		  "z": 270
+		},
+		{
+		  "model": "minecraft:block/stone",
+		  "x": 270,
+		  "y": 270,
+		  "z": 270
+		},
+  
+  
+  
+		
+		{
+		  "model": "minecraft:block/stone1"
+		},
+		{
+		  "model": "minecraft:block/stone1",
+		  "y": 90
+		},
+		{
+		  "model": "minecraft:block/stone1",
+		  "y": 180
+		},
+		{
+		  "model": "minecraft:block/stone1",
+		  "y": 270
+		},
+		{
+		  "model": "minecraft:block/stone1",
+		  "x": 90
+		},
+		{
+		  "model": "minecraft:block/stone1",
+		  "x": 90,
+		  "y": 90
+		},
+		{
+		  "model": "minecraft:block/stone1",
+		  "x": 90,
+		  "y": 180
+		},
+		{
+		  "model": "minecraft:block/stone1",
+		  "x": 90,
+		  "y": 270
+		},
+		{
+		  "model": "minecraft:block/stone1",
+		  "x": 180
+		},
+		{
+		  "model": "minecraft:block/stone1",
+		  "x": 180,
+		  "y": 90
+		},
+		{
+		  "model": "minecraft:block/stone1",
+		  "x": 180,
+		  "y": 180
+		},
+		{
+		  "model": "minecraft:block/stone1",
+		  "x": 180,
+		  "y": 270
+		},
+		{
+		  "model": "minecraft:block/stone1",
+		  "x": 270
+		},
+		{
+		  "model": "minecraft:block/stone1",
+		  "x": 270,
+		  "y": 90
+		},
+		{
+		  "model": "minecraft:block/stone1",
+		  "x": 270,
+		  "y": 180
+		},
+		{
+		  "model": "minecraft:block/stone1",
+		  "x": 270,
+		  "y": 270
+		},
+  
+		
+		{
+		  "model": "minecraft:block/stone1",
+		  "z": 90
+		},
+		{
+		  "model": "minecraft:block/stone1",
+		  "y": 90,
+		  "z": 90
+		},
+		{
+		  "model": "minecraft:block/stone1",
+		  "y": 180,
+		  "z": 90
+		},
+		{
+		  "model": "minecraft:block/stone1",
+		  "y": 270,
+		  "z": 90
+		},
+		{
+		  "model": "minecraft:block/stone1",
+		  "x": 90,
+		  "z": 90
+		},
+		{
+		  "model": "minecraft:block/stone1",
+		  "x": 90,
+		  "y": 90,
+		  "z": 90
+		},
+		{
+		  "model": "minecraft:block/stone1",
+		  "x": 90,
+		  "y": 180,
+		  "z": 90
+		},
+		{
+		  "model": "minecraft:block/stone1",
+		  "x": 90,
+		  "y": 270,
+		  "z": 90
+		},
+		{
+		  "model": "minecraft:block/stone1",
+		  "x": 180,
+		  "z": 90
+		},
+		{
+		  "model": "minecraft:block/stone1",
+		  "x": 180,
+		  "y": 90,
+		  "z": 90
+		},
+		{
+		  "model": "minecraft:block/stone1",
+		  "x": 180,
+		  "y": 180,
+		  "z": 90
+		},
+		{
+		  "model": "minecraft:block/stone1",
+		  "x": 180,
+		  "y": 270,
+		  "z": 90
+		},
+		{
+		  "model": "minecraft:block/stone1",
+		  "x": 270,
+		  "z": 90
+		},
+		{
+		  "model": "minecraft:block/stone1",
+		  "x": 270,
+		  "y": 90,
+		  "z": 90
+		},
+		{
+		  "model": "minecraft:block/stone1",
+		  "x": 270,
+		  "y": 180,
+		  "z": 90
+		},
+		{
+		  "model": "minecraft:block/stone1",
+		  "x": 270,
+		  "y": 270,
+		  "z": 90
+		},
+  
+		
+		{
+		  "model": "minecraft:block/stone1",
+		  "z": 180
+		},
+		{
+		  "model": "minecraft:block/stone1",
+		  "y": 90,
+		  "z": 180
+		},
+		{
+		  "model": "minecraft:block/stone1",
+		  "y": 180,
+		  "z": 180
+		},
+		{
+		  "model": "minecraft:block/stone1",
+		  "y": 270,
+		  "z": 180
+		},
+		{
+		  "model": "minecraft:block/stone1",
+		  "x": 90,
+		  "z": 180
+		},
+		{
+		  "model": "minecraft:block/stone1",
+		  "x": 90,
+		  "y": 90,
+		  "z": 180
+		},
+		{
+		  "model": "minecraft:block/stone1",
+		  "x": 90,
+		  "y": 180,
+		  "z": 180
+		},
+		{
+		  "model": "minecraft:block/stone1",
+		  "x": 90,
+		  "y": 270,
+		  "z": 180
+		},
+		{
+		  "model": "minecraft:block/stone1",
+		  "x": 180,
+		  "z": 180
+		},
+		{
+		  "model": "minecraft:block/stone1",
+		  "x": 180,
+		  "y": 90,
+		  "z": 180
+		},
+		{
+		  "model": "minecraft:block/stone1",
+		  "x": 180,
+		  "y": 180,
+		  "z": 180
+		},
+		{
+		  "model": "minecraft:block/stone1",
+		  "x": 180,
+		  "y": 270,
+		  "z": 180
+		},
+		{
+		  "model": "minecraft:block/stone1",
+		  "x": 270,
+		  "z": 180
+		},
+		{
+		  "model": "minecraft:block/stone1",
+		  "x": 270,
+		  "y": 90,
+		  "z": 180
+		},
+		{
+		  "model": "minecraft:block/stone1",
+		  "x": 270,
+		  "y": 180,
+		  "z": 180
+		},
+		{
+		  "model": "minecraft:block/stone1",
+		  "x": 270,
+		  "y": 270,
+		  "z": 180
+		},
+  
+		
+		{
+		  "model": "minecraft:block/stone1",
+		  "z": 270
+		},
+		{
+		  "model": "minecraft:block/stone1",
+		  "y": 90,
+		  "z": 270
+		},
+		{
+		  "model": "minecraft:block/stone1",
+		  "y": 180,
+		  "z": 270
+		},
+		{
+		  "model": "minecraft:block/stone1",
+		  "y": 270,
+		  "z": 270
+		},
+		{
+		  "model": "minecraft:block/stone1",
+		  "x": 90,
+		  "z": 270
+		},
+		{
+		  "model": "minecraft:block/stone1",
+		  "x": 90,
+		  "y": 90,
+		  "z": 270
+		},
+		{
+		  "model": "minecraft:block/stone1",
+		  "x": 90,
+		  "y": 180,
+		  "z": 270
+		},
+		{
+		  "model": "minecraft:block/stone1",
+		  "x": 90,
+		  "y": 270,
+		  "z": 270
+		},
+		{
+		  "model": "minecraft:block/stone1",
+		  "x": 180,
+		  "z": 270
+		},
+		{
+		  "model": "minecraft:block/stone1",
+		  "x": 180,
+		  "y": 90,
+		  "z": 270
+		},
+		{
+		  "model": "minecraft:block/stone1",
+		  "x": 180,
+		  "y": 180,
+		  "z": 270
+		},
+		{
+		  "model": "minecraft:block/stone1",
+		  "x": 180,
+		  "y": 270,
+		  "z": 270
+		},
+		{
+		  "model": "minecraft:block/stone1",
+		  "x": 270,
+		  "z": 270
+		},
+		{
+		  "model": "minecraft:block/stone1",
+		  "x": 270,
+		  "y": 90,
+		  "z": 270
+		},
+		{
+		  "model": "minecraft:block/stone1",
+		  "x": 270,
+		  "y": 180,
+		  "z": 270
+		},
+		{
+		  "model": "minecraft:block/stone1",
+		  "x": 270,
+		  "y": 270,
+		  "z": 270
+		}
+	  ]
+	}
+  }

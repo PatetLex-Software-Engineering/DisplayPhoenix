@@ -1,0 +1,18 @@
+{
+  "variants": {
+    "": [
+      {
+	    "model": "minecraft:block/cyan_terracotta0"
+	  },
+      {
+	    "model": "minecraft:block/cyan_terracotta1"
+	  },
+      {
+	    "model": "minecraft:block/cyan_terracotta2"
+	  },
+      {
+	    "model": "minecraft:block/cyan_terracotta3"
+	  }
+	]
+  }
+}

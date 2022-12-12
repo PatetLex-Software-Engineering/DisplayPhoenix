@@ -1,0 +1,157 @@
+{
+  "variants": {
+    "": [
+      {
+        "model": "minecraft:block/mycelium",
+        "weight": 8
+      },
+      {
+        "model": "minecraft:block/mycelium",
+        "y": 90,
+        "weight": 8
+      },
+      {
+        "model": "minecraft:block/mycelium",
+        "y": 180,
+        "weight": 8
+      },
+      {
+        "model": "minecraft:block/mycelium",
+        "y": 270,
+        "weight": 8
+      },
+      {
+        "model": "minecraft:block/mycelium_mirrored",
+        "weight": 8
+      },
+      {
+        "model": "minecraft:block/mycelium_mirrored",
+        "y": 90,
+        "weight": 8
+      },
+      {
+        "model": "minecraft:block/mycelium_mirrored",
+        "y": 180,
+        "weight": 8
+      },
+      {
+        "model": "minecraft:block/mycelium_mirrored",
+        "y": 270,
+        "weight": 8
+      },
+      {
+        "model": "minecraft:block/mycelium6",
+        "weight": 8
+      },
+      {
+        "model": "minecraft:block/mycelium6",
+        "y": 90,
+        "weight": 8
+      },
+      {
+        "model": "minecraft:block/mycelium6",
+        "y": 180,
+        "weight": 8
+      },
+      {
+        "model": "minecraft:block/mycelium6",
+        "y": 270,
+        "weight": 8
+      },
+      {
+        "model": "minecraft:block/mycelium_mirrored1",
+        "weight": 8
+      },
+      {
+        "model": "minecraft:block/mycelium_mirrored1",
+        "y": 90,
+        "weight": 8
+      },
+      {
+        "model": "minecraft:block/mycelium_mirrored1",
+        "y": 180,
+        "weight": 8
+      },
+      {
+        "model": "minecraft:block/mycelium_mirrored1",
+        "y": 270,
+        "weight": 8
+      },
+      {
+        "model": "minecraft:block/mycelium1"
+      },
+      {
+        "model": "minecraft:block/mycelium1",
+        "y": 90
+      },
+      {
+        "model": "minecraft:block/mycelium1",
+        "y": 180
+      },
+      {
+        "model": "minecraft:block/mycelium1",
+        "y": 270
+      },
+      {
+        "model": "minecraft:block/mycelium2"
+      },
+      {
+        "model": "minecraft:block/mycelium2",
+        "y": 90
+      },
+      {
+        "model": "minecraft:block/mycelium2",
+        "y": 180
+      },
+      {
+        "model": "minecraft:block/mycelium2",
+        "y": 270
+      },
+      {
+        "model": "minecraft:block/mycelium3"
+      },
+      {
+        "model": "minecraft:block/mycelium3",
+        "y": 90
+      },
+      {
+        "model": "minecraft:block/mycelium3",
+        "y": 180
+      },
+      {
+        "model": "minecraft:block/mycelium3",
+        "y": 270
+      },
+      {
+        "model": "minecraft:block/mycelium4"
+      },
+      {
+        "model": "minecraft:block/mycelium4",
+        "y": 90
+      },
+      {
+        "model": "minecraft:block/mycelium4",
+        "y": 180
+      },
+      {
+        "model": "minecraft:block/mycelium4",
+        "y": 270
+      },
+      {
+        "model": "minecraft:block/mycelium5"
+      },
+      {
+        "model": "minecraft:block/mycelium5",
+        "y": 90
+      },
+      {
+        "model": "minecraft:block/mycelium5",
+        "y": 180
+      },
+      {
+        "model": "minecraft:block/mycelium5",
+        "y": 270
+      }
+    ]
+  }
+}

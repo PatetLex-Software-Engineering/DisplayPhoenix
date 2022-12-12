@@ -1,0 +1,127 @@
+{
+  "variants": {
+    "": [
+      {
+        "model": "minecraft:block/dirt_path",
+		"weight": 2
+      },
+      {
+        "model": "minecraft:block/dirt_path",
+		"weight": 2,
+        "y": 90
+      },
+      {
+        "model": "minecraft:block/dirt_path",
+		"weight": 2,
+        "y": 180
+      },
+      {
+        "model": "minecraft:block/dirt_path",
+		"weight": 2,
+        "y": 270
+      },
+      {
+        "model": "minecraft:block/dirt_path4",
+		"weight": 2
+      },
+      {
+        "model": "minecraft:block/dirt_path4",
+		"weight": 2,
+        "y": 90
+      },
+      {
+        "model": "minecraft:block/dirt_path4",
+		"weight": 2,
+        "y": 180
+      },
+      {
+        "model": "minecraft:block/dirt_path4",
+		"weight": 2,
+        "y": 270
+      },
+      {
+        "model": "minecraft:block/dirt_path5",
+		"weight": 2
+      },
+      {
+        "model": "minecraft:block/dirt_path5",
+		"weight": 2,
+        "y": 90
+      },
+      {
+        "model": "minecraft:block/dirt_path5",
+		"weight": 2,
+        "y": 180
+      },
+      {
+        "model": "minecraft:block/dirt_path5",
+		"weight": 2,
+        "y": 270
+      },
+      {
+        "model": "minecraft:block/dirt_path6",
+		"weight": 2
+      },
+      {
+        "model": "minecraft:block/dirt_path6",
+		"weight": 2,
+        "y": 90
+      },
+      {
+        "model": "minecraft:block/dirt_path6",
+		"weight": 2,
+        "y": 180
+      },
+      {
+        "model": "minecraft:block/dirt_path6",
+		"weight": 2,
+        "y": 270
+      },
+      {
+        "model": "minecraft:block/dirt_path1"
+      },
+      {
+        "model": "minecraft:block/dirt_path1",
+        "y": 90
+      },
+      {
+        "model": "minecraft:block/dirt_path1",
+        "y": 180
+      },
+      {
+        "model": "minecraft:block/dirt_path1",
+        "y": 270
+      },
+      {
+        "model": "minecraft:block/dirt_path2"
+      },
+      {
+        "model": "minecraft:block/dirt_path2",
+        "y": 90
+      },
+      {
+        "model": "minecraft:block/dirt_path2",
+        "y": 180
+      },
+      {
+        "model": "minecraft:block/dirt_path2",
+        "y": 270
+      },
+      {
+        "model": "minecraft:block/dirt_path3"
+      },
+      {
+        "model": "minecraft:block/dirt_path3",
+        "y": 90
+      },
+      {
+        "model": "minecraft:block/dirt_path3",
+        "y": 180
+      },
+      {
+        "model": "minecraft:block/dirt_path3",
+        "y": 270
+      }
+    ]
+  }
+}

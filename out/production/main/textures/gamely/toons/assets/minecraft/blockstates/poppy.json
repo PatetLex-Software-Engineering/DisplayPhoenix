@@ -1,0 +1,59 @@
+{
+  "variants": {
+    "": [
+      {
+        "model": "minecraft:block/poppy",
+        "weight": 64
+      },
+      {
+        "model": "minecraft:block/poppy",
+        "y": 90,
+        "weight": 64
+      },
+      {
+        "model": "minecraft:block/poppy",
+        "y": 180,
+        "weight": 64
+      },
+      {
+        "model": "minecraft:block/poppy",
+        "y": 270,
+        "weight": 64
+      },
+      {
+        "model": "minecraft:block/poppy1",
+        "weight": 64
+      },
+      {
+        "model": "minecraft:block/poppy1",
+        "y": 90,
+        "weight": 64
+      },
+      {
+        "model": "minecraft:block/poppy1",
+        "y": 180,
+        "weight": 64
+      },
+      {
+        "model": "minecraft:block/poppy1",
+        "y": 270,
+        "weight": 64
+      },
+      {
+        "model": "minecraft:block/poppy1_butterfly"
+      },
+      {
+        "model": "minecraft:block/poppy1_butterfly",
+        "y": 90
+      },
+      {
+        "model": "minecraft:block/poppy1_butterfly",
+        "y": 180
+      },
+      {
+        "model": "minecraft:block/poppy1_butterfly",
+        "y": 270
+      }
+    ]
+  }
+}

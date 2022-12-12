@@ -165,10 +165,10 @@ public class GamePhysics2D extends GamePhysics {
     }
 
     @Override
-    public List<GameObject> getCollidingObjects(GameObject gameObject, GameEngine engine) {
+    public List<GameObject> getCollidingObjects(Collection<GameObject> objs, GameObject gameObject, GameEngine engine) {
         Rectangle2D entityBound = new Rectangle2D.Float(gameObject.getPosition().x, -gameObject.getPosition().y, gameObject.getBoundingSize().x, gameObject.getBoundingSize().y);
         List<GameObject> bounds = new ArrayList<>();
-        for (GameObject bound : engine.getGameObjects().values()) {
+        for (GameObject bound : objs) {
             if (bound.getId() != gameObject.getId()) {
                 if (doesCollide(entityBound, bound)) {
                     bounds.add(bound);
@@ -179,10 +179,10 @@ public class GamePhysics2D extends GamePhysics {
     }
 
     @Override
-    public GameObject rayTraceObject(Point onScreen, GameEngine engine) {
+    public GameObject rayTraceObject(Collection<GameObject> objss, Point onScreen, GameEngine engine) {
         Vector3f pointInGame = rayTracePoint(onScreen, engine);
         List<GameObject> objs = new ArrayList<>();
-        for (GameObject obj : engine.getGameObjects().values()) {
+        for (GameObject obj : objss) {
             Rectangle2D boundingBox = new Rectangle2D.Float(obj.getPosition().x, -obj.getPosition().y, obj.getBoundingSize().x, obj.getBoundingSize().y);
             if (boundingBox.contains(pointInGame.x, -pointInGame.y)) {
                 objs.add(obj);

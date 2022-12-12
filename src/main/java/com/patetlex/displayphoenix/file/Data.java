@@ -1,7 +1,12 @@
 package com.patetlex.displayphoenix.file;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.TypeAdapter;
 import com.google.gson.reflect.TypeToken;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonToken;
+import com.google.gson.stream.JsonWriter;
 import com.patetlex.displayphoenix.Application;
 import com.patetlex.displayphoenix.interfaces.FileIteration;
 import com.patetlex.displayphoenix.lang.Local;
@@ -9,6 +14,7 @@ import com.patetlex.displayphoenix.ui.ColorTheme;
 import com.patetlex.displayphoenix.util.FileHelper;
 import com.patetlex.displayphoenix.util.StringHelper;
 
+import java.awt.*;
 import java.io.*;
 import java.nio.file.Files;
 import java.util.ArrayList;
@@ -21,7 +27,7 @@ import java.util.Map;
  */
 public class Data {
 
-    private static final Gson gson = new Gson();
+    private static Gson gson;
 
     private static boolean created;
     private static Map<String, Object> data;
@@ -184,6 +190,36 @@ public class Data {
     }
 
     public static int create() {
+        GsonBuilder builder = new GsonBuilder();
+        builder.registerTypeAdapter(Color.class, new TypeAdapter<Color>() {
+            @Override
+            public void write(JsonWriter jsonWriter, Color color) throws IOException {
+                if (color == null)
+                    color = Color.BLACK;
+                jsonWriter.beginObject();
+                jsonWriter.name("rgb");
+                jsonWriter.value(color.getRGB());
+                jsonWriter.endObject();
+            }
+
+            @Override
+            public Color read(JsonReader jsonReader) throws IOException {
+                Color color = null;
+                jsonReader.beginObject();
+                while (jsonReader.hasNext()) {
+                    JsonToken token = jsonReader.peek();
+                    if (token.equals(JsonToken.NAME)) {
+                        String name = jsonReader.nextName();
+                        if (name.equals("rgb")) {
+                            color = new Color((int) jsonReader.nextLong());
+                        }
+                    }
+                }
+                jsonReader.endObject();
+                return color;
+            }
+        });
+        gson = builder.create();
         created = true;
         try {
             File dir = new File(System.getProperty("user.home") + "/." + StringHelper.id(Application.getTitle()));
@@ -201,6 +237,7 @@ public class Data {
                     try {
                         data.put(key, gson.fromJson(dataObjectMap.get(key).object, Class.forName(dataObjectMap.get(key).objectClass)));
                     } catch (ClassNotFoundException e) {
+
                     }
                 }
             }

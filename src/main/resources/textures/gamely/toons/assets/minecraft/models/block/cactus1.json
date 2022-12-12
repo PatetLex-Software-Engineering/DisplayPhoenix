@@ -1,0 +1,173 @@
+{
+	"credit": "Made with Blockbench",
+	"parent": "minecraft:block/block",
+	"textures": {
+		"particle": "minecraft:block/cactus_side",
+		"side": "minecraft:block/cactus_side",
+		"top": "minecraft:block/cactus_top",
+		"bottom": "minecraft:block/cactus_bottom",
+		"flower": "minecraft:block/cactus_flower"
+	},
+	"elements": [
+		{
+			"name": "Body",
+			"from": [3, 0, 3],
+			"to": [13, 16, 13],
+			"faces": {
+				"north": {"uv": [1, 0, 15, 16], "texture": "#side"},
+				"east": {"uv": [1, 0, 15, 16], "texture": "#side"},
+				"south": {"uv": [1, 0, 15, 16], "texture": "#side"},
+				"west": {"uv": [1, 0, 15, 16], "texture": "#side"},
+				"up": {"uv": [1, 1, 15, 15], "texture": "#top", "cullface": "up"},
+				"down": {"uv": [1, 1, 15, 15], "texture": "#bottom", "cullface": "down"}
+			}
+		},
+		{
+			"name": "East Thorns",
+			"from": [13, 0, 8],
+			"to": [14, 16, 8],
+			"faces": {
+				"north": {"uv": [0, 0, 1, 16], "texture": "#side"},
+				"south": {"uv": [1, 0, 0, 16], "texture": "#side"}
+			}
+		},
+		{
+			"name": "South Thorns",
+			"from": [8, 0, 13],
+			"to": [8, 16, 14],
+			"rotation": {"angle": 0, "axis": "y", "origin": [8, 0, 8]},
+			"faces": {
+				"east": {"uv": [0, 0, 1, 16], "texture": "#side"},
+				"west": {"uv": [1, 0, 0, 16], "texture": "#side"}
+			}
+		},
+		{
+			"name": "West Thorns",
+			"from": [2, 0, 8],
+			"to": [3, 16, 8],
+			"faces": {
+				"north": {"uv": [1, 0, 0, 16], "texture": "#side"},
+				"south": {"uv": [0, 0, 1, 16], "texture": "#side"}
+			}
+		},
+		{
+			"name": "North Thorns",
+			"from": [8, 0, 2],
+			"to": [8, 16, 3],
+			"rotation": {"angle": 0, "axis": "y", "origin": [8, 0, 8]},
+			"faces": {
+				"east": {"uv": [1, 0, 0, 16], "texture": "#side"},
+				"west": {"uv": [0, 0, 1, 16], "texture": "#side"}
+			}
+		},
+		{
+			"name": "Body",
+			"from": [-5, 5, 5],
+			"to": [1, 11, 11],
+			"rotation": {"angle": 0, "axis": "z", "origin": [8, 8, 8]},
+			"faces": {
+				"north": {"uv": [1, 1, 15, 15], "rotation": 90, "texture": "#top"},
+				"south": {"uv": [1, 1, 15, 15], "rotation": 270, "texture": "#top"},
+				"west": {"uv": [1, 1, 15, 15], "rotation": 270, "texture": "#top"},
+				"up": {"uv": [1, 1, 15, 15], "rotation": 270, "texture": "#top"},
+				"down": {"uv": [1, 1, 15, 15], "rotation": 270, "texture": "#top"}
+			}
+		},
+		{
+			"name": "Body",
+			"from": [-5, 11, 5],
+			"to": [1, 19, 11],
+			"rotation": {"angle": 0, "axis": "z", "origin": [8, 8, 8]},
+			"faces": {
+				"north": {"uv": [1, 0, 15, 16], "texture": "#side"},
+				"east": {"uv": [1, 0, 15, 16], "texture": "#side"},
+				"south": {"uv": [1, 0, 15, 16], "texture": "#side"},
+				"west": {"uv": [1, 0, 15, 16], "texture": "#side"},
+				"up": {"uv": [1, 1, 15, 15], "texture": "#top"},
+				"down": {"uv": [1, 1, 15, 15], "texture": "#bottom"}
+			}
+		},
+		{
+			"name": "Body",
+			"from": [1, 5, 5],
+			"to": [9, 11, 11],
+			"rotation": {"angle": 0, "axis": "z", "origin": [8, 8, 8]},
+			"faces": {
+				"north": {"uv": [1, 0, 15, 16], "rotation": 270, "texture": "#side"},
+				"south": {"uv": [1, 0, 15, 16], "rotation": 90, "texture": "#side"},
+				"up": {"uv": [1, 0, 15, 16], "rotation": 90, "texture": "#side"},
+				"down": {"uv": [1, 0, 15, 16], "rotation": 90, "texture": "#side"}
+			}
+		},
+		{
+			"name": "Flower",
+			"from": [4, 16, 8],
+			"to": [12, 20, 8],
+			"rotation": {"angle": -45, "axis": "y", "origin": [8, 0, 8]},
+			"faces": {
+				"north": {"uv": [0, 7, 16, 16], "texture": "#flower", "cullface": "up"},
+				"south": {"uv": [0, 7, 16, 16], "texture": "#flower", "cullface": "up"}
+			}
+		},
+		{
+			"name": "Flower",
+			"from": [8, 16, 4],
+			"to": [8, 20, 12],
+			"rotation": {"angle": -22.5, "axis": "y", "origin": [8, 0, 8]},
+			"faces": {
+				"east": {"uv": [0, 7, 16, 16], "texture": "#flower", "cullface": "up"},
+				"west": {"uv": [0, 7, 16, 16], "texture": "#flower", "cullface": "up"}
+			}
+		},
+		{
+			"name": "Flower",
+			"from": [4, 16, 8],
+			"to": [12, 20, 8],
+			"rotation": {"angle": 0, "axis": "y", "origin": [8, 0, 8]},
+			"faces": {
+				"north": {"uv": [0, 7, 16, 16], "texture": "#flower", "cullface": "up"},
+				"south": {"uv": [0, 7, 16, 16], "texture": "#flower", "cullface": "up"}
+			}
+		},
+		{
+			"name": "North-East Thorns",
+			"from": [8, 0, 2],
+			"to": [8, 16, 3],
+			"rotation": {"angle": -45, "axis": "y", "origin": [8, 0, 8], "rescale": true},
+			"faces": {
+				"east": {"uv": [1, 0, 0, 16], "texture": "#side"},
+				"west": {"uv": [0, 0, 1, 16], "texture": "#side"}
+			}
+		},
+		{
+			"name": "South-East Thorns",
+			"from": [13, 0, 8],
+			"to": [14, 16, 8],
+			"rotation": {"angle": -45, "axis": "y", "origin": [8, 0, 8], "rescale": true},
+			"faces": {
+				"north": {"uv": [0, 0, 1, 16], "texture": "#side"},
+				"south": {"uv": [1, 0, 0, 16], "texture": "#side"}
+			}
+		},
+		{
+			"name": "South-West Thorns",
+			"from": [2, 0, 8],
+			"to": [3, 16, 8],
+			"rotation": {"angle": 45, "axis": "y", "origin": [8, 0, 8], "rescale": true},
+			"faces": {
+				"north": {"uv": [1, 0, 0, 16], "texture": "#side"},
+				"south": {"uv": [0, 0, 1, 16], "texture": "#side"}
+			}
+		},
+		{
+			"name": "North-West Thorns",
+			"from": [8, 0, 2],
+			"to": [8, 16, 3],
+			"rotation": {"angle": 45, "axis": "y", "origin": [8, 0, 8], "rescale": true},
+			"faces": {
+				"east": {"uv": [1, 0, 0, 16], "texture": "#side"},
+				"west": {"uv": [0, 0, 1, 16], "texture": "#side"}
+			}
+		}
+	]
+}

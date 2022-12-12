@@ -1,0 +1,107 @@
+{
+	"credit": "Made with Blockbench",
+	"parent": "block/block",
+	"textures": {
+		"5": "block/small_dripleaf_stem_top1",
+		"particle": "block/small_dripleaf_top",
+		"top": "block/small_dripleaf_top",
+		"side": "block/small_dripleaf_side",
+		"1_stem": "block/small_dripleaf_stem_top"
+	},
+	"elements": [
+		{
+			"from": [8, 3, 8],
+			"to": [15, 3, 15],
+			"shade": false,
+			"faces": {
+				"up": {"uv": [8, 8, 0, 0], "texture": "#top"},
+				"down": {"uv": [8, 8, 0, 0], "rotation": 270, "texture": "#top"}
+			}
+		},
+		{
+			"from": [1, 8, 1],
+			"to": [8, 8, 8],
+			"shade": false,
+			"faces": {
+				"up": {"uv": [0, 0, 8, 8], "texture": "#top"},
+				"down": {"uv": [0, 0, 8, 8], "rotation": 270, "texture": "#top"}
+			}
+		},
+		{
+			"from": [1.2, 13.9, 7.8],
+			"to": [8.2, 13.9, 14.8],
+			"shade": false,
+			"faces": {
+				"up": {"uv": [0, 0, 8, 8], "rotation": 270, "texture": "#top"},
+				"down": {"uv": [0, 0, 8, 8], "texture": "#top"}
+			}
+		},
+		{
+			"from": [8, 2, 8],
+			"to": [15, 3, 15],
+			"shade": false,
+			"faces": {
+				"north": {"uv": [0, 0, 8, 1], "texture": "#side"},
+				"east": {"uv": [0, 0, 8, 1], "texture": "#side"},
+				"south": {"uv": [0, 0, 8, 1], "texture": "#side"},
+				"west": {"uv": [0, 0, 8, 1], "texture": "#side"}
+			}
+		},
+		{
+			"from": [1, 7, 1],
+			"to": [8, 8, 8],
+			"shade": false,
+			"faces": {
+				"north": {"uv": [0, 0, 8, 1], "texture": "#side"},
+				"east": {"uv": [0, 0, 8, 1], "texture": "#side"},
+				"south": {"uv": [0, 0, 8, 1], "texture": "#side"},
+				"west": {"uv": [0, 0, 8, 1], "texture": "#side"}
+			}
+		},
+		{
+			"from": [1, 13, 8],
+			"to": [8, 14, 15],
+			"shade": false,
+			"faces": {
+				"north": {"uv": [0, 0, 8, 1], "texture": "#side"},
+				"east": {"uv": [0, 0, 8, 1], "texture": "#side"},
+				"south": {"uv": [0, 0, 8, 1], "texture": "#side"},
+				"west": {"uv": [0, 0, 8, 1], "texture": "#side"}
+			}
+		},
+		{
+			"from": [4.5, 0, 8],
+			"to": [11.5, 14, 8],
+			"shade": false,
+			"rotation": {"angle": 45, "axis": "y", "origin": [8, 8, 8]},
+			"faces": {
+				"north": {"uv": [3, 0, 14, 16], "texture": "#5"},
+				"south": {"uv": [14, 0, 3, 16], "texture": "#5"}
+			}
+		},
+		{
+			"from": [4.5, 0, 8],
+			"to": [11.5, 14, 8],
+			"shade": false,
+			"rotation": {"angle": -45, "axis": "y", "origin": [8, 8, 8]},
+			"faces": {
+				"north": {"uv": [3, 0, 14, 16], "texture": "#1_stem"},
+				"south": {"uv": [14, 0, 3, 16], "texture": "#1_stem"}
+			}
+		}
+	],
+	"display": {
+		"gui": {
+			"rotation": [22, 90, 0],
+			"translation": [0, 0.25, 0]
+		}
+	},
+	"groups": [
+		{
+			"name": "small_dripleaf_top",
+			"origin": [8, 8, 8],
+			"color": 0,
+			"children": [0, 1, 2, 3, 4, 5, 6, 7]
+		}
+	]
+}

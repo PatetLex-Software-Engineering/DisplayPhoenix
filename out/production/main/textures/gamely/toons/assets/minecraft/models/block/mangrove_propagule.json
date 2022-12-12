@@ -1,0 +1,86 @@
+{
+	"credit": "Made with Blockbench",
+	"parent": "block/block",
+	"ambientocclusion": false,
+	"textures": {
+		"0": "block/mangrove_sapling",
+		"1": "block/mangrove_sapling1",
+		"particle": "block/mangrove_sapling"
+	},
+	"elements": [
+		{
+			"from": [8.15, -1.48175, 7.4825],
+			"to": [8.15, 9.58175, 9.1925],
+			"shade": false,
+			"rotation": {"angle": 0, "axis": "y", "origin": [8, 5.0875, 8.3375]},
+			"faces": {
+				"east": {"uv": [6, 8, 4, 16], "texture": "#0"},
+				"west": {"uv": [4, 8, 6, 16], "texture": "#0"}
+			}
+		},
+		{
+			"from": [7.295, -1.48175, 8.3375],
+			"to": [9.005, 9.58175, 8.3375],
+			"shade": false,
+			"rotation": {"angle": 0, "axis": "y", "origin": [8, 5.0875, 8.3375]},
+			"faces": {
+				"north": {"uv": [4, 8, 6, 16], "texture": "#0"},
+				"south": {"uv": [6, 8, 4, 16], "texture": "#0"}
+			}
+		},
+		{
+			"name": "leaf",
+			"from": [8.1, 9.5, 4.7],
+			"to": [8.1, 14.5, 12.2],
+			"shade": false,
+			"rotation": {"angle": 0, "axis": "x", "origin": [8, 12.5, 8]},
+			"faces": {
+				"east": {"uv": [16, 7, 0, 16], "texture": "#1"},
+				"west": {"uv": [0, 7, 16, 16], "texture": "#1"}
+			}
+		},
+		{
+			"name": "leaf",
+			"from": [4.6, 9.525, 8.3],
+			"to": [12.1, 13.525, 8.3],
+			"shade": false,
+			"rotation": {"angle": -22.5, "axis": "y", "origin": [8, 12.5, 8]},
+			"faces": {
+				"north": {"uv": [0, 7, 16, 16], "texture": "#1"},
+				"south": {"uv": [16, 7, 0, 16], "texture": "#1"}
+			}
+		}
+	],
+	"display": {
+		"thirdperson_righthand": {
+			"rotation": [75, 45, 0],
+			"translation": [0, 2.5, 0],
+			"scale": [0.375, 0.375, 0.375]
+		},
+		"thirdperson_lefthand": {
+			"rotation": [75, 45, 0],
+			"translation": [0, 2.5, 0],
+			"scale": [0.375, 0.375, 0.375]
+		},
+		"firstperson_righthand": {
+			"rotation": [0, 45, 0],
+			"translation": [0.25, 1.5, 0],
+			"scale": [0.33, 0.33, 0.33]
+		},
+		"firstperson_lefthand": {
+			"rotation": [0, 225, 0],
+			"scale": [0.4, 0.4, 0.4]
+		},
+		"ground": {
+			"translation": [0, 3, 0],
+			"scale": [0.25, 0.25, 0.25]
+		},
+		"gui": {
+			"rotation": [30, 225, 0],
+			"scale": [0.625, 0.625, 0.625]
+		},
+		"fixed": {
+			"scale": [0.5, 0.5, 0.5]
+		}
+	}
+}

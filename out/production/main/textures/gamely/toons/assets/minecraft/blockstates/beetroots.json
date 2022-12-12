@@ -1,0 +1,48 @@
+{
+  "variants": {
+    "age=0": [
+	  {
+        "model": "minecraft:block/beetroots_stage0"
+      },
+	  {
+        "model": "minecraft:block/beetroots_stage0_1"
+      },
+	  {
+        "model": "minecraft:block/beetroots_stage0_2"
+      }
+	],
+    "age=1": [
+	  {
+        "model": "minecraft:block/beetroots_stage1"
+      },
+	  {
+        "model": "minecraft:block/beetroots_stage1_1"
+      },
+	  {
+        "model": "minecraft:block/beetroots_stage1_2"
+      }
+	],
+    "age=2": [
+	  {
+        "model": "minecraft:block/beetroots_stage2"
+      },
+	  {
+        "model": "minecraft:block/beetroots_stage2_1"
+      },
+	  {
+        "model": "minecraft:block/beetroots_stage2_2"
+      }
+	],
+    "age=3": [
+	  {
+        "model": "minecraft:block/beetroots_stage3"
+      },
+	  {
+        "model": "minecraft:block/beetroots_stage3_1"
+      },
+	  {
+        "model": "minecraft:block/beetroots_stage3_2"
+      }
+	]
+  }
+}

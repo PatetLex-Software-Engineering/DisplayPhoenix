@@ -1,0 +1,30 @@
+{
+	"credit": "Made with Blockbench",
+	"parent": "minecraft:block/door_bottom",
+	"ambientocclusion": false,
+	"textures": {
+		"particle": "block/jungle_door_bottom",
+		"1_bottom": "block/jungle_door_bottom"
+	},
+	"elements": [
+		{
+			"from": [0, 0, 0],
+			"to": [3, 16, 16],
+			"faces": {
+				"north": {"uv": [0.125, 0, 0.1875, 16], "texture": "#1_bottom"},
+				"east": {"uv": [16, 0, 0, 16], "texture": "#1_bottom"},
+				"south": {"uv": [10, 10.6875, 10.375, 11.1875], "rotation": 90, "texture": "#1_bottom"},
+				"west": {"uv": [0, 0, 16, 16], "texture": "#1_bottom"},
+				"down": {"uv": [10, 10.6875, 10.375, 11.1875], "rotation": 90, "texture": "#1_bottom"}
+			}
+		}
+	],
+	"groups": [
+		{
+			"name": "door_bottom",
+			"origin": [8, 8, 8],
+			"color": 0,
+			"children": [0]
+		}
+	]
+}

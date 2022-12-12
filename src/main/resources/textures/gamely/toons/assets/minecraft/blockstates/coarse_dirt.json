@@ -1,0 +1,270 @@
+{
+  "variants": {
+    "": [
+	  {
+	    "model": "minecraft:block/coarse_dirt0",
+		"weight": 1
+	  },
+	  {
+	    "model": "minecraft:block/coarse_dirt0",
+        "y": 90,
+		"weight": 1
+	  },
+	  {
+	    "model": "minecraft:block/coarse_dirt0",
+        "y": 180,
+		"weight": 1
+	  },
+	  {
+	    "model": "minecraft:block/coarse_dirt0",
+        "y": 270,
+		"weight": 1
+	  },
+	  {
+	    "model": "minecraft:block/coarse_dirt0",
+        "x": 90,
+		"weight": 1
+	  },
+	  {
+	    "model": "minecraft:block/coarse_dirt0",
+		"x": 90,
+        "y": 90,
+		"weight": 1
+	  },
+	  {
+	    "model": "minecraft:block/coarse_dirt0",
+		"x": 90,
+        "y": 180,
+		"weight": 1
+	  },
+	  {
+	    "model": "minecraft:block/coarse_dirt0",
+		"x": 90,
+        "y": 270,
+		"weight": 1
+	  },
+	  {
+	    "model": "minecraft:block/coarse_dirt0",
+        "x": 180,
+		"weight": 1
+	  },
+	  {
+	    "model": "minecraft:block/coarse_dirt0",
+		"x": 180,
+        "y": 90,
+		"weight": 1
+	  },
+	  {
+	    "model": "minecraft:block/coarse_dirt0",
+		"x": 180,
+        "y": 180,
+		"weight": 1
+	  },
+	  {
+	    "model": "minecraft:block/coarse_dirt0",
+		"x": 180,
+        "y": 270,
+		"weight": 1
+	  },
+	  {
+	    "model": "minecraft:block/coarse_dirt0",
+        "x": 270,
+		"weight": 1
+	  },
+	  {
+	    "model": "minecraft:block/coarse_dirt0",
+		"x": 270,
+        "y": 90,
+		"weight": 1
+	  },
+	  {
+	    "model": "minecraft:block/coarse_dirt0",
+		"x": 270,
+        "y": 180,
+		"weight": 1
+	  },
+	  {
+	    "model": "minecraft:block/coarse_dirt0",
+		"x": 270,
+        "y": 270,
+		"weight": 1
+	  },
+	  {
+	    "model": "minecraft:block/coarse_dirt1",
+		"weight": 1
+	  },
+	  {
+	    "model": "minecraft:block/coarse_dirt1",
+        "y": 90,
+		"weight": 1
+	  },
+	  {
+	    "model": "minecraft:block/coarse_dirt1",
+        "y": 180,
+		"weight": 1
+	  },
+	  {
+	    "model": "minecraft:block/coarse_dirt1",
+        "y": 270,
+		"weight": 1
+	  },
+	  {
+	    "model": "minecraft:block/coarse_dirt1",
+        "x": 90,
+		"weight": 1
+	  },
+	  {
+	    "model": "minecraft:block/coarse_dirt1",
+		"x": 90,
+        "y": 90,
+		"weight": 1
+	  },
+	  {
+	    "model": "minecraft:block/coarse_dirt1",
+		"x": 90,
+        "y": 180,
+		"weight": 1
+	  },
+	  {
+	    "model": "minecraft:block/coarse_dirt1",
+		"x": 90,
+        "y": 270,
+		"weight": 1
+	  },
+	  {
+	    "model": "minecraft:block/coarse_dirt1",
+        "x": 180,
+		"weight": 1
+	  },
+	  {
+	    "model": "minecraft:block/coarse_dirt1",
+		"x": 180,
+        "y": 90,
+		"weight": 1
+	  },
+	  {
+	    "model": "minecraft:block/coarse_dirt1",
+		"x": 180,
+        "y": 180,
+		"weight": 1
+	  },
+	  {
+	    "model": "minecraft:block/coarse_dirt1",
+		"x": 180,
+        "y": 270,
+		"weight": 1
+	  },
+	  {
+	    "model": "minecraft:block/coarse_dirt1",
+        "x": 270,
+		"weight": 1
+	  },
+	  {
+	    "model": "minecraft:block/coarse_dirt1",
+		"x": 270,
+        "y": 90,
+		"weight": 1
+	  },
+	  {
+	    "model": "minecraft:block/coarse_dirt1",
+		"x": 270,
+        "y": 180,
+		"weight": 1
+	  },
+	  {
+	    "model": "minecraft:block/coarse_dirt1",
+		"x": 270,
+        "y": 270,
+		"weight": 1
+	  },
+	  {
+	    "model": "minecraft:block/coarse_dirt2",
+		"weight": 1
+	  },
+	  {
+	    "model": "minecraft:block/coarse_dirt2",
+        "y": 90,
+		"weight": 1
+	  },
+	  {
+	    "model": "minecraft:block/coarse_dirt2",
+        "y": 180,
+		"weight": 1
+	  },
+	  {
+	    "model": "minecraft:block/coarse_dirt2",
+        "y": 270,
+		"weight": 1
+	  },
+	  {
+	    "model": "minecraft:block/coarse_dirt2",
+        "x": 90,
+		"weight": 1
+	  },
+	  {
+	    "model": "minecraft:block/coarse_dirt2",
+		"x": 90,
+        "y": 90,
+		"weight": 1
+	  },
+	  {
+	    "model": "minecraft:block/coarse_dirt2",
+		"x": 90,
+        "y": 180,
+		"weight": 1
+	  },
+	  {
+	    "model": "minecraft:block/coarse_dirt2",
+		"x": 90,
+        "y": 270,
+		"weight": 1
+	  },
+	  {
+	    "model": "minecraft:block/coarse_dirt2",
+        "x": 180,
+		"weight": 1
+	  },
+	  {
+	    "model": "minecraft:block/coarse_dirt2",
+		"x": 180,
+        "y": 90,
+		"weight": 1
+	  },
+	  {
+	    "model": "minecraft:block/coarse_dirt2",
+		"x": 180,
+        "y": 180,
+		"weight": 1
+	  },
+	  {
+	    "model": "minecraft:block/coarse_dirt2",
+		"x": 180,
+        "y": 270,
+		"weight": 1
+	  },
+	  {
+	    "model": "minecraft:block/coarse_dirt2",
+        "x": 270,
+		"weight": 1
+	  },
+	  {
+	    "model": "minecraft:block/coarse_dirt2",
+		"x": 270,
+        "y": 90,
+		"weight": 1
+	  },
+	  {
+	    "model": "minecraft:block/coarse_dirt2",
+		"x": 270,
+        "y": 180,
+		"weight": 1
+	  },
+	  {
+	    "model": "minecraft:block/coarse_dirt2",
+		"x": 270,
+        "y": 270,
+		"weight": 1
+	  }
+	]
+  }
+}

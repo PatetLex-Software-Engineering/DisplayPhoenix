@@ -1,0 +1,9 @@
+{
+	"parent": "minecraft:block/template_leaves02",
+	"textures": {
+		  "2": "block/jungle_leaves3",
+		  "3": "block/jungle_leaves5",
+		  "4": "block/jungle_leaves4",
+		  "particle": "block/jungle_leaves3"
+	}
+  }

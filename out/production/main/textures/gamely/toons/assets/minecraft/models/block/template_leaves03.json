@@ -1,0 +1,71 @@
+{
+	"credit": "Made with Blockbench",
+	"ambientocclusion": false,
+	"textures": {
+		"2": "block/oak_leaves3",
+		"3": "block/oak_leaves5",
+		"4": "block/oak_leaves4",
+		"particle": "block/oak_leaves3"
+	},
+	"elements": [
+		{
+			"from": [-11.55401, -16, 1.42661],
+			"to": [24.60691, 19.63776, 1.42661],
+			"shade": false,
+			"rotation": {"angle": 45, "axis": "y", "origin": [8.81834, 3.84919, 2.20087]},
+			"faces": {
+				"north": {"uv": [0, 0, 16, 16], "texture": "#2"},
+				"south": {"uv": [16, 0, 0, 16], "texture": "#2"}
+			}
+		},
+		{
+			"from": [8.31932, -16, -16],
+			"to": [8.31932, 19.63776, 17.98944],
+			"shade": false,
+			"rotation": {"angle": 45, "axis": "y", "origin": [8.81834, 3.84919, 2.20087]},
+			"faces": {
+				"east": {"uv": [0, 0, 16, 16], "texture": "#2"},
+				"west": {"uv": [16, 0, 0, 16], "texture": "#2"}
+			}
+		},
+		{
+			"from": [-6.73101, -2.404, -11.41929],
+			"to": [23.64231, -2.404, 18.95404],
+			"shade": false,
+			"rotation": {"angle": 0, "axis": "y", "origin": [8.81834, 3.84919, 2.20087]},
+			"faces": {
+				"up": {"uv": [16, 0, 0, 16], "rotation": 90, "texture": "#4", "cullface": "up"},
+				"down": {"uv": [0, 0, 16, 16], "rotation": 90, "texture": "#4", "cullface": "down"}
+			}
+		},
+		{
+			"from": [-4.07643, 12.065, -10.31691],
+			"to": [23.40309, 12.065, 18.12722],
+			"shade": false,
+			"rotation": {"angle": 0, "axis": "x", "origin": [8.81834, 3.84919, 2.20087]},
+			"faces": {
+				"up": {"uv": [16, 0, 0, 16], "rotation": 270, "texture": "#3"},
+				"down": {"uv": [0, 0, 16, 16], "rotation": 270, "texture": "#3", "cullface": "down"}
+			}
+		},
+		{
+			"from": [-9.62481, 9.1712, -11.41929],
+			"to": [17.85471, 9.1712, 17.02484],
+			"shade": false,
+			"rotation": {"angle": -45, "axis": "z", "origin": [8.81834, 3.84919, 2.20087]},
+			"faces": {
+				"up": {"uv": [0, 16, 16, 0], "rotation": 180, "texture": "#3"},
+				"down": {"uv": [0, 0, 16, 16], "rotation": 180, "texture": "#3"}
+			}
+		}
+	],
+	"groups": [
+		{
+			"name": "group",
+			"origin": [8.03096, 13.10412, -5.98391],
+			"color": 0,
+			"shade": false,
+			"children": [0, 1, 2, 3, 4]
+		}
+	]
+}

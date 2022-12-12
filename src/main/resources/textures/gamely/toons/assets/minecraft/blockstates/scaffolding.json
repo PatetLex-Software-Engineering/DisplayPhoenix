@@ -1,0 +1,76 @@
+{
+  "variants": {
+    "bottom=false": [
+		{
+		  "model": "minecraft:block/scaffolding_stable",
+		  "weight": 10
+		},
+		{
+		  "model": "minecraft:block/scaffolding_stable1"
+		},
+		{
+		  "model": "minecraft:block/scaffolding_stable1",
+		  "y": 90
+		},
+		{
+		  "model": "minecraft:block/scaffolding_stable1",
+		  "y": 180
+		},
+		{
+		  "model": "minecraft:block/scaffolding_stable1",
+		  "y": 270
+		},
+		{
+		  "model": "minecraft:block/scaffolding_stable2"
+		},
+		{
+		  "model": "minecraft:block/scaffolding_stable2",
+		  "y": 90
+		},
+		{
+		  "model": "minecraft:block/scaffolding_stable2",
+		  "y": 180
+		},
+		{
+		  "model": "minecraft:block/scaffolding_stable2",
+		  "y": 270
+		}
+	],
+    "bottom=true": [
+		{
+		  "model": "minecraft:block/scaffolding_unstable",
+		  "weight": 10
+		},
+		{
+		  "model": "minecraft:block/scaffolding_unstable1"
+		},
+		{
+		  "model": "minecraft:block/scaffolding_unstable1",
+		  "y": 90
+		},
+		{
+		  "model": "minecraft:block/scaffolding_unstable1",
+		  "y": 180
+		},
+		{
+		  "model": "minecraft:block/scaffolding_unstable1",
+		  "y": 270
+		},
+		{
+		  "model": "minecraft:block/scaffolding_unstable2"
+		},
+		{
+		  "model": "minecraft:block/scaffolding_unstable2",
+		  "y": 90
+		},
+		{
+		  "model": "minecraft:block/scaffolding_unstable2",
+		  "y": 180
+		},
+		{
+		  "model": "minecraft:block/scaffolding_unstable2",
+		  "y": 270
+		}
+	]
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cube_column_mirrored",
+  "textures": {
+    "side": "minecraft:block/lime_terracotta0",
+    "end": "minecraft:block/lime_terracotta_top"
+  }
+}

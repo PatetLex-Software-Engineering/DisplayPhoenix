@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/tinted_cross_mirrored",
+  "textures": {
+    "cross": "minecraft:block/grass1"
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/template_seagrass_mirrored",
+  "textures": {
+    "0": "minecraft:block/seagrass",
+    "1": "minecraft:block/seagrass1"
+  }
+}

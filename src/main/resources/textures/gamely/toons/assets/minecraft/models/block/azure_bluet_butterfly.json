@@ -1,0 +1,141 @@
+{
+	"credit": "Made with Blockbench",
+	"parent": "minecraft:block/cross",
+	"ambientocclusion": false,
+	"textures": {
+		"1": "block/butterfly_body",
+		"2": "block/butterfly_wing0",
+		"3": "block/butterfly_wing1",
+		"4": "block/butterfly_wing2",
+		"5": "block/butterfly_wing3",
+		"6": "block/butterfly_body1",
+		"particle": "block/azure_bluet",
+		"cross": "block/azure_bluet"
+	},
+	"elements": [
+		{
+			"from": [0.8, 0, 8],
+			"to": [15.2, 16, 8],
+			"shade": false,
+			"rotation": {"angle": 45, "axis": "y", "origin": [8, 8, 8], "rescale": true},
+			"faces": {
+				"north": {"uv": [0, 0, 16, 16], "texture": "#cross"},
+				"south": {"uv": [16, 0, 0, 16], "texture": "#cross"}
+			}
+		},
+		{
+			"from": [8, 0, 0.8],
+			"to": [8, 16, 15.2],
+			"shade": false,
+			"rotation": {"angle": 45, "axis": "y", "origin": [8, 8, 8], "rescale": true},
+			"faces": {
+				"east": {"uv": [16, 0, 0, 16], "texture": "#cross"},
+				"west": {"uv": [0, 0, 16, 16], "texture": "#cross"}
+			}
+		},
+		{
+			"from": [5.4, 10.2, 5.7],
+			"to": [9.4, 10.2, 9.7],
+			"rotation": {"angle": 22.5, "axis": "x", "origin": [7.4, 10.2, 7.7]},
+			"faces": {
+				"up": {"uv": [0, 0, 16, 16], "texture": "#1"},
+				"down": {"uv": [0, 16, 16, 0], "texture": "#1"}
+			}
+		},
+		{
+			"from": [7.4, 8.2, 5.7],
+			"to": [7.4, 12.2, 9.7],
+			"rotation": {"angle": 22.5, "axis": "x", "origin": [7.4, 10.2, 7.7]},
+			"faces": {
+				"east": {"uv": [0, 0, 16, 16], "rotation": 90, "texture": "#6"},
+				"west": {"uv": [0, 16, 16, 0], "rotation": 90, "texture": "#6"}
+			}
+		},
+		{
+			"from": [4.9, 10.01, 6.9],
+			"to": [7.9, 10.01, 9.9],
+			"rotation": {"angle": 0, "axis": "z", "origin": [7.4, 10.21, 7.8]},
+			"faces": {
+				"up": {"uv": [16, 0, 0, 16], "texture": "#5"},
+				"down": {"uv": [16, 16, 0, 0], "texture": "#5"}
+			}
+		},
+		{
+			"from": [6.9, 10, 6.9],
+			"to": [9.9, 10, 9.9],
+			"rotation": {"angle": 0, "axis": "z", "origin": [7.4, 10.2, 7.8]},
+			"faces": {
+				"up": {"uv": [0, 0, 16, 16], "texture": "#5"},
+				"down": {"uv": [0, 16, 16, 0], "texture": "#5"}
+			}
+		},
+		{
+			"from": [6.9, 10, 6.9],
+			"to": [9.9, 10, 9.9],
+			"rotation": {"angle": 22.5, "axis": "z", "origin": [7.4, 10.2, 7.8]},
+			"faces": {
+				"up": {"uv": [0, 0, 16, 16], "texture": "#4"},
+				"down": {"uv": [0, 16, 16, 0], "texture": "#4"}
+			}
+		},
+		{
+			"from": [4.9, 10, 6.9],
+			"to": [7.9, 10, 9.9],
+			"rotation": {"angle": -22.5, "axis": "z", "origin": [7.4, 10.2, 7.8]},
+			"faces": {
+				"up": {"uv": [16, 0, 0, 16], "texture": "#4"},
+				"down": {"uv": [16, 16, 0, 0], "texture": "#4"}
+			}
+		},
+		{
+			"from": [7.6, 9.7, 6.9],
+			"to": [7.6, 12.7, 9.9],
+			"rotation": {"angle": -45, "axis": "z", "origin": [7.4, 10.2, 7.8]},
+			"faces": {
+				"east": {"uv": [0, 16, 16, 0], "rotation": 270, "texture": "#3"},
+				"west": {"uv": [0, 0, 16, 16], "rotation": 270, "texture": "#3"}
+			}
+		},
+		{
+			"from": [4.9, 10, 6.9],
+			"to": [7.9, 10, 9.9],
+			"rotation": {"angle": -45, "axis": "z", "origin": [7.4, 10.2, 7.8]},
+			"faces": {
+				"up": {"uv": [16, 0, 0, 16], "texture": "#3"},
+				"down": {"uv": [16, 16, 0, 0], "texture": "#3"}
+			}
+		},
+		{
+			"from": [7.6, 9.7, 6.9],
+			"to": [7.6, 12.7, 9.9],
+			"rotation": {"angle": -22.5, "axis": "z", "origin": [7.4, 10.2, 7.8]},
+			"faces": {
+				"east": {"uv": [0, 16, 16, 0], "rotation": 270, "texture": "#2"},
+				"west": {"uv": [0, 0, 16, 16], "rotation": 270, "texture": "#2"}
+			}
+		},
+		{
+			"from": [7.2, 9.7, 6.9],
+			"to": [7.2, 12.7, 9.9],
+			"rotation": {"angle": 22.5, "axis": "z", "origin": [7.4, 10.2, 7.8]},
+			"faces": {
+				"east": {"uv": [16, 0, 0, 16], "rotation": 90, "texture": "#2"},
+				"west": {"uv": [16, 16, 0, 0], "rotation": 90, "texture": "#2"}
+			}
+		}
+	],
+	"groups": [
+		{
+			"name": "cross",
+			"origin": [8, 8, 8],
+			"color": 0,
+			"children": [0, 1]
+		},
+		{
+			"name": "butterfly",
+			"origin": [8, 8, 8],
+			"color": 0,
+			"children": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+		}
+	]
+}

@@ -248,6 +248,9 @@ public class Chunk {
             }
             List<Vector3f> vertices = new ArrayList<>();
             List<Vector3i> faces = new ArrayList<>();
+            Map<String, List<Vector2f>> texturesMap = new HashMap<>();
+            List<Vector2f> textureCoordinates = new ArrayList<>();
+            int atlasRatio = (int) Math.ceil(Math.sqrt(this.engine.getAtlasTypes("blocks").size()));
             for (BlockObject obj : this) {
                 Vector3i pos = obj.getBlockPosition();
                 List<Vector3i> facesToRender = new ArrayList<>();
@@ -270,19 +273,25 @@ public class Chunk {
                     facesToRender.addAll(BlockObject.Face.LEFT.faces());
                 }
                 int prevSize = vertices.size();
-                for (int i = 0; i < facesToRender.size(); i += 3) {
-                    vertices.add(new Vector3f(baseVertices.get(facesToRender.get(i).x())).add(obj.getPosition()));
-                    vertices.add(new Vector3f(baseVertices.get(facesToRender.get(i + 1).x())).add(obj.getPosition()));
-                    vertices.add(new Vector3f(baseVertices.get(facesToRender.get(i + 2).x())).add(obj.getPosition()));
-                    faces.add(new Vector3i(prevSize + i, facesToRender.get(i).y(), facesToRender.get(i).z()));
-                    faces.add(new Vector3i(prevSize + i + 1, facesToRender.get(i + 1).y(), facesToRender.get(i + 1).z()));
-                    faces.add(new Vector3i(prevSize + i + 2, facesToRender.get(i + 2).y(), facesToRender.get(i + 2).z()));
+                int i = this.engine.getAtlasTypes("blocks").indexOf(obj.getType());
+                int y = atlasRatio - 1 - (i % atlasRatio);
+                int x = (i / atlasRatio);
+                for (int j = 0; j < facesToRender.size(); j += 3) {
+                    vertices.add(new Vector3f(baseVertices.get(facesToRender.get(j).x())).add(obj.getPosition()));
+                    vertices.add(new Vector3f(baseVertices.get(facesToRender.get(j + 1).x())).add(obj.getPosition()));
+                    vertices.add(new Vector3f(baseVertices.get(facesToRender.get(j + 2).x())).add(obj.getPosition()));
+                    textureCoordinates.add(new Vector2f((new Vector2f(baseTextureCoordinates.get(facesToRender.get(j).y())).x + x) / atlasRatio, (new Vector2f(baseTextureCoordinates.get(facesToRender.get(j).y())).y + y) / atlasRatio));
+                    textureCoordinates.add(new Vector2f((new Vector2f(baseTextureCoordinates.get(facesToRender.get(j + 1).y())).x + x) / atlasRatio, (new Vector2f(baseTextureCoordinates.get(facesToRender.get(j + 1).y())).y + y) / atlasRatio));
+                    textureCoordinates.add(new Vector2f((new Vector2f(baseTextureCoordinates.get(facesToRender.get(j + 2).y())).x + x) / atlasRatio, (new Vector2f(baseTextureCoordinates.get(facesToRender.get(j + 2).y())).y + y) / atlasRatio));
+                    faces.add(new Vector3i(prevSize + j, prevSize + j, facesToRender.get(j).z()));
+                    faces.add(new Vector3i(prevSize + j + 1, prevSize + j + 1, facesToRender.get(j + 1).z()));
+                    faces.add(new Vector3i(prevSize + j + 2, prevSize + j + 2, facesToRender.get(j + 2).z()));
                 }
             }
             if (this.mesh != null) {
                 this.engine.disposeVAO(this.mesh.getId());
             }
-            this.mesh = this.engine.loadObjFormat(vertices, baseNormals, baseTextureCoordinates, faces);
+            this.mesh = this.engine.loadObjFormat(vertices, baseNormals, textureCoordinates, faces);
         }
     }
 }

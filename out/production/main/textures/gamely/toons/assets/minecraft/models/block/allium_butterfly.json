@@ -1,0 +1,146 @@
+{
+	"credit": "Made with Blockbench",
+	"parent": "minecraft:block/cross",
+	"ambientocclusion": false,
+	"textures": {
+		"1": "block/butterfly_body",
+		"2": "block/butterfly_wing0",
+		"3": "block/butterfly_wing1",
+		"4": "block/butterfly_wing2",
+		"5": "block/butterfly_wing3",
+		"6": "block/butterfly_body1",
+		"top": "block/allium_top",
+		"particle": "block/allium",
+		"cross": "block/allium"
+	},
+	"elements": [
+		{
+			"from": [8, 0, 0.8],
+			"to": [8, 16, 15.2],
+			"shade": false,
+			"rotation": {"angle": 45, "axis": "y", "origin": [8, 8, 8], "rescale": true},
+			"faces": {
+				"east": {"uv": [16, 0, 0, 16], "texture": "#cross"},
+				"west": {"uv": [0, 0, 16, 16], "texture": "#cross"}
+			}
+		},
+		{
+			"from": [0.8, 0, 8],
+			"to": [15.2, 16, 8],
+			"shade": false,
+			"rotation": {"angle": 45, "axis": "y", "origin": [8, 8, 8], "rescale": true},
+			"faces": {
+				"north": {"uv": [0, 0, 16, 16], "texture": "#cross"},
+				"south": {"uv": [16, 0, 0, 16], "texture": "#cross"}
+			}
+		},
+		{
+			"from": [0.16, 12.66, 0.37],
+			"to": [15.91, 12.66, 15.98],
+			"shade": false,
+			"rotation": {"angle": -45, "axis": "y", "origin": [8, 12.5, 8]},
+			"faces": {
+				"up": {"uv": [1.75, 1.75, 14, 14.6875], "rotation": 90, "texture": "#top"},
+				"down": {"uv": [0, 0, 16, 16], "rotation": 180, "texture": "#top"}
+			}
+		},
+		{
+			"from": [1, 28.7, 12.9],
+			"to": [5, 28.7, 16.9],
+			"rotation": {"angle": 22.5, "axis": "x", "origin": [3, 28.7, 14.9]},
+			"faces": {
+				"up": {"uv": [0, 0, 16, 16], "texture": "#1"},
+				"down": {"uv": [0, 16, 16, 0], "texture": "#1"}
+			}
+		},
+		{
+			"from": [3, 26.7, 12.9],
+			"to": [3, 30.7, 16.9],
+			"rotation": {"angle": 22.5, "axis": "x", "origin": [3, 28.7, 14.9]},
+			"faces": {
+				"east": {"uv": [0, 0, 16, 16], "rotation": 90, "texture": "#6"},
+				"west": {"uv": [0, 16, 16, 0], "rotation": 90, "texture": "#6"}
+			}
+		},
+		{
+			"from": [0.5, 28.51, 14.1],
+			"to": [3.5, 28.51, 17.1],
+			"rotation": {"angle": 0, "axis": "z", "origin": [3, 28.71, 15]},
+			"faces": {
+				"up": {"uv": [16, 0, 0, 16], "texture": "#5"},
+				"down": {"uv": [16, 16, 0, 0], "texture": "#5"}
+			}
+		},
+		{
+			"from": [2.5, 28.5, 14.1],
+			"to": [5.5, 28.5, 17.1],
+			"rotation": {"angle": 0, "axis": "z", "origin": [3, 28.7, 15]},
+			"faces": {
+				"up": {"uv": [0, 0, 16, 16], "texture": "#5"},
+				"down": {"uv": [0, 16, 16, 0], "texture": "#5"}
+			}
+		},
+		{
+			"from": [2.5, 28.5, 14.1],
+			"to": [5.5, 28.5, 17.1],
+			"rotation": {"angle": 22.5, "axis": "z", "origin": [3, 28.7, 15]},
+			"faces": {
+				"up": {"uv": [0, 0, 16, 16], "texture": "#4"},
+				"down": {"uv": [0, 16, 16, 0], "texture": "#4"}
+			}
+		},
+		{
+			"from": [0.5, 28.5, 14.1],
+			"to": [3.5, 28.5, 17.1],
+			"rotation": {"angle": -22.5, "axis": "z", "origin": [3, 28.7, 15]},
+			"faces": {
+				"up": {"uv": [16, 0, 0, 16], "texture": "#4"},
+				"down": {"uv": [16, 16, 0, 0], "texture": "#4"}
+			}
+		},
+		{
+			"from": [3.2, 28.2, 14.1],
+			"to": [3.2, 31.2, 17.1],
+			"rotation": {"angle": -45, "axis": "z", "origin": [3, 28.7, 15]},
+			"faces": {
+				"east": {"uv": [0, 16, 16, 0], "rotation": 270, "texture": "#3"},
+				"west": {"uv": [0, 0, 16, 16], "rotation": 270, "texture": "#3"}
+			}
+		},
+		{
+			"from": [0.5, 28.5, 14.1],
+			"to": [3.5, 28.5, 17.1],
+			"rotation": {"angle": -45, "axis": "z", "origin": [3, 28.7, 15]},
+			"faces": {
+				"up": {"uv": [16, 0, 0, 16], "texture": "#3"},
+				"down": {"uv": [16, 16, 0, 0], "texture": "#3"}
+			}
+		},
+		{
+			"from": [3.2, 28.2, 14.1],
+			"to": [3.2, 31.2, 17.1],
+			"rotation": {"angle": -22.5, "axis": "z", "origin": [3, 28.7, 15]},
+			"faces": {
+				"east": {"uv": [0, 16, 16, 0], "rotation": 270, "texture": "#2"},
+				"west": {"uv": [0, 0, 16, 16], "rotation": 270, "texture": "#2"}
+			}
+		},
+		{
+			"from": [2.8, 28.2, 14.1],
+			"to": [2.8, 31.2, 17.1],
+			"rotation": {"angle": 22.5, "axis": "z", "origin": [3, 28.7, 15]},
+			"faces": {
+				"east": {"uv": [16, 0, 0, 16], "rotation": 90, "texture": "#2"},
+				"west": {"uv": [16, 16, 0, 0], "rotation": 90, "texture": "#2"}
+			}
+		}
+	],
+	"groups": [0, 1, 2,
+		{
+			"name": "butterfly",
+			"origin": [8, 8, 8],
+			"color": 0,
+			"children": [3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+		}
+	]
+}

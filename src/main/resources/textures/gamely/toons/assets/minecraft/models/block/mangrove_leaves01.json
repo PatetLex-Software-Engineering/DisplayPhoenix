@@ -1,0 +1,9 @@
+{
+	"parent": "minecraft:block/template_leaves02_tinted",
+	"textures": {
+		  "2": "block/mangrove_leaves3",
+		  "3": "block/mangrove_leaves5",
+		  "4": "block/mangrove_leaves4",
+		  "particle": "block/mangrove_leaves3"
+	}
+  }

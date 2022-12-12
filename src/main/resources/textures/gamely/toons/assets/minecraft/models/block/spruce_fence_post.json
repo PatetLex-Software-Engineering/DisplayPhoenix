@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/fence_post",
+  "textures": {
+    "side": "minecraft:block/spruce_log",
+    "top": "minecraft:block/spruce_fence_post_top"
+  }
+}

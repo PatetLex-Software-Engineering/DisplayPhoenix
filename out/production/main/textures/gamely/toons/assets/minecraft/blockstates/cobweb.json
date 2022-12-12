@@ -1,0 +1,36 @@
+{
+  "variants": {
+    "": [
+      {
+        "model": "minecraft:block/cobweb"
+      },
+      {
+        "model": "minecraft:block/cobweb1"
+      },
+      {
+        "model": "minecraft:block/cobweb",
+        "y": 90
+      },
+      {
+        "model": "minecraft:block/cobweb1",
+        "y": 90
+      },
+      {
+        "model": "minecraft:block/cobweb",
+        "y": 180
+      },
+      {
+        "model": "minecraft:block/cobweb1",
+        "y": 180
+      },
+      {
+        "model": "minecraft:block/cobweb",
+        "y": 270
+      },
+      {
+        "model": "minecraft:block/cobweb1",
+        "y": 270
+      }
+    ]
+  }
+}

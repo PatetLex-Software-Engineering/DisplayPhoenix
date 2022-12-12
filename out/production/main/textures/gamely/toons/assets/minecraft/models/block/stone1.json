@@ -1,0 +1,13 @@
+{
+	"credit": "Made with Blockbench",
+	"parent": "minecraft:block/cube",
+	"textures": {
+		"particle": "block/stone0",
+		"north": "block/stone3",
+		"east": "block/stone2",
+		"south": "block/stone0",
+		"west": "block/stone3",
+		"up": "block/stone0",
+		"down": "block/stone0"
+	}
+}

@@ -1,0 +1,37 @@
+{
+	"credit": "Made with Blockbench",
+	"parent": "block/thin_block",
+	"textures": {
+		"particle": "block/dark_oak_trapdoor",
+		"texture": "block/dark_oak_trapdoor"
+	},
+	"elements": [
+		{
+			"from": [0, 13, 0],
+			"to": [16, 16, 16],
+			"rotation": {"angle": 0, "axis": "y", "origin": [8, 1.5, 8]},
+			"faces": {
+				"north": {"uv": [16, 0, 0, 3], "rotation": 180, "texture": "#texture"},
+				"east": {"uv": [16, 3, 0, 0], "rotation": 180, "texture": "#texture"},
+				"south": {"uv": [16, 3, 0, 0], "rotation": 180, "texture": "#texture"},
+				"west": {"uv": [0, 0, 16, 3], "texture": "#texture"},
+				"up": {"uv": [0, 0, 16, 16], "rotation": 180, "texture": "#texture"},
+				"down": {"uv": [0, 0, 16, 16], "texture": "#texture"}
+			}
+		}
+	],
+	"groups": [
+		{
+			"name": "template_trapdoor_open",
+			"origin": [8, 8, 8],
+			"color": 0,
+			"children": [0]
+		},
+		{
+			"name": "template_trapdoor_bottom",
+			"origin": [8, 8, 8],
+			"color": 0,
+			"children": []
+		}
+	]
+}

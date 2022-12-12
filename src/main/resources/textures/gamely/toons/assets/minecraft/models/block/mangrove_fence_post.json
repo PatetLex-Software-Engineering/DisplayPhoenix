@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/fence_post",
+  "textures": {
+    "side": "minecraft:block/mangrove_log",
+    "top": "minecraft:block/mangrove_fence_post_top"
+  }
+}

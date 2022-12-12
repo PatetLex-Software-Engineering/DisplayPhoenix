@@ -1,0 +1,139 @@
+{
+	"credit": "Made with Blockbench",
+	"ambientocclusion": false,
+	"textures": {
+		"1": "block/iron_parts",
+		"particle": "block/rail",
+		"rail": "block/rail"
+	},
+	"elements": [
+		{
+			"from": [0, 0.1, 0],
+			"to": [16, 1, 16],
+			"rotation": {"angle": 0, "axis": "y", "origin": [0, -16, 16]},
+			"faces": {
+				"up": {"uv": [0, 0, 16, 16], "texture": "#rail"},
+				"down": {"uv": [0, 16, 16, 0], "texture": "#rail"}
+			}
+		},
+		{
+			"from": [0, 0.13, 0],
+			"to": [16, 0.13, 16],
+			"rotation": {"angle": 0, "axis": "y", "origin": [0, -16, 16]},
+			"faces": {
+				"up": {"uv": [16, 0, 0, 16], "texture": "#rail"}
+			}
+		},
+		{
+			"from": [0, 0.13, 1.34],
+			"to": [16, 1, 4.74],
+			"rotation": {"angle": 0, "axis": "x", "origin": [0, -15.87, 18.17]},
+			"faces": {
+				"north": {"uv": [0, 12.3125, 16, 15.0625], "rotation": 180, "texture": "#rail"},
+				"south": {"uv": [0, 12.375, 16, 14.9375], "rotation": 180, "texture": "#rail"}
+			}
+		},
+		{
+			"from": [0, 0.13, 12.31],
+			"to": [16, 1, 15.06],
+			"rotation": {"angle": 0, "axis": "x", "origin": [0, -15.87, 28.48]},
+			"faces": {
+				"north": {"uv": [0, 1.375, 16, 4.75], "rotation": 180, "texture": "#rail"},
+				"south": {"uv": [0, 1.375, 16, 4.6875], "rotation": 180, "texture": "#rail"}
+			}
+		},
+		{
+			"from": [0, 0.13, 6.83],
+			"to": [16, 1, 9.63],
+			"rotation": {"angle": 0, "axis": "x", "origin": [0, -15.87, 23.68]},
+			"faces": {
+				"north": {"uv": [0, 1.25, 16, 4.875], "texture": "#rail"},
+				"south": {"uv": [0, 1.375, 16, 4.6875], "texture": "#rail"}
+			}
+		},
+		{
+			"from": [0.9, 0.13, 0],
+			"to": [15.3, 1, 16],
+			"rotation": {"angle": 0, "axis": "y", "origin": [-0.4, -16, 16]},
+			"faces": {
+				"east": {"uv": [9, 0, 9.9375, 16], "rotation": 90, "texture": "#rail"},
+				"west": {"uv": [9, 0, 9.9375, 16], "rotation": 270, "texture": "#rail"}
+			}
+		},
+		{
+			"from": [2, 0, -0.4],
+			"to": [3, 2, 16.4],
+			"rotation": {"angle": 0, "axis": "y", "origin": [2, -16, 16]},
+			"faces": {
+				"north": {"uv": [11.3125, 2, 11.75, 0], "rotation": 90, "texture": "#1"},
+				"east": {"uv": [10.5, 5.5, 10.8125, 5.9375], "texture": "#1"},
+				"south": {"uv": [11.3125, 2, 11.75, 0], "rotation": 270, "texture": "#1"},
+				"west": {"uv": [10.8125, 7.6875, 11.125, 8.125], "texture": "#1"},
+				"up": {"uv": [3, 0, 16, 2], "rotation": 90, "texture": "#1"},
+				"down": {"uv": [3, 0, 16, 2], "rotation": 90, "texture": "#1"}
+			}
+		},
+		{
+			"from": [13, 0, -0.4],
+			"to": [14, 2, 16.4],
+			"rotation": {"angle": 0, "axis": "y", "origin": [12, -16, 16]},
+			"faces": {
+				"north": {"uv": [11.3125, 2, 11.75, 0], "rotation": 270, "texture": "#1"},
+				"east": {"uv": [10.8125, 7.6875, 11.125, 8.125], "texture": "#1"},
+				"south": {"uv": [11.3125, 2, 11.75, 0], "rotation": 90, "texture": "#1"},
+				"west": {"uv": [10.5, 5.5, 10.8125, 5.9375], "texture": "#1"},
+				"up": {"uv": [16, 2, 3, 0], "rotation": 90, "texture": "#1"},
+				"down": {"uv": [16, 2, 3, 0], "rotation": 90, "texture": "#1"}
+			}
+		}
+	],
+	"gui_light": "front",
+	"display": {
+		"thirdperson_righthand": {
+			"rotation": [75, 45, 0],
+			"translation": [0, 4.25, 2.25],
+			"scale": [0.375, 0.375, 0.375]
+		},
+		"thirdperson_lefthand": {
+			"rotation": [75, 45, 0],
+			"translation": [0, 4.25, 2.25],
+			"scale": [0.375, 0.375, 0.375]
+		},
+		"firstperson_righthand": {
+			"rotation": [34, 11.75, 0],
+			"translation": [7.75, 1, -8],
+			"scale": [0.65586, 0.65586, 0.65586]
+		},
+		"firstperson_lefthand": {
+			"rotation": [34, 11.75, 0],
+			"translation": [7.75, 1, -8],
+			"scale": [0.65586, 0.65586, 0.65586]
+		},
+		"ground": {
+			"translation": [0, 3, 0],
+			"scale": [0.42188, 0.42188, 0.42188]
+		},
+		"gui": {
+			"rotation": [96, -180, -20],
+			"translation": [-2, -0.75, 0],
+			"scale": [0.80273, 0.80273, 0.80273]
+		},
+		"head": {
+			"translation": [0, 13.25, 0],
+			"scale": [0.86914, 0.86914, 0.86914]
+		},
+		"fixed": {
+			"rotation": [-90, 0, 0],
+			"translation": [0, 0, -5.75],
+			"scale": [0.7168, 0.7168, 0.7168]
+		}
+	},
+	"groups": [
+		{
+			"name": "rail_flat",
+			"origin": [8, 8, 8],
+			"color": 0,
+			"children": [0, 1, 2, 3, 4, 5, 6, 7]
+		}
+	]
+}

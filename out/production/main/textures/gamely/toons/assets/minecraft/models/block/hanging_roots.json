@@ -1,0 +1,50 @@
+{
+	"credit": "Made with Blockbench",
+	"parent": "minecraft:block/cross",
+	"ambientocclusion": false,
+	"textures": {
+		"1": "block/hanging_roots_top",
+		"particle": "block/hanging_roots",
+		"cross": "block/hanging_roots"
+	},
+	"elements": [
+		{
+			"from": [0.8, -0.01, 8],
+			"to": [15.2, 15.99, 8],
+			"shade": false,
+			"rotation": {"angle": 45, "axis": "y", "origin": [8, 7.99, 8], "rescale": true},
+			"faces": {
+				"north": {"uv": [16, 0, 0, 16], "texture": "#cross"},
+				"south": {"uv": [0, 0, 16, 16], "texture": "#cross"}
+			}
+		},
+		{
+			"from": [8, -0.01, 0.8],
+			"to": [8, 15.99, 15.2],
+			"shade": false,
+			"rotation": {"angle": 45, "axis": "y", "origin": [8, 7.99, 8], "rescale": true},
+			"faces": {
+				"east": {"uv": [16, 0, 0, 16], "texture": "#cross"},
+				"west": {"uv": [0, 0, 16, 16], "texture": "#cross"}
+			}
+		},
+		{
+			"from": [0.8, 15.99, 0.8],
+			"to": [15.2, 15.99, 15.2],
+			"shade": false,
+			"rotation": {"angle": -45, "axis": "y", "origin": [8, 15.99, 8], "rescale": true},
+			"faces": {
+				"down": {"uv": [0, 0, 15.9375, 15.9375], "texture": "#1"}
+			}
+		}
+	],
+	"groups": [
+		{
+			"name": "cross",
+			"origin": [8, 8, 8],
+			"color": 0,
+			"shade": false,
+			"children": [0, 1, 2]
+		}
+	]
+}

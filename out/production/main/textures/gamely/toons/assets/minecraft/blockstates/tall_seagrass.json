@@ -1,0 +1,32 @@
+{
+  "variants": {
+    "half=lower": [
+	  {
+        "model": "minecraft:block/tall_seagrass_bottom"
+      },
+	  {
+        "model": "minecraft:block/tall_seagrass_bottom_mirrored"
+      },
+	  {
+        "model": "minecraft:block/tall_seagrass_bottom1"
+      },
+	  {
+        "model": "minecraft:block/tall_seagrass_bottom_mirrored1"
+      }
+	],
+    "half=upper": [
+	  {
+        "model": "minecraft:block/tall_seagrass_top"
+      },
+	  {
+        "model": "minecraft:block/tall_seagrass_top_mirrored"
+      },
+	  {
+        "model": "minecraft:block/tall_seagrass_top1"
+      },
+	  {
+        "model": "minecraft:block/tall_seagrass_top_mirrored1"
+      }
+	]
+  }
+}

@@ -1,0 +1,123 @@
+{
+  "multipart": [
+    {
+      "when": {
+        "facing": "north"
+      },
+      "apply": {
+        "y": 0,
+        "model": "minecraft:block/oak_fence_gate_post"
+      }
+    },
+    {
+      "when": {
+        "facing": "east"
+      },
+      "apply": {
+        "y": 90,
+        "model": "minecraft:block/oak_fence_gate_post"
+      }
+    },
+    {
+      "when": {
+        "facing": "south"
+      },
+      "apply": {
+        "y": 0,
+        "model": "minecraft:block/oak_fence_gate_post"
+      }
+    },
+    {
+      "when": {
+        "facing": "west"
+      },
+      "apply": {
+        "y": 90,
+        "model": "minecraft:block/oak_fence_gate_post"
+      }
+    },
+
+
+
+    {
+      "when": {
+        "facing": "north",
+        "open": "false"
+      },
+      "apply": {
+        "y": 0,
+        "model": "minecraft:block/oak_fence_gate0"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "open": "true"
+      },
+      "apply": {
+        "y": 0,
+        "model": "minecraft:block/oak_fence_gate_open0"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "open": "false"
+      },
+      "apply": {
+        "y": 90,
+        "model": "minecraft:block/oak_fence_gate0"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "open": "true"
+      },
+      "apply": {
+        "y": 90,
+        "model": "minecraft:block/oak_fence_gate_open0"
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "open": "false"
+      },
+      "apply": {
+        "y": 0,
+        "model": "minecraft:block/oak_fence_gate0"
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "open": "true"
+      },
+      "apply": {
+        "y": 0,
+        "model": "minecraft:block/oak_fence_gate_open1"
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "open": "false"
+      },
+      "apply": {
+        "y": 90,
+        "model": "minecraft:block/oak_fence_gate0"
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "open": "true"
+      },
+      "apply": {
+        "y": 90,
+        "model": "minecraft:block/oak_fence_gate_open1"
+      }
+    }
+  ]
+}

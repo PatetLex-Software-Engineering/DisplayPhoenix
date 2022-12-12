@@ -1,0 +1,11 @@
+{
+  "parent": "minecraft:block/cube",
+  "textures": {
+    "up": "minecraft:block/brown_mushroom_block",
+    "down": "minecraft:block/brown_mushroom_block_bottom",
+    "north": "minecraft:block/brown_mushroom_block_side1",
+    "east": "minecraft:block/brown_mushroom_block_side",
+    "south": "minecraft:block/brown_mushroom_block_side1",
+    "west": "minecraft:block/brown_mushroom_block_side"
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "variants": {
+    "": [
+	  {
+	    "model": "minecraft:block/brown_mushroom_block"
+	  },
+	  {
+	    "model": "minecraft:block/brown_mushroom_block",
+        "y": 90
+	  },
+	  {
+	    "model": "minecraft:block/brown_mushroom_block",
+        "y": 180
+	  },
+	  {
+	    "model": "minecraft:block/brown_mushroom_block",
+        "y": 270
+	  },
+	  {
+	    "model": "minecraft:block/brown_mushroom_block_variant"
+	  },
+	  {
+	    "model": "minecraft:block/brown_mushroom_block_variant",
+        "y": 90
+	  },
+	  {
+	    "model": "minecraft:block/brown_mushroom_block_variant",
+        "y": 180
+	  },
+	  {
+	    "model": "minecraft:block/brown_mushroom_block_variant",
+        "y": 270
+	  }
+	]
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "variants": {
+    "": [
+	  {
+        "model": "minecraft:block/mossy_stone_bricks0"
+      },
+	  {
+        "model": "minecraft:block/mossy_stone_bricks1"
+      },
+	  {
+        "model": "minecraft:block/mossy_stone_bricks2"
+      },
+	  {
+        "model": "minecraft:block/mossy_stone_bricks3"
+      }
+	]
+  }
+}

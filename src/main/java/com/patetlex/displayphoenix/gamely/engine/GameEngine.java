@@ -8,7 +8,6 @@ import com.patetlex.displayphoenix.gamely.ui.GamePanel;
 
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -93,6 +92,7 @@ public abstract class GameEngine {
                 long now = System.nanoTime();
                 delta += (now - lastTime) / ns;
                 lastTime = now;
+                panel.repaint();
                 while (delta >= 1) {
 
                     if (this.shouldTick)
@@ -103,7 +103,6 @@ public abstract class GameEngine {
                     delta--;
                 }
                 panel.repaint();
-
             }
             GameEngine.this.end();
         }).start();
@@ -191,6 +190,15 @@ public abstract class GameEngine {
         return this.panel;
     }
 
+    public IDebugRenderer getDebugRenderer() {
+        return new IDebugRenderer() {
+            @Override
+            public void debugRender() {
+
+            }
+        };
+    }
+
     public Camera getCamera() {
         return camera;
     }
@@ -211,5 +219,9 @@ public abstract class GameEngine {
             this.ticksRemaining = ticksRemaining;
             this.consumer = consumer;
         }
+    }
+
+    public interface IDebugRenderer {
+        void debugRender();
     }
 }

@@ -1,0 +1,62 @@
+{
+	"credit": "Made with Blockbench",
+	"parent": "minecraft:block/tinted_cross",
+	"ambientocclusion": false,
+	"textures": {
+		"1": "block/molehill_base",
+		"3": "block/molehill_middle",
+		"4": "block/molehill_mole",
+		"5": "block/molehill_top",
+		"particle": "block/grass"
+	},
+	"elements": [
+		{
+			"from": [0, 16.01, 0],
+			"to": [16, 16.01, 16],
+			"shade": false,
+			"rotation": {"angle": 0, "axis": "y", "origin": [0, 16.01, 0]},
+			"faces": {
+				"up": {"uv": [0, 0, 16, 16], "rotation": 90, "texture": "#1"},
+				"down": {"uv": [16, 0, 0, 16], "rotation": 90, "texture": "#1"}
+			}
+		},
+		{
+			"from": [-1.9, 16.48, -2.4],
+			"to": [16.1, 16.48, 17.6],
+			"shade": false,
+			"rotation": {"angle": 0, "axis": "y", "origin": [0, 16.01, 0]},
+			"faces": {
+				"up": {"uv": [0, 0, 16, 16], "texture": "#3"},
+				"down": {"uv": [16, 0, 0, 16], "rotation": 90, "texture": "#3"}
+			}
+		},
+		{
+			"from": [0.7, 16.97, 1.6],
+			"to": [14.7, 16.97, 15.6],
+			"shade": false,
+			"rotation": {"angle": 0, "axis": "y", "origin": [0, 16.01, 0]},
+			"faces": {
+				"up": {"uv": [0, 0, 16, 16], "rotation": 180, "texture": "#3"},
+				"down": {"uv": [16, 0, 0, 16], "rotation": 90, "texture": "#3"}
+			}
+		},
+		{
+			"from": [3.1, 17.48, 4.2],
+			"to": [11.1, 17.48, 12.2],
+			"shade": false,
+			"rotation": {"angle": 0, "axis": "y", "origin": [0, 16.01, 0]},
+			"faces": {
+				"up": {"uv": [0, 0, 16, 16], "rotation": 270, "texture": "#5"},
+				"down": {"uv": [16, 0, 0, 16], "rotation": 90, "texture": "#3"}
+			}
+		},
+		{
+			"from": [0, 16, 8],
+			"to": [16, 24, 8],
+			"faces": {
+				"north": {"uv": [0, 6, 16, 14], "texture": "#4"},
+				"south": {"uv": [16, 6, 0, 14], "texture": "#4"}
+			}
+		}
+	]
+}

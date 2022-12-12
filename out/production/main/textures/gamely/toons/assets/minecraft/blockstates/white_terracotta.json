@@ -1,0 +1,18 @@
+{
+  "variants": {
+    "": [
+      {
+	    "model": "minecraft:block/white_terracotta0"
+	  },
+      {
+	    "model": "minecraft:block/white_terracotta1"
+	  },
+      {
+	    "model": "minecraft:block/white_terracotta2"
+	  },
+      {
+	    "model": "minecraft:block/white_terracotta3"
+	  }
+	]
+  }
+}

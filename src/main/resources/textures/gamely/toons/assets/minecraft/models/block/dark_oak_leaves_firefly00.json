@@ -1,0 +1,83 @@
+{
+	"credit": "Made with Blockbench",
+	"ambientocclusion": false,
+	"textures": {
+		"2": "block/dark_oak_leaves3",
+		"3": "block/dark_oak_leaves5",
+		"4": "block/dark_oak_leaves4",
+		"5": "block/firefly",
+		"particle": "block/dark_oak_leaves3"
+	},
+	"elements": [
+		{
+			"from": [-16, -9.72994, 8.25434],
+			"to": [25.7255, 32, 8.25434],
+			"shade": false,
+			"rotation": {"angle": 45, "axis": "z", "origin": [6.14938, 15.52958, 9.21433]},
+			"faces": {
+				"north": {"uv": [0, 0, 16, 16], "texture": "#2", "cullface": "north"},
+				"south": {"uv": [16, 0, 0, 16], "texture": "#2", "cullface": "south"}
+			}
+		},
+		{
+			"from": [5.53065, -9.72994, -16],
+			"to": [5.53065, 32, 28.79046],
+			"shade": false,
+			"rotation": {"angle": 45, "axis": "z", "origin": [6.14938, 15.52958, 9.21433]},
+			"faces": {
+				"east": {"uv": [0, 0, 16, 16], "texture": "#2"},
+				"west": {"uv": [16, 0, 0, 16], "texture": "#2"}
+			}
+		},
+		{
+			"from": [-11.32614, 4.97231, -7.06519],
+			"to": [22.7255, 4.97231, 26.98646],
+			"shade": false,
+			"rotation": {"angle": 45, "axis": "z", "origin": [6.14938, 15.52958, 9.21433]},
+			"faces": {
+				"up": {"uv": [16, 0, 0, 16], "rotation": 90, "texture": "#4"},
+				"down": {"uv": [0, 0, 16, 16], "rotation": 90, "texture": "#4"}
+			}
+		},
+		{
+			"from": [-12.34614, 18.73631, -8.86919],
+			"to": [21.7255, 18.73631, 26.39846],
+			"shade": false,
+			"rotation": {"angle": 45, "axis": "z", "origin": [6.14938, 15.52958, 9.21433]},
+			"faces": {
+				"up": {"uv": [16, 0, 0, 16], "rotation": 90, "texture": "#3"},
+				"down": {"uv": [0, 0, 16, 16], "rotation": 90, "texture": "#3"}
+			}
+		},
+		{
+			"from": [-12.13014, 19.12831, -8.06519],
+			"to": [21.9415, 19.12831, 27.20246],
+			"shade": false,
+			"rotation": {"angle": -45, "axis": "y", "origin": [6.14938, 15.52958, 9.21433]},
+			"faces": {
+				"up": {"uv": [16, 0, 0, 16], "rotation": 90, "texture": "#3"},
+				"down": {"uv": [0, 0, 16, 16], "rotation": 90, "texture": "#3", "cullface": "down"}
+			}
+		},
+		{
+			"name": "firefly",
+			"from": [-16, -16, -16],
+			"to": [-16, -13, 32],
+			"rotation": {"angle": 22.5, "axis": "z", "origin": [28, 8, 8]},
+			"faces": {
+				"east": {"uv": [0, 0, 16, 16], "texture": "#5"},
+				"west": {"uv": [16, 0, 0, 16], "texture": "#5"}
+			}
+		}
+	],
+	"groups": [
+		{
+			"name": "group",
+			"origin": [8.03096, 13.10412, -5.98391],
+			"color": 0,
+			"shade": false,
+			"children": [0, 1, 2, 3, 4]
+		},
+		5
+	]
+}

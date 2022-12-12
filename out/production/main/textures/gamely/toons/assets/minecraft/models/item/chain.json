@@ -1,0 +1,30 @@
+{
+  "parent": "minecraft:block/chain",
+  "display": {
+    "firstperson_righthand": {
+	  "scale": [0.75, 0.75, 0.75],
+	  "translation": [0, 0, 0]
+	},
+    "thirdperson_righthand": {
+	  "scale": [0.75, 0.75, 0.75],
+	  "translation": [0, 0, 0]
+	},
+    "gui": {
+	  "scale": [1, 1, 1],
+	  "translation": [0, 0, 0],
+	  "rotation": [5, 15, 0]
+	},
+    "head": {
+	  "scale": [0.75, 0.75, 0.75],
+	  "translation": [0, 0, 0]
+	},
+    "ground": {
+	  "scale": [0.75, 0.75, 0.75],
+	  "translation": [0, 0, 0]
+	},
+    "fixed": {
+	  "scale": [0.75, 0.75, 0.75],
+	  "translation": [0, 0, 0]
+	}
+  }
+}

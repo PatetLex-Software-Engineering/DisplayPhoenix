@@ -1,12 +1,16 @@
 package com.patetlex.displayphoenix.gamely.engine.impl;
 
+import com.bulletphysics.linearmath.IDebugDraw;
 import com.patetlex.displayphoenix.gamely.engine.GameEngine;
 import com.patetlex.displayphoenix.gamely.obj.Camera;
 import com.patetlex.displayphoenix.gamely.obj.GameObject;
-import com.patetlex.displayphoenix.gamely.physics.GamePhysics;
+import com.patetlex.displayphoenix.gamely.physics.impl.GamePhysics3D;
 import com.patetlex.displayphoenix.gamely.ui.GamePanel;
 import com.patetlex.displayphoenix.gamely.ui.impl.GameGLFWPanel;
+import com.patetlex.displayphoenix.interfaces.FileIteration;
 import com.patetlex.displayphoenix.util.FileHelper;
+import com.patetlex.displayphoenix.util.ImageHelper;
+import org.ghost4j.renderer.RendererException;
 import org.joml.*;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFW;
@@ -17,6 +21,7 @@ import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
 
 import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.Math;
@@ -36,10 +41,14 @@ import java.util.function.BiConsumer;
 public class GameEngine3D extends GameEngine {
 
     public Shader shader;
+    public Shader baseShader;
 
-    public GameEngine3D(GamePhysics physics, int tickRate) {
+    protected DebugRenderer debugRenderer;
+
+    public GameEngine3D(GamePhysics3D physics, int tickRate) {
         super(physics, tickRate);
-
+        this.debugRenderer = new DebugRenderer(this);
+        physics.setDebugRenderer(this.debugRenderer);
     }
 
     @Override
@@ -55,6 +64,12 @@ public class GameEngine3D extends GameEngine {
 
     public void setupGLFW(GameGLFWPanel panel) {
         this.shader = new Shader();
+        this.baseShader = new Shader() {
+            @Override
+            protected void bindAttributes() {
+                GL20.glBindAttribLocation(this.programId, 0, "position");
+            }
+        };
         this.startShader();
 
         GLFW.glfwDefaultWindowHints();
@@ -80,6 +95,11 @@ public class GameEngine3D extends GameEngine {
             renderObject(g, obj);
         }
         this.shader.unbind();
+        this.baseShader.bind();
+        if (this.debugRenderer.getDebugMode() != 0) {
+            this.debugRenderer.debugRender();
+        }
+        this.baseShader.unbind();
     }
 
     protected void renderObject(Graphics2D g, GameObject obj) {
@@ -93,6 +113,8 @@ public class GameEngine3D extends GameEngine {
         shader.setUniform("projectionMatrix", this.getCamera().updateProjectionMatrix());
         shader.setUniform("viewMatrix", createViewMatrix(this.getCamera()));
         shader.setUniform("ambientLight", new Vector4f(1F, 1F, 1F, 0.4F));
+        shader.setUniform("skyColor", new Vector3f(1F, 1F, 1F));
+        shader.setUniform("renderDistance", 1);
     }
 
     @Override
@@ -103,6 +125,11 @@ public class GameEngine3D extends GameEngine {
     @Override
     public boolean shouldBreak() {
         return GLFW.glfwWindowShouldClose(((GameGLFWPanel) this.getPanel()).getContext());
+    }
+
+    @Override
+    public IDebugRenderer getDebugRenderer() {
+        return this.debugRenderer;
     }
 
     protected GameObject[] sortRenderingLights() {
@@ -130,7 +157,7 @@ public class GameEngine3D extends GameEngine {
         return matrix4f;
     }
 
-    private static Matrix4f createViewMatrix(Camera camera) {
+    public static Matrix4f createViewMatrix(Camera camera) {
         Vector3f position = camera.getPosition();
         Vector3f rotation = camera.getRotation();
         Matrix4f matrix4f = new Matrix4f();
@@ -246,25 +273,23 @@ public class GameEngine3D extends GameEngine {
             verticesArray[(i * 3) + 2] = pos.z;
             i++;
         }
-
         float[] textureCoordinatesArray = new float[vertices.size() * 2];
         float[] normalsArray = new float[vertices.size() * 3];
-
         for (Vector3i face : faces) {
             Model.processVertex(face.x, face.y, face.z, textureCoordinates, normals, indices, textureCoordinatesArray, normalsArray);
         }
-
         int[] indicesArray = indices.stream().mapToInt((Integer v) -> v).toArray();
         return loadModel(verticesArray, textureCoordinatesArray, normalsArray, indicesArray);
     }
 
-    public int loadTextureToAtlas(String texturePath) {
+    public int loadTexture(String texturePath) {
         int width;
         int height;
         ByteBuffer buffer;
         ByteBuffer imageBuffer;
         try {
             imageBuffer = ioResourceToByteBuffer("textures/gamely/" + texturePath, 8 * 1024);
+
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -287,6 +312,36 @@ public class GameEngine3D extends GameEngine {
         GL30.glGenerateMipmap(GL11.GL_TEXTURE_2D);
         STBImage.stbi_image_free(buffer);
         return id;
+    }
+
+    public int loadTexturesToAtlas(String texturesPath, FileIteration iterator) {
+        BufferedImage image = ImageHelper.loadImagesToAtlas(texturesPath, iterator);
+        ByteBuffer imageBuffer = convertImageData(image);
+        int id = GL11.glGenTextures();
+        this.texs.add(id);
+        GL11.glBindTexture(GL11.GL_TEXTURE_2D, id);
+        GL11.glTexParameterf(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR_MIPMAP_LINEAR);
+        GL11.glTexParameterf(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR);
+        GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA8, image.getWidth(), image.getHeight(), 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, imageBuffer);
+        GL30.glGenerateMipmap(GL11.GL_TEXTURE_2D);
+        return id;
+    }
+
+    private static ByteBuffer convertImageData(BufferedImage image) {
+        int[] pixels = new int[image.getWidth() * image.getHeight()];
+        image.getRGB(0, 0, image.getWidth(), image.getHeight(), pixels, 0, image.getWidth());
+        ByteBuffer buffer = ByteBuffer.allocateDirect(image.getWidth() * image.getHeight() * 4);
+        for(int h = 0; h < image.getHeight(); h++) {
+            for(int w = 0; w < image.getWidth(); w++) {
+                int pixel = pixels[h * image.getWidth() + w];
+                buffer.put((byte) ((pixel >> 16) & 0xFF));
+                buffer.put((byte) ((pixel >> 8) & 0xFF));
+                buffer.put((byte) (pixel & 0xFF));
+                buffer.put((byte) ((pixel >> 24) & 0xFF));
+            }
+        }
+        buffer.flip();
+        return buffer;
     }
 
     protected int createVAO() {
@@ -422,6 +477,13 @@ public class GameEngine3D extends GameEngine {
         this.shader.createUniform("reflectance");
         this.shader.createLightsUniform("lights");
         this.shader.createUniform("ambientLight");
+        this.shader.createUniform("skyColor");
+        this.shader.createUniform("renderDistance");
+
+        this.baseShader.createVertexShader(FileHelper.readAllLines(ClassLoader.getSystemClassLoader().getResourceAsStream("gamely/shaders/baseVertex.vs")));
+        this.baseShader.createFragmentShader(FileHelper.readAllLines(ClassLoader.getSystemClassLoader().getResourceAsStream("gamely/shaders/baseFragment.fs")));
+        this.baseShader.linkProgram();
+        this.baseShader.createUniform("color");
     }
 
     public static class Shader {
@@ -560,6 +622,84 @@ public class GameEngine3D extends GameEngine {
         }
     }
 
+    public static class DebugRenderer extends IDebugDraw implements IDebugRenderer {
+
+        protected GameEngine3D engine;
+
+        private int debugMode;
+
+        private float lineThickness;
+
+        public DebugRenderer(GameEngine3D engine) {
+            this.engine = engine;
+        }
+
+        public void setLineThickness(float thickness) {
+            this.lineThickness = thickness;
+        }
+
+        @Override
+        public void drawLine(javax.vecmath.Vector3f vector3f, javax.vecmath.Vector3f vector3f1, javax.vecmath.Vector3f vector3f2) {
+            float t = this.lineThickness / 2F;
+            float[] vertices = new float[18];
+            for (int i = 0; i < 5; i++) {
+                javax.vecmath.Vector3f v = i > 2 ? vector3f1 : vector3f;
+                vertices[i * 3] = v.x;
+                vertices[i * 3 + 1] = (i + 1) % 2 == 0 ? v.y - t : v.y + t;
+                vertices[i * 3 + 2] = v.z;
+            }
+            this.engine.baseShader.setUniform("color", new Vector3f(vector3f2.x, vector3f2.y, vector3f2.z));
+            int vao = this.engine.createVAO();
+            GL30.glBindVertexArray(vao);
+            GL20.glEnableVertexAttribArray(0);
+            GL11.glDrawElements(GL11.GL_TRIANGLES, 6, GL11.GL_UNSIGNED_INT, 0);
+            GL20.glDisableVertexAttribArray(0);
+            GL30.glBindVertexArray(0);
+            this.engine.disposeVAO(vao);
+        }
+
+        @Override
+        public void drawContactPoint(javax.vecmath.Vector3f vector3f, javax.vecmath.Vector3f vector3f1, float v, int i, javax.vecmath.Vector3f vector3f2) {
+
+        }
+
+        @Override
+        public void reportErrorWarning(String s) {
+            try {
+                throw new RendererException(s);
+            } catch (RendererException e) {
+                e.printStackTrace();
+            }
+        }
+
+        @Override
+        public void draw3dText(javax.vecmath.Vector3f vector3f, String s) {
+
+        }
+
+        @Override
+        public void setDebugMode(int i) {
+            this.debugMode = i;
+        }
+
+        @Override
+        public int getDebugMode() {
+            return this.debugMode;
+        }
+
+        @Override
+        public void debugRender() {
+            ((GamePhysics3D) this.engine.getPhysics()).renderPhysics(this.engine, this.engine.getGameObjects().values());
+        }
+
+        protected int storeVerticesToVAO(float[] vertices) {
+            int id = this.engine.createVAO();
+            this.engine.storeDataInAttribute(id, 0, 3, vertices);
+            this.engine.unbind();
+            return id;
+        }
+    }
+
     private static ByteBuffer resizeBuffer(ByteBuffer buffer, int newCapacity) {
         ByteBuffer newBuffer = BufferUtils.createByteBuffer(newCapacity);
         buffer.flip();
@@ -569,21 +709,17 @@ public class GameEngine3D extends GameEngine {
 
     private static ByteBuffer ioResourceToByteBuffer(String resource, int bufferSize) throws IOException {
         ByteBuffer buffer;
-
         Path path = Paths.get(resource);
         if (Files.isReadable(path)) {
             try (SeekableByteChannel fc = Files.newByteChannel(path)) {
                 buffer = BufferUtils.createByteBuffer((int) fc.size() + 1);
                 while (fc.read(buffer) != -1) {
+
                 }
             }
         } else {
-            try (
-                    InputStream source = ClassLoader.getSystemClassLoader().getResourceAsStream(resource);
-                    ReadableByteChannel rbc = Channels.newChannel(source)
-            ) {
+            try (InputStream source = ClassLoader.getSystemClassLoader().getResourceAsStream(resource); ReadableByteChannel rbc = Channels.newChannel(source)) {
                 buffer = BufferUtils.createByteBuffer(bufferSize);
-
                 while (true) {
                     int bytes = rbc.read(buffer);
                     if (bytes == -1) {
@@ -595,7 +731,6 @@ public class GameEngine3D extends GameEngine {
                 }
             }
         }
-
         buffer.flip();
         return MemoryUtil.memSlice(buffer);
     }

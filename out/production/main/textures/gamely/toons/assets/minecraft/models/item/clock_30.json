@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/template_clock",
+  "textures": {
+    "layer0": "minecraft:item/clock_30"
+  }
+}

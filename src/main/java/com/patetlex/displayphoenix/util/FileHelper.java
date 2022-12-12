@@ -22,11 +22,33 @@ public class FileHelper {
     public static final File TEMP_DIRECTORY = new File(System.getProperty("java.io.tmpdir"));
 
     public static void forEachSubFile(File directory, FileIteration iterator) {
+        if (!directory.isDirectory()) {
+            iterator.iterate(directory);
+            return;
+        }
         for (File subFile : directory.listFiles()) {
             if (subFile.isDirectory()) {
                 forEachSubFile(subFile, iterator);
             } else {
                 iterator.iterate(subFile);
+                try {
+                    iterator.iterate(subFile.getPath(), new FileInputStream(subFile));
+                } catch (FileNotFoundException e) {
+                }
+            }
+        }
+    }
+
+    public static void forEachSubStream(String directory, FileIteration iterator) {
+        InputStream directoryStream = ClassLoader.getSystemClassLoader().getResourceAsStream(directory);
+        String[] paths = readAllLines(directoryStream).split("\n");
+        for (int i = 0; i < paths.length; i++) {
+            String path = paths[i];
+            boolean dir = !path.contains(".");
+            if (dir) {
+                forEachSubStream(directory + "/" + path + "/", iterator);
+            } else {
+                iterator.iterate(directory + "/" + path, ClassLoader.getSystemClassLoader().getResourceAsStream(directory + "/" + path));
             }
         }
     }

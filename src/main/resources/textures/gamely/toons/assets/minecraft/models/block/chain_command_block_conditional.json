@@ -1,0 +1,10 @@
+{
+  "parent": "minecraft:block/template_command_block",
+  "textures": {
+    "3": "block/command_block_chain0",
+    "4": "block/command_block_chain1",
+    "5": "block/command_block_chain3",
+    "6": "block/command_block_chain5",
+    "particle": "block/command_block_chain0"
+  }
+}

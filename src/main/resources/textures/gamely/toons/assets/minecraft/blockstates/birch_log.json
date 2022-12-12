@@ -1,0 +1,238 @@
+{
+  "variants": {
+    "axis=x": [
+      {
+        "model": "minecraft:block/birch_log0",
+        "x": 90,
+        "y": 90
+      },
+      {
+        "model": "minecraft:block/birch_log0",
+        "x": 90,
+        "y": 90,
+        "z": 90
+      },
+      {
+        "model": "minecraft:block/birch_log0",
+        "x": 90,
+        "y": 90,
+        "z": 180
+      },
+      {
+        "model": "minecraft:block/birch_log0",
+        "x": 90,
+        "y": 90,
+        "z": 270
+      },
+      {
+        "model": "minecraft:block/birch_log1",
+        "x": 90,
+        "y": 90
+      },
+      {
+        "model": "minecraft:block/birch_log1",
+        "x": 90,
+        "y": 90,
+        "z": 90
+      },
+      {
+        "model": "minecraft:block/birch_log1",
+        "x": 90,
+        "y": 90,
+        "z": 180
+      },
+      {
+        "model": "minecraft:block/birch_log1",
+        "x": 90,
+        "y": 90,
+        "z": 270
+      },
+      {
+        "model": "minecraft:block/birch_log2",
+        "x": 90,
+        "y": 90
+      },
+      {
+        "model": "minecraft:block/birch_log2",
+        "x": 90,
+        "y": 90,
+        "z": 90
+      },
+      {
+        "model": "minecraft:block/birch_log2",
+        "x": 90,
+        "y": 90,
+        "z": 180
+      },
+      {
+        "model": "minecraft:block/birch_log2",
+        "x": 90,
+        "y": 90,
+        "z": 270
+      },
+      {
+        "model": "minecraft:block/birch_log3",
+        "x": 90,
+        "y": 90
+      },
+      {
+        "model": "minecraft:block/birch_log3",
+        "x": 90,
+        "y": 90,
+        "z": 90
+      },
+      {
+        "model": "minecraft:block/birch_log3",
+        "x": 90,
+        "y": 90,
+        "z": 180
+      },
+      {
+        "model": "minecraft:block/birch_log3",
+        "x": 90,
+        "y": 90,
+        "z": 270
+      }
+    ],
+    "axis=y": [
+      {
+        "model": "minecraft:block/birch_log0"
+      },
+      {
+        "model": "minecraft:block/birch_log0",
+        "y": 90
+      },
+      {
+        "model": "minecraft:block/birch_log0",
+        "y": 180
+      },
+      {
+        "model": "minecraft:block/birch_log0",
+        "y": 270
+      },
+      {
+        "model": "minecraft:block/birch_log1"
+      },
+      {
+        "model": "minecraft:block/birch_log1",
+        "y": 90
+      },
+      {
+        "model": "minecraft:block/birch_log1",
+        "y": 180
+      },
+      {
+        "model": "minecraft:block/birch_log1",
+        "y": 270
+      },
+      {
+        "model": "minecraft:block/birch_log2"
+      },
+      {
+        "model": "minecraft:block/birch_log2",
+        "y": 90
+      },
+      {
+        "model": "minecraft:block/birch_log2",
+        "y": 180
+      },
+      {
+        "model": "minecraft:block/birch_log2",
+        "y": 270
+      },
+      {
+        "model": "minecraft:block/birch_log3"
+      },
+      {
+        "model": "minecraft:block/birch_log3",
+        "y": 90
+      },
+      {
+        "model": "minecraft:block/birch_log3",
+        "y": 180
+      },
+      {
+        "model": "minecraft:block/birch_log3",
+        "y": 270
+      }
+    ],
+    "axis=z": [
+      {
+        "model": "minecraft:block/birch_log0",
+        "x": 90
+      },
+      {
+        "model": "minecraft:block/birch_log0",
+        "x": 90,
+        "z": 90
+      },
+      {
+        "model": "minecraft:block/birch_log0",
+        "x": 90,
+        "z": 180
+      },
+      {
+        "model": "minecraft:block/birch_log0",
+        "x": 90,
+        "z": 270
+      },
+      {
+        "model": "minecraft:block/birch_log1",
+        "x": 90
+      },
+      {
+        "model": "minecraft:block/birch_log1",
+        "x": 90,
+        "z": 90
+      },
+      {
+        "model": "minecraft:block/birch_log1",
+        "x": 90,
+        "z": 180
+      },
+      {
+        "model": "minecraft:block/birch_log1",
+        "x": 90,
+        "z": 270
+      },
+      {
+        "model": "minecraft:block/birch_log2",
+        "x": 90
+      },
+      {
+        "model": "minecraft:block/birch_log2",
+        "x": 90,
+        "z": 90
+      },
+      {
+        "model": "minecraft:block/birch_log2",
+        "x": 90,
+        "z": 180
+      },
+      {
+        "model": "minecraft:block/birch_log2",
+        "x": 90,
+        "z": 270
+      },
+      {
+        "model": "minecraft:block/birch_log3",
+        "x": 90
+      },
+      {
+        "model": "minecraft:block/birch_log3",
+        "x": 90,
+        "z": 90
+      },
+      {
+        "model": "minecraft:block/birch_log3",
+        "x": 90,
+        "z": 180
+      },
+      {
+        "model": "minecraft:block/birch_log3",
+        "x": 90,
+        "z": 270
+      }
+    ]
+  }
+}

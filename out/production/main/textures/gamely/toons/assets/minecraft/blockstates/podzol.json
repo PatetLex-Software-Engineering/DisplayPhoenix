@@ -1,0 +1,21 @@
+{
+  "variants": {
+    "": [
+      {
+        "model": "minecraft:block/podzol"
+      },
+      {
+        "model": "minecraft:block/podzol1"
+      },
+      {
+        "model": "minecraft:block/podzol2"
+      },
+      {
+        "model": "minecraft:block/podzol3"
+      },
+      {
+        "model": "minecraft:block/podzol4"
+      }
+    ]
+  }
+}

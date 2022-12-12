@@ -1,0 +1,12 @@
+{
+  "variants": {
+    "": [
+	  {
+        "model": "minecraft:block/soul_soil0"
+      },
+	  {
+        "model": "minecraft:block/soul_soil1"
+      }
+	]
+  }
+}

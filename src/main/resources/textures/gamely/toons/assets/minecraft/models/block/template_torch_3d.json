@@ -1,0 +1,59 @@
+{
+	"credit": "Made with Blockbench",
+	"ambientocclusion": false,
+	"textures": {
+		"particle": "#torch"
+	},
+	"elements": [
+		{
+			"from": [6, 4.5, 6],
+			"to": [10, 7, 10],
+			"faces": {
+				"north": {"uv": [7.4375, 9.9375, 8.4375, 10.9375], "texture": "#torch"},
+				"east": {"uv": [7.4375, 10, 8.4375, 11], "texture": "#torch"},
+				"south": {"uv": [7.4375, 9.9375, 8.4375, 10.9375], "texture": "#torch"},
+				"west": {"uv": [7.4375, 9.8125, 8.4375, 10.8125], "texture": "#torch"},
+				"up": {"uv": [7.5625, 9.9375, 8.5625, 10.9375], "texture": "#torch"},
+				"down": {"uv": [7.4375, 10, 8.4375, 11], "texture": "#torch"}
+			}
+		},
+		{
+			"shade": false,
+			"from": [0, 7, 8],
+			"to": [16, 16, 8],
+			"faces": {
+				"north": {"uv": [0, 0, 16, 9], "texture": "#torch"},
+				"east": {"uv": [0, 0, 0, 9], "texture": "#missing"},
+				"south": {"uv": [0, 0, 16, 9], "texture": "#torch"},
+				"west": {"uv": [0, 0, 0, 9], "texture": "#missing"},
+				"up": {"uv": [0, 0, 16, 0], "texture": "#missing"},
+				"down": {"uv": [0, 0, 16, 0], "texture": "#missing"}
+			}
+		},
+		{
+			"shade": false,
+			"from": [8, 7, 0],
+			"to": [8, 16, 16],
+			"faces": {
+				"north": {"uv": [0, 0, 0, 9], "texture": "#missing"},
+				"east": {"uv": [0, 0, 16, 9], "texture": "#torch"},
+				"south": {"uv": [0, 0, 0, 9], "texture": "#missing"},
+				"west": {"uv": [0, 0, 16, 9], "texture": "#torch"},
+				"up": {"uv": [0, 0, 16, 0], "rotation": 270, "texture": "#missing"},
+				"down": {"uv": [0, 0, 16, 0], "rotation": 90, "texture": "#missing"}
+			}
+		},
+		{
+			"from": [7, 0, 7],
+			"to": [9, 5, 9],
+			"faces": {
+				"north": {"uv": [7.375, 14.9375, 8.625, 16], "texture": "#torch"},
+				"east": {"uv": [7.4375, 14.875, 8.5625, 16], "texture": "#torch"},
+				"south": {"uv": [7.4375, 14.5625, 8.625, 16], "texture": "#torch"},
+				"west": {"uv": [7.375, 14.9375, 8.5, 16], "texture": "#torch"},
+				"up": {"uv": [7.3125, 15, 8.5, 16], "texture": "#torch"},
+				"down": {"uv": [7.5625, 14.9375, 8.5, 16], "texture": "#torch"}
+			}
+		}
+	]
+}

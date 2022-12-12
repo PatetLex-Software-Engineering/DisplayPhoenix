@@ -1,0 +1,9 @@
+{
+	"parent": "minecraft:block/template_leaves02",
+	"textures": {
+		  "2": "block/oak_leaves_item3",
+		  "3": "block/oak_leaves_item5",
+		  "4": "block/oak_leaves_item4",
+		  "particle": "block/oak_leaves_item3"
+	}
+  }

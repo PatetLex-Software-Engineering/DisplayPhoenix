@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/fence_gate_post",
+  "textures": {
+    "side": "minecraft:block/jungle_log",
+    "top": "minecraft:block/jungle_fence_post_top"
+  }
+}

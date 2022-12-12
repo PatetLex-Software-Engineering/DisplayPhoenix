@@ -1,0 +1,238 @@
+{
+	"variants": {
+	  "": [
+		  {
+			"model": "minecraft:block/birch_leaves00",
+			"weight": 2
+		  },
+		  {
+			"model": "minecraft:block/birch_leaves00",
+			"z": 90,
+			"weight": 2
+		  },
+		  {
+			"model": "minecraft:block/birch_leaves00",
+			"z": 180,
+			"weight": 2
+		  },
+		  {
+			"model": "minecraft:block/birch_leaves00",
+			"z": 270,
+			"weight": 2
+		  },
+		  {
+			"model": "minecraft:block/birch_leaves00",
+			"y": 90,
+			"weight": 2
+		  },
+		  {
+			"model": "minecraft:block/birch_leaves00",
+			"z": 90,
+			"y": 90,
+			"weight": 2
+		  },
+		  {
+			"model": "minecraft:block/birch_leaves00",
+			"z": 180,
+			"y": 90,
+			"weight": 2
+		  },
+		  {
+			"model": "minecraft:block/birch_leaves00",
+			"z": 270,
+			"y": 90,
+			"weight": 2
+		  },
+		  {
+			"model": "minecraft:block/birch_leaves00",
+			"y": 180,
+			"weight": 2
+		  },
+		  {
+			"model": "minecraft:block/birch_leaves00",
+			"z": 90,
+			"y": 180,
+			"weight": 2
+		  },
+		  {
+			"model": "minecraft:block/birch_leaves00",
+			"z": 180,
+			"y": 180,
+			"weight": 2
+		  },
+		  {
+			"model": "minecraft:block/birch_leaves00",
+			"z": 270,
+			"y": 180,
+			"weight": 2
+		  },
+		  {
+			"model": "minecraft:block/birch_leaves00",
+			"y": 270,
+			"weight": 2
+		  },
+		  {
+			"model": "minecraft:block/birch_leaves00",
+			"z": 90,
+			"y": 270,
+			"weight": 2
+		  },
+		  {
+			"model": "minecraft:block/birch_leaves00",
+			"z": 180,
+			"y": 270,
+			"weight": 2
+		  },
+		  {
+			"model": "minecraft:block/birch_leaves00",
+			"z": 270,
+			"y": 270,
+			"weight": 2
+		  },
+		  {
+			"model": "minecraft:block/birch_leaves01"
+		  },
+		  {
+			"model": "minecraft:block/birch_leaves01",
+			"z": 90
+		  },
+		  {
+			"model": "minecraft:block/birch_leaves01",
+			"z": 180
+		  },
+		  {
+			"model": "minecraft:block/birch_leaves01",
+			"z": 270
+		  },
+		  {
+			"model": "minecraft:block/birch_leaves01",
+			"y": 90
+		  },
+		  {
+			"model": "minecraft:block/birch_leaves01",
+			"z": 90,
+			"y": 90
+		  },
+		  {
+			"model": "minecraft:block/birch_leaves01",
+			"z": 180,
+			"y": 90
+		  },
+		  {
+			"model": "minecraft:block/birch_leaves01",
+			"z": 270,
+			"y": 90
+		  },
+		  {
+			"model": "minecraft:block/birch_leaves01",
+			"y": 180
+		  },
+		  {
+			"model": "minecraft:block/birch_leaves01",
+			"z": 90,
+			"y": 180
+		  },
+		  {
+			"model": "minecraft:block/birch_leaves01",
+			"z": 180,
+			"y": 180
+		  },
+		  {
+			"model": "minecraft:block/birch_leaves01",
+			"z": 270,
+			"y": 180
+		  },
+		  {
+			"model": "minecraft:block/birch_leaves01",
+			"y": 270
+		  },
+		  {
+			"model": "minecraft:block/birch_leaves01",
+			"z": 90,
+			"y": 270
+		  },
+		  {
+			"model": "minecraft:block/birch_leaves01",
+			"z": 180,
+			"y": 270
+		  },
+		  {
+			"model": "minecraft:block/birch_leaves01",
+			"z": 270,
+			"y": 270
+		  },
+		  {
+			"model": "minecraft:block/birch_leaves02"
+		  },
+		  {
+			"model": "minecraft:block/birch_leaves02",
+			"z": 90
+		  },
+		  {
+			"model": "minecraft:block/birch_leaves02",
+			"z": 180
+		  },
+		  {
+			"model": "minecraft:block/birch_leaves02",
+			"z": 270
+		  },
+		  {
+			"model": "minecraft:block/birch_leaves02",
+			"y": 90
+		  },
+		  {
+			"model": "minecraft:block/birch_leaves02",
+			"z": 90,
+			"y": 90
+		  },
+		  {
+			"model": "minecraft:block/birch_leaves02",
+			"z": 180,
+			"y": 90
+		  },
+		  {
+			"model": "minecraft:block/birch_leaves02",
+			"z": 270,
+			"y": 90
+		  },
+		  {
+			"model": "minecraft:block/birch_leaves02",
+			"y": 180
+		  },
+		  {
+			"model": "minecraft:block/birch_leaves02",
+			"z": 90,
+			"y": 180
+		  },
+		  {
+			"model": "minecraft:block/birch_leaves02",
+			"z": 180,
+			"y": 180
+		  },
+		  {
+			"model": "minecraft:block/birch_leaves02",
+			"z": 270,
+			"y": 180
+		  },
+		  {
+			"model": "minecraft:block/birch_leaves02",
+			"y": 270
+		  },
+		  {
+			"model": "minecraft:block/birch_leaves02",
+			"z": 90,
+			"y": 270
+		  },
+		  {
+			"model": "minecraft:block/birch_leaves02",
+			"z": 180,
+			"y": 270
+		  },
+		  {
+			"model": "minecraft:block/birch_leaves02",
+			"z": 270,
+			"y": 270
+		  }
+	  ]
+	}
+  }

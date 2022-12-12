@@ -1,0 +1,7 @@
+{
+	"parent": "minecraft:block/cornflower",
+	"ambientocclusion": false,
+	"textures": {
+		"cross": "block/cornflower3"
+	}
+}

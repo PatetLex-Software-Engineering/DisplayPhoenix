@@ -1,0 +1,71 @@
+{
+	"credit": "Made with Blockbench",
+	"ambientocclusion": false,
+	"textures": {
+		"2": "block/oak_leaves3",
+		"3": "block/oak_leaves5",
+		"4": "block/oak_leaves4",
+		"particle": "block/oak_leaves3"
+	},
+	"elements": [
+		{
+			"from": [-15.60846, -12.35473, 7.66603],
+			"to": [28.72943, 24.45577, 7.66603],
+			"shade": false,
+			"rotation": {"angle": 45, "axis": "y", "origin": [9.12836, 8.38289, 8.62724]},
+			"faces": {
+				"north": {"uv": [0, 0, 16, 16], "texture": "#2", "tintindex": 0},
+				"south": {"uv": [16, 0, 0, 16], "texture": "#2", "tintindex": 0}
+			}
+		},
+		{
+			"from": [8.50884, -12.35473, -14.69015],
+			"to": [8.50884, 24.45577, 28.22831],
+			"shade": false,
+			"rotation": {"angle": 45, "axis": "y", "origin": [9.12836, 8.38289, 8.62724]},
+			"faces": {
+				"east": {"uv": [0, 0, 16, 16], "texture": "#2", "tintindex": 0},
+				"west": {"uv": [16, 0, 0, 16], "texture": "#2", "tintindex": 0}
+			}
+		},
+		{
+			"from": [-10.17573, 2.01711, -8.28179],
+			"to": [27.5319, 2.01711, 29.42584],
+			"shade": false,
+			"rotation": {"angle": 0, "axis": "y", "origin": [9.12836, 8.38289, 8.62724]},
+			"faces": {
+				"up": {"uv": [16, 0, 0, 16], "rotation": 90, "texture": "#4", "cullface": "up", "tintindex": 0},
+				"down": {"uv": [0, 0, 16, 16], "rotation": 90, "texture": "#4", "cullface": "down", "tintindex": 0}
+			}
+		},
+		{
+			"from": [-5.38563, 11.83681, -10.97383],
+			"to": [29.92695, 11.83681, 23.14123],
+			"shade": false,
+			"rotation": {"angle": 45, "axis": "z", "origin": [9.12836, 8.38289, 8.62724]},
+			"faces": {
+				"up": {"uv": [16, 0, 0, 16], "texture": "#3", "tintindex": 0},
+				"down": {"uv": [0, 0, 16, 16], "rotation": 180, "texture": "#3", "tintindex": 0}
+			}
+		},
+		{
+			"from": [-6.88014, 13.80075, -10.67684],
+			"to": [28.43244, 13.80075, 23.43822],
+			"shade": false,
+			"rotation": {"angle": 22.5, "axis": "x", "origin": [9.12836, 8.38289, 8.62724]},
+			"faces": {
+				"up": {"uv": [16, 0, 0, 16], "rotation": 180, "texture": "#3", "tintindex": 0},
+				"down": {"uv": [0, 0, 16, 16], "texture": "#3", "tintindex": 0}
+			}
+		}
+	],
+	"groups": [
+		{
+			"name": "group",
+			"origin": [8.03096, 13.10412, -5.98391],
+			"color": 0,
+			"shade": false,
+			"children": [0, 1, 2, 3, 4]
+		}
+	]
+}

@@ -1,0 +1,22 @@
+{
+	"credit": "Made with Blockbench",
+	"parent": "minecraft:block/button",
+	"textures": {
+		"texture": "block/smooth_stone_slab_side",
+		"particle": "#texture"
+	},
+	"elements": [
+		{
+			"from": [5, 0, 6],
+			"to": [11, 1, 10],
+			"faces": {
+				"north": {"uv": [0, 8, 16, 5.3125], "texture": "#texture"},
+				"east": {"uv": [0, 8, 16, 5.3125], "texture": "#texture"},
+				"south": {"uv": [0, 8, 16, 5.3125], "texture": "#texture"},
+				"west": {"uv": [0, 8, 16, 5.3125], "texture": "#texture"},
+				"up": {"uv": [0, 8, 16, 0], "texture": "#texture"},
+				"down": {"uv": [5, 6, 11, 10], "texture": "#texture", "cullface": "down"}
+			}
+		}
+	]
+}

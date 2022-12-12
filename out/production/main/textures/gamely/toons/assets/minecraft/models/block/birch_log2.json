@@ -1,0 +1,13 @@
+{
+	"credit": "Made with Blockbench",
+	"parent": "block/cube",
+	"textures": {
+		"particle": "block/birch_log0",
+		"north": "block/birch_log1",
+		"east": "block/birch_log3",
+		"south": "block/birch_log0",
+		"west": "block/birch_log2",
+		"up": "block/birch_log_top",
+		"down": "block/birch_log_top"
+	}
+}

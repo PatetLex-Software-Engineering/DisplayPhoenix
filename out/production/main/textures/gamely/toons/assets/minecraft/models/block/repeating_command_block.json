@@ -1,0 +1,10 @@
+{
+  "parent": "minecraft:block/template_command_block",
+  "textures": {
+    "3": "block/command_block_repeat0",
+    "4": "block/command_block_repeat2",
+    "5": "block/command_block_repeat4",
+    "6": "block/command_block_repeat5",
+    "particle": "block/command_block_repeat0"
+  }
+}

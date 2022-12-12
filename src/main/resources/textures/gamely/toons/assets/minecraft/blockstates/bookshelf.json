@@ -1,0 +1,28 @@
+{
+	"multipart": [
+	  {
+		"apply": {
+		  "model": "minecraft:block/bookshelf_ends"
+		}
+	  },
+	  {
+		"apply": [
+			{
+			  "model": "minecraft:block/bookshelf_main"
+			},
+			{
+			  "model": "minecraft:block/bookshelf_main",
+			  "y": 90
+			},
+			{
+			  "model": "minecraft:block/bookshelf_main",
+			  "y": 180
+			},
+			{
+			  "model": "minecraft:block/bookshelf_main",
+			  "y": 270
+			}
+		  ]
+	  }
+	]
+}

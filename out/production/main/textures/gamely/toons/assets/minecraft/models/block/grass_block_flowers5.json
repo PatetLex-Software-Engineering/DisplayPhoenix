@@ -1,0 +1,6 @@
+{
+    "parent": "block/grass_block_flowers_template",
+    "textures": {
+        "flowers": "block/grass_block_flowers5"
+    }
+}

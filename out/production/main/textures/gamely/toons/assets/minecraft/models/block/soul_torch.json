@@ -1,0 +1,11 @@
+{
+	"parent": "minecraft:block/torch",
+	"textures": {
+		"4": "block/soul_torch_parts",
+		"5": "block/soul_torch0",
+		"6": "block/soul_torch1",
+		"7": "block/soul_torch_parts1",
+		"particle": "block/soul_torch_parts",
+		"torch": "block/soul_torch"
+	}
+  }

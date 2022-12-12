@@ -1,0 +1,424 @@
+{
+	"credit": "Made with Blockbench",
+	"parent": "minecraft:block/cube",
+	"textures": {
+		"particle": "block/cartography_table_top0",
+		"south": "block/cartography_table_side5",
+		"west": "block/cartography_table_side4",
+		"up": "block/cartography_table_top0",
+		"down": "block/dark_oak_planks",
+		"globe_north": "block/cartography_table_globe_side1",
+		"globe_east": "block/cartography_table_globe_side2",
+		"globe_south": "block/cartography_table_globe_side3",
+		"globe_west": "block/cartography_table_globe_side4",
+		"globe_top": "block/cartography_table_globe_top",
+		"globe_bottom": "block/cartography_table_globe_bottom",
+		"copper": "block/copper_block",
+		"compass": "block/cartography_table_compass"
+	},
+	"elements": [
+		{
+			"name": "table",
+			"from": [0, 0, 0],
+			"to": [16, 16, 16],
+			"faces": {
+				"north": {"uv": [0, 0, 16, 16], "rotation": 180, "texture": "#west"},
+				"east": {"uv": [0, 0, 16, 16], "texture": "#south"},
+				"south": {"uv": [0, 0, 16, 16], "texture": "#down"},
+				"west": {"uv": [0, 0, 16, 16], "texture": "#down"},
+				"up": {"uv": [0, 0, 16, 16], "texture": "#up"},
+				"down": {"uv": [0, 0, 16, 16], "texture": "#down"}
+			}
+		},
+		{
+			"name": "globe",
+			"from": [2, 18.5, 3],
+			"to": [8, 24.5, 9],
+			"faces": {
+				"north": {"uv": [0, 0, 16, 16], "texture": "#globe_north"},
+				"east": {"uv": [0, 0, 16, 16], "texture": "#globe_east"},
+				"south": {"uv": [0, 0, 16, 16], "texture": "#globe_south"},
+				"west": {"uv": [0, 0, 16, 16], "texture": "#globe_west"},
+				"up": {"uv": [0, 0, 16, 16], "rotation": 180, "texture": "#globe_top"},
+				"down": {"uv": [0, 0, 16, 16], "rotation": 180, "texture": "#globe_bottom"}
+			}
+		},
+		{
+			"name": "globe_stand_base",
+			"from": [3.25, 16, 4.35938],
+			"to": [6.5, 16.75, 7.60938],
+			"faces": {
+				"north": {"uv": [0, 0, 16, 0.1875], "texture": "#copper"},
+				"east": {"uv": [0, 0, 16, 0.1875], "texture": "#copper"},
+				"south": {"uv": [0, 0, 16, 0.1875], "texture": "#copper"},
+				"west": {"uv": [0, 0, 16, 0.1875], "texture": "#copper"},
+				"up": {"uv": [0, 0, 16, 16], "texture": "#copper"}
+			}
+		},
+		{
+			"name": "globe_stand1",
+			"from": [4.625, 16.75, 5.60938],
+			"to": [5.375, 24.75, 6.35938],
+			"faces": {
+				"north": {"uv": [5.25, 1.5, 6, 15.125], "texture": "#copper"},
+				"east": {"uv": [5.25, 1.5, 6, 15.125], "texture": "#copper"},
+				"south": {"uv": [5.25, 1.5, 6, 15.125], "texture": "#copper"},
+				"west": {"uv": [5.25, 1.5, 6, 15.125], "texture": "#copper"}
+			}
+		},
+		{
+			"name": "globe_stand2",
+			"from": [1.875, 17.875, 5.35938],
+			"to": [5.875, 18.375, 6.60938],
+			"rotation": {"angle": 0, "axis": "z", "origin": [4.625, 17.75, 5.625]},
+			"faces": {
+				"north": {"uv": [6.75, 15.125, 12.625, 15.3125], "rotation": 90, "texture": "#copper"},
+				"east": {"uv": [14.4375, 16, 14.8125, 14.625], "rotation": 270, "texture": "#copper"},
+				"south": {"uv": [15.25, 15.25, 16, 16], "rotation": 90, "texture": "#copper"},
+				"west": {"uv": [15.25, 15.25, 16, 16], "rotation": 90, "texture": "#copper"},
+				"up": {"uv": [15.25, 15.25, 16, 16], "rotation": 90, "texture": "#copper"},
+				"down": {"uv": [3.3125, 15.25, 7.0625, 15.875], "rotation": 180, "texture": "#copper"}
+			}
+		},
+		{
+			"name": "globe_stand3",
+			"from": [1.375, 17.875, 5.35938],
+			"to": [1.875, 25.125, 6.60938],
+			"rotation": {"angle": 0, "axis": "z", "origin": [4.625, 17.75, 5.625]},
+			"faces": {
+				"north": {"uv": [6.75, 15.125, 12.625, 15.3125], "rotation": 90, "texture": "#copper"},
+				"east": {"uv": [15.25, 15.25, 16, 16], "rotation": 90, "texture": "#copper"},
+				"south": {"uv": [15.25, 15.25, 16, 16], "rotation": 90, "texture": "#copper"},
+				"west": {"uv": [3.3125, 15.25, 7.0625, 15.875], "rotation": 270, "texture": "#copper"},
+				"up": {"uv": [6.625, 15.25, 8.5, 15.875], "texture": "#copper"},
+				"down": {"uv": [3.3125, 15.25, 7.0625, 15.875], "rotation": 180, "texture": "#copper"}
+			}
+		},
+		{
+			"name": "globe_stand4",
+			"from": [1.875, 24.625, 5.35938],
+			"to": [5.875, 25.125, 6.60938],
+			"rotation": {"angle": 0, "axis": "z", "origin": [4.625, 17.75, 5.625]},
+			"faces": {
+				"north": {"uv": [6.75, 15.125, 12.625, 15.3125], "rotation": 90, "texture": "#copper"},
+				"east": {"uv": [14.625, 14.4375, 15.0625, 15.8125], "rotation": 90, "texture": "#copper"},
+				"south": {"uv": [15.25, 15.25, 16, 16], "rotation": 90, "texture": "#copper"},
+				"west": {"uv": [15.25, 15.25, 16, 16], "rotation": 90, "texture": "#copper"},
+				"up": {"uv": [6.625, 15.25, 8.5, 15.875], "texture": "#copper"},
+				"down": {"uv": [15.25, 15.25, 16, 16], "rotation": 90, "texture": "#copper"}
+			}
+		},
+		{
+			"name": "compass_face",
+			"from": [6.9375, 16.07813, 11.60938],
+			"to": [8.70313, 16.32813, 14.23438],
+			"rotation": {"angle": 45, "axis": "y", "origin": [8, 16.125, 12.75]},
+			"faces": {
+				"up": {"uv": [0, 2, 12, 10], "rotation": 90, "texture": "#compass"}
+			}
+		},
+		{
+			"name": "compass_face",
+			"from": [8.70313, 16.07813, 11.85938],
+			"to": [9.10938, 16.32813, 13.98438],
+			"rotation": {"angle": 45, "axis": "y", "origin": [8, 16.125, 12.75]},
+			"faces": {
+				"up": {"uv": [0.9375, 0, 11.0625, 2.1875], "rotation": 90, "texture": "#compass"}
+			}
+		},
+		{
+			"name": "compass_face",
+			"from": [6.5, 16.07813, 11.82813],
+			"to": [6.9375, 16.32813, 14.01563],
+			"rotation": {"angle": 45, "axis": "y", "origin": [8, 16.125, 12.75]},
+			"faces": {
+				"up": {"uv": [0.9375, 9.9375, 11.0625, 12.0625], "rotation": 90, "texture": "#compass"}
+			}
+		},
+		{
+			"from": [7.65234, 16, 14.3125],
+			"to": [8.34375, 16.5, 14.73438],
+			"rotation": {"angle": 0, "axis": "y", "origin": [8, 16.375, 13]},
+			"faces": {
+				"north": {"uv": [10.9375, 10.5, 11.3125, 11], "texture": "#compass"},
+				"east": {"uv": [13.25, 9.1875, 14, 9.9375], "texture": "#compass"},
+				"south": {"uv": [13.25, 9.1875, 14, 9.9375], "texture": "#compass"},
+				"west": {"uv": [13.25, 9.1875, 14, 9.9375], "texture": "#compass"},
+				"up": {"uv": [4.5, 13.5625, 6.4375, 14.625], "texture": "#compass"},
+				"down": {"uv": [0, 0, 0.6875, 0.48438], "texture": "#compass"}
+			}
+		},
+		{
+			"from": [7.65234, 16, 14.3125],
+			"to": [8.34375, 16.5, 14.73438],
+			"rotation": {"angle": 22.5, "axis": "y", "origin": [8, 16.375, 13]},
+			"faces": {
+				"north": {"uv": [10.9375, 10.5, 11.3125, 11], "texture": "#compass"},
+				"east": {"uv": [13.25, 9.1875, 14, 9.9375], "texture": "#compass"},
+				"south": {"uv": [13.25, 9.1875, 14, 9.9375], "texture": "#compass"},
+				"west": {"uv": [13.25, 9.1875, 14, 9.9375], "texture": "#compass"},
+				"up": {"uv": [4.5, 13.5625, 6.4375, 14.625], "texture": "#compass"},
+				"down": {"uv": [0, 0, 0.6875, 0.48438], "texture": "#compass"}
+			}
+		},
+		{
+			"from": [9.30859, 16, 12.65625],
+			"to": [9.73438, 16.49609, 13.34375],
+			"rotation": {"angle": -45, "axis": "y", "origin": [8, 16.35938, 13]},
+			"faces": {
+				"north": {"uv": [13.25, 9.1875, 14, 9.9375], "texture": "#compass"},
+				"east": {"uv": [13.25, 9.1875, 14, 9.9375], "texture": "#compass"},
+				"south": {"uv": [13.25, 9.1875, 14, 9.9375], "texture": "#compass"},
+				"west": {"uv": [10.9375, 10.5, 11.3125, 11], "texture": "#compass"},
+				"up": {"uv": [4.5, 13.5625, 6.4375, 14.625], "rotation": 270, "texture": "#compass"},
+				"down": {"uv": [0, 0, 0.6875, 0.48438], "rotation": 90, "texture": "#compass"}
+			}
+		},
+		{
+			"from": [9.30859, 16, 12.65625],
+			"to": [9.73438, 16.5, 13.34375],
+			"rotation": {"angle": -22.5, "axis": "y", "origin": [8, 16.375, 13]},
+			"faces": {
+				"north": {"uv": [13.25, 9.1875, 14, 9.9375], "texture": "#compass"},
+				"east": {"uv": [15.3125, 0, 15.625, 0.3125], "texture": "#compass"},
+				"south": {"uv": [13.25, 9.1875, 14, 9.9375], "texture": "#compass"},
+				"west": {"uv": [10.9375, 10.5, 11.3125, 11], "texture": "#compass"},
+				"up": {"uv": [12.5, 0, 16, 1.1875], "rotation": 90, "texture": "#compass"},
+				"down": {"uv": [0, 0, 0.6875, 0.48438], "rotation": 90, "texture": "#compass"}
+			}
+		},
+		{
+			"from": [9.30859, 16, 12.65625],
+			"to": [9.73438, 16.5, 13.34375],
+			"rotation": {"angle": 0, "axis": "y", "origin": [8, 16.375, 13]},
+			"faces": {
+				"north": {"uv": [13.25, 9.1875, 14, 9.9375], "texture": "#compass"},
+				"east": {"uv": [15.3125, 0, 15.625, 0.3125], "texture": "#compass"},
+				"south": {"uv": [13.25, 9.1875, 14, 9.9375], "texture": "#compass"},
+				"west": {"uv": [10.9375, 10.5, 11.3125, 11], "texture": "#compass"},
+				"up": {"uv": [12.75, 0, 15.4375, 1.1875], "rotation": 90, "texture": "#compass"},
+				"down": {"uv": [0, 0, 0.6875, 0.48438], "rotation": 90, "texture": "#compass"}
+			}
+		},
+		{
+			"from": [9.30859, 16, 12.65625],
+			"to": [9.73438, 16.5, 13.34375],
+			"rotation": {"angle": 22.5, "axis": "y", "origin": [8, 16.375, 13]},
+			"faces": {
+				"north": {"uv": [13.25, 9.1875, 14, 9.9375], "texture": "#compass"},
+				"east": {"uv": [15.3125, 0, 15.625, 0.3125], "texture": "#compass"},
+				"south": {"uv": [13.25, 9.1875, 14, 9.9375], "texture": "#compass"},
+				"west": {"uv": [10.9375, 10.5, 11.3125, 11], "texture": "#compass"},
+				"up": {"uv": [12.75, 0, 15.4375, 1.1875], "rotation": 90, "texture": "#compass"},
+				"down": {"uv": [0, 0, 0.6875, 0.48438], "rotation": 90, "texture": "#compass"}
+			}
+		},
+		{
+			"from": [7.65234, 16, 11.26563],
+			"to": [8.34375, 16.5, 11.6875],
+			"rotation": {"angle": -45, "axis": "y", "origin": [8, 16.375, 13]},
+			"faces": {
+				"north": {"uv": [12.4375, 0, 13.125, 0.25], "texture": "#compass"},
+				"east": {"uv": [13.25, 9.1875, 14, 9.9375], "texture": "#compass"},
+				"south": {"uv": [10.9375, 10.5, 11.3125, 11], "texture": "#compass"},
+				"west": {"uv": [13.25, 9.1875, 14, 9.9375], "texture": "#compass"},
+				"up": {"uv": [12.75, 0, 15.4375, 1.1875], "texture": "#compass"},
+				"down": {"uv": [0, 0, 0.6875, 0.48438], "rotation": 180, "texture": "#compass"}
+			}
+		},
+		{
+			"from": [7.65234, 16, 11.26563],
+			"to": [8.34375, 16.5, 11.6875],
+			"rotation": {"angle": -22.5, "axis": "y", "origin": [8, 16.375, 13]},
+			"faces": {
+				"north": {"uv": [12.4375, 0, 13.125, 0.25], "texture": "#compass"},
+				"east": {"uv": [13.25, 9.1875, 14, 9.9375], "texture": "#compass"},
+				"south": {"uv": [10.9375, 10.5, 11.3125, 11], "texture": "#compass"},
+				"west": {"uv": [13.25, 9.1875, 14, 9.9375], "texture": "#compass"},
+				"up": {"uv": [12.75, 0, 15.4375, 1.1875], "texture": "#compass"},
+				"down": {"uv": [0, 0, 0.6875, 0.48438], "rotation": 180, "texture": "#compass"}
+			}
+		},
+		{
+			"from": [7.65234, 16, 11.26563],
+			"to": [8.34375, 16.5, 11.6875],
+			"rotation": {"angle": 0, "axis": "y", "origin": [8, 16.375, 13]},
+			"faces": {
+				"north": {"uv": [12.4375, 0, 13.125, 0.25], "texture": "#compass"},
+				"east": {"uv": [13.25, 9.1875, 14, 9.9375], "texture": "#compass"},
+				"south": {"uv": [10.9375, 10.5, 11.3125, 11], "texture": "#compass"},
+				"west": {"uv": [13.25, 9.1875, 14, 9.9375], "texture": "#compass"},
+				"up": {"uv": [12.75, 0, 15.4375, 1.1875], "texture": "#compass"},
+				"down": {"uv": [0, 0, 0.6875, 0.48438], "rotation": 180, "texture": "#compass"}
+			}
+		},
+		{
+			"from": [7.65234, 16, 11.26563],
+			"to": [8.34375, 16.5, 11.6875],
+			"rotation": {"angle": 22.5, "axis": "y", "origin": [8, 16.375, 13]},
+			"faces": {
+				"north": {"uv": [12.4375, 0, 13.125, 0.25], "texture": "#compass"},
+				"east": {"uv": [13.25, 9.1875, 14, 9.9375], "texture": "#compass"},
+				"south": {"uv": [10.9375, 10.5, 11.3125, 11], "texture": "#compass"},
+				"west": {"uv": [13.25, 9.1875, 14, 9.9375], "texture": "#compass"},
+				"up": {"uv": [12.75, 0, 15.4375, 1.1875], "texture": "#compass"},
+				"down": {"uv": [0, 0, 0.6875, 0.48438], "rotation": 180, "texture": "#compass"}
+			}
+		},
+		{
+			"from": [6.26172, 16, 12.65625],
+			"to": [6.6875, 16.5, 13.34375],
+			"rotation": {"angle": -45, "axis": "y", "origin": [8, 16.375, 13]},
+			"faces": {
+				"north": {"uv": [13.25, 9.1875, 14, 9.9375], "texture": "#compass"},
+				"east": {"uv": [10.9375, 10.5, 11.3125, 11], "texture": "#compass"},
+				"south": {"uv": [13.25, 9.1875, 14, 9.9375], "texture": "#compass"},
+				"west": {"uv": [12.5625, 0, 12.9375, 0.25], "texture": "#compass"},
+				"up": {"uv": [12.75, 0, 15.4375, 1.1875], "rotation": 270, "texture": "#compass"},
+				"down": {"uv": [0, 0, 0.6875, 0.48438], "rotation": 270, "texture": "#compass"}
+			}
+		},
+		{
+			"from": [6.26172, 16, 12.65625],
+			"to": [6.6875, 16.5, 13.34375],
+			"rotation": {"angle": -22.5, "axis": "y", "origin": [8, 16.375, 13]},
+			"faces": {
+				"north": {"uv": [13.25, 9.1875, 14, 9.9375], "texture": "#compass"},
+				"east": {"uv": [10.9375, 10.5, 11.3125, 11], "texture": "#compass"},
+				"south": {"uv": [13.25, 9.1875, 14, 9.9375], "texture": "#compass"},
+				"west": {"uv": [12.5625, 0, 12.9375, 0.25], "texture": "#compass"},
+				"up": {"uv": [12.75, 0, 15.4375, 1.1875], "rotation": 270, "texture": "#compass"},
+				"down": {"uv": [0, 0, 0.6875, 0.48438], "rotation": 270, "texture": "#compass"}
+			}
+		},
+		{
+			"from": [6.26172, 16, 12.65625],
+			"to": [6.6875, 16.5, 13.34375],
+			"rotation": {"angle": 0, "axis": "y", "origin": [8, 16.375, 13]},
+			"faces": {
+				"north": {"uv": [13.25, 9.1875, 14, 9.9375], "texture": "#compass"},
+				"east": {"uv": [10.9375, 10.5, 11.3125, 11], "texture": "#compass"},
+				"south": {"uv": [13.25, 9.1875, 14, 9.9375], "texture": "#compass"},
+				"west": {"uv": [12.5625, 0, 12.9375, 0.25], "texture": "#compass"},
+				"up": {"uv": [12, 0, 15.4375, 1.1875], "rotation": 270, "texture": "#compass"},
+				"down": {"uv": [0, 0, 0.6875, 0.48438], "rotation": 270, "texture": "#compass"}
+			}
+		},
+		{
+			"from": [6.26172, 16, 12.65625],
+			"to": [6.6875, 16.49609, 13.34375],
+			"rotation": {"angle": 22.5, "axis": "y", "origin": [8, 16.35938, 13]},
+			"faces": {
+				"north": {"uv": [13.25, 9.1875, 14, 9.9375], "texture": "#compass"},
+				"east": {"uv": [10.9375, 10.5, 11.3125, 11], "texture": "#compass"},
+				"south": {"uv": [13.25, 9.1875, 14, 9.9375], "texture": "#compass"},
+				"west": {"uv": [13.25, 9.1875, 14, 9.9375], "texture": "#compass"},
+				"up": {"uv": [4.5, 13.5625, 6.4375, 14.625], "texture": "#compass"},
+				"down": {"uv": [0, 0, 0.6875, 0.48438], "rotation": 270, "texture": "#compass"}
+			}
+		},
+		{
+			"from": [7.65234, 16, 14.3125],
+			"to": [8.34375, 16.5, 14.73438],
+			"rotation": {"angle": -45, "axis": "y", "origin": [8, 16.375, 13]},
+			"faces": {
+				"north": {"uv": [10.9375, 10.5, 11.3125, 11], "texture": "#compass"},
+				"east": {"uv": [13.25, 9.1875, 14, 9.9375], "texture": "#compass"},
+				"south": {"uv": [13.25, 9.1875, 14, 9.9375], "texture": "#compass"},
+				"west": {"uv": [13.25, 9.1875, 14, 9.9375], "texture": "#compass"},
+				"up": {"uv": [4.5, 13.5625, 6.4375, 14.625], "texture": "#compass"},
+				"down": {"uv": [0, 0, 0.6875, 0.48438], "texture": "#compass"}
+			}
+		},
+		{
+			"from": [7.65234, 16, 14.3125],
+			"to": [8.34375, 16.5, 14.73438],
+			"rotation": {"angle": -22.5, "axis": "y", "origin": [8, 16.375, 13]},
+			"faces": {
+				"north": {"uv": [10.9375, 10.5, 11.3125, 11], "texture": "#compass"},
+				"east": {"uv": [13.25, 9.1875, 14, 9.9375], "texture": "#compass"},
+				"south": {"uv": [13.25, 9.1875, 14, 9.9375], "texture": "#compass"},
+				"west": {"uv": [13.25, 9.1875, 14, 9.9375], "texture": "#compass"},
+				"up": {"uv": [4.5, 13.5625, 6.4375, 14.625], "texture": "#compass"},
+				"down": {"uv": [0, 0, 0.6875, 0.48438], "texture": "#compass"}
+			}
+		},
+		{
+			"name": "the_other_kind_of_compass",
+			"from": [11.95313, 16, 8.125],
+			"to": [14.375, 16.59375, 8.625],
+			"rotation": {"angle": -45, "axis": "y", "origin": [14.25, 16.29688, 8.375]},
+			"faces": {
+				"north": {"uv": [0, 0, 3.25, 0.3125], "texture": "#copper"},
+				"east": {"uv": [0, 0, 3.25, 0.3125], "texture": "#copper"},
+				"south": {"uv": [0, 0, 3.25, 0.3125], "texture": "#copper"},
+				"west": {"uv": [0, 0, 3.25, 0.3125], "texture": "#copper"},
+				"up": {"uv": [0, 0, 3.25, 0.3125], "texture": "#copper"},
+				"down": {"uv": [0, 0, 3.25, 0.3125], "texture": "#copper"}
+			}
+		},
+		{
+			"name": "the_other_kind_of_compass",
+			"from": [9.375, 16.15625, 8.23438],
+			"to": [12.625, 16.4375, 8.51563],
+			"rotation": {"angle": -45, "axis": "y", "origin": [14.25, 16.29688, 8.375]},
+			"faces": {
+				"north": {"uv": [6.875, 1.9375, 5.6875, 9], "rotation": 90, "texture": "#copper"},
+				"east": {"uv": [10.8125, 11.4375, 12.875, 13.625], "rotation": 270, "texture": "#copper"},
+				"south": {"uv": [6.875, 2, 5.6875, 9.0625], "rotation": 270, "texture": "#copper"},
+				"west": {"uv": [10.8125, 11.4375, 12.875, 13.625], "rotation": 270, "texture": "#copper"},
+				"up": {"uv": [5.625, 2, 6.8125, 9.0625], "rotation": 270, "texture": "#copper"},
+				"down": {"uv": [5.625, 2, 6.8125, 9.0625], "rotation": 270, "texture": "#copper"}
+			}
+		},
+		{
+			"name": "the_other_kind_of_compass",
+			"from": [14.10938, 16.15625, 3.5],
+			"to": [14.39063, 16.4375, 6.75],
+			"rotation": {"angle": 0, "axis": "y", "origin": [14.25, 16.29688, 8.375]},
+			"faces": {
+				"north": {"uv": [10.8125, 11.4375, 12.875, 13.625], "rotation": 270, "texture": "#copper"},
+				"east": {"uv": [6.875, 1.9375, 5.6875, 9], "rotation": 90, "texture": "#copper"},
+				"south": {"uv": [10.8125, 11.4375, 12.875, 13.625], "rotation": 270, "texture": "#copper"},
+				"west": {"uv": [6.875, 2, 5.6875, 9.0625], "rotation": 270, "texture": "#copper"},
+				"up": {"uv": [5.625, 2, 6.8125, 9.0625], "texture": "#copper"},
+				"down": {"uv": [5.625, 2, 6.8125, 9.0625], "rotation": 180, "texture": "#copper"}
+			}
+		},
+		{
+			"name": "the_other_kind_of_compass",
+			"from": [14.15625, 15.95313, 7.89063],
+			"to": [14.79688, 16.60938, 8.60938],
+			"rotation": {"angle": 22.5, "axis": "y", "origin": [14.375, 16.375, 8.875]},
+			"faces": {
+				"north": {"uv": [0, 0, 0.64063, 0.65625], "texture": "#copper"},
+				"east": {"uv": [0, 0, 0.71875, 0.65625], "texture": "#copper"},
+				"south": {"uv": [0, 0, 0.64063, 0.65625], "texture": "#copper"},
+				"west": {"uv": [0, 0, 0.71875, 0.65625], "texture": "#copper"},
+				"up": {"uv": [12, 12, 16, 16], "texture": "#compass"},
+				"down": {"uv": [0, 0, 0.64063, 0.71875], "texture": "#copper"}
+			}
+		},
+		{
+			"name": "the_other_kind_of_compass",
+			"from": [14, 16.04688, 6.07813],
+			"to": [14.5, 16.54688, 8.5],
+			"rotation": {"angle": 0, "axis": "y", "origin": [-1.25, -1.45312, -2.5]},
+			"faces": {
+				"north": {"uv": [0, 0, 0.5, 0.5], "texture": "#copper"},
+				"east": {"uv": [0, 0, 2.42188, 0.5], "texture": "#copper"},
+				"south": {"uv": [0, 0, 0.5, 0.5], "texture": "#copper"},
+				"west": {"uv": [0, 0, 2.42188, 0.5], "texture": "#copper"},
+				"up": {"uv": [0, 0, 0.5, 2.42188], "texture": "#copper"},
+				"down": {"uv": [0, 0, 0.5, 2.42188], "texture": "#copper"}
+			}
+		}
+	],
+	"groups": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9,
+		{
+			"name": "compass",
+			"origin": [0, 0, 0],
+			"color": 0,
+			"children": [10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25]
+		}, 26, 27, 28, 29, 30]
+}

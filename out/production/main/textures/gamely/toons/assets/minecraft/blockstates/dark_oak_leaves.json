@@ -1,0 +1,319 @@
+{
+	"variants": {
+	  "": [
+		  {
+			"model": "minecraft:block/dark_oak_leaves00",
+			"weight": 16
+		  },
+		  {
+			"model": "minecraft:block/dark_oak_leaves00",
+			"z": 90,
+			"weight": 16
+		  },
+		  {
+			"model": "minecraft:block/dark_oak_leaves00",
+			"z": 180,
+			"weight": 16
+		  },
+		  {
+			"model": "minecraft:block/dark_oak_leaves00",
+			"z": 270,
+			"weight": 16
+		  },
+		  {
+			"model": "minecraft:block/dark_oak_leaves00",
+			"y": 90,
+			"weight": 16
+		  },
+		  {
+			"model": "minecraft:block/dark_oak_leaves00",
+			"z": 90,
+			"y": 90,
+			"weight": 16
+		  },
+		  {
+			"model": "minecraft:block/dark_oak_leaves00",
+			"z": 180,
+			"y": 90,
+			"weight": 16
+		  },
+		  {
+			"model": "minecraft:block/dark_oak_leaves00",
+			"z": 270,
+			"y": 90,
+			"weight": 16
+		  },
+		  {
+			"model": "minecraft:block/dark_oak_leaves00",
+			"y": 180,
+			"weight": 16
+		  },
+		  {
+			"model": "minecraft:block/dark_oak_leaves00",
+			"z": 90,
+			"y": 180,
+			"weight": 16
+		  },
+		  {
+			"model": "minecraft:block/dark_oak_leaves00",
+			"z": 180,
+			"y": 180,
+			"weight": 16
+		  },
+		  {
+			"model": "minecraft:block/dark_oak_leaves00",
+			"z": 270,
+			"y": 180,
+			"weight": 16
+		  },
+		  {
+			"model": "minecraft:block/dark_oak_leaves00",
+			"y": 270,
+			"weight": 16
+		  },
+		  {
+			"model": "minecraft:block/dark_oak_leaves00",
+			"z": 90,
+			"y": 270,
+			"weight": 16
+		  },
+		  {
+			"model": "minecraft:block/dark_oak_leaves00",
+			"z": 180,
+			"y": 270,
+			"weight": 16
+		  },
+		  {
+			"model": "minecraft:block/dark_oak_leaves00",
+			"z": 270,
+			"y": 270,
+			"weight": 16
+		  },
+		  {
+			"model": "minecraft:block/dark_oak_leaves01",
+			"weight": 16
+		  },
+		  {
+			"model": "minecraft:block/dark_oak_leaves01",
+			"z": 90,
+			"weight": 16
+		  },
+		  {
+			"model": "minecraft:block/dark_oak_leaves01",
+			"z": 180,
+			"weight": 16
+		  },
+		  {
+			"model": "minecraft:block/dark_oak_leaves01",
+			"z": 270,
+			"weight": 16
+		  },
+		  {
+			"model": "minecraft:block/dark_oak_leaves01",
+			"y": 90,
+			"weight": 16
+		  },
+		  {
+			"model": "minecraft:block/dark_oak_leaves01",
+			"z": 90,
+			"y": 90,
+			"weight": 16
+		  },
+		  {
+			"model": "minecraft:block/dark_oak_leaves01",
+			"z": 180,
+			"y": 90,
+			"weight": 16
+		  },
+		  {
+			"model": "minecraft:block/dark_oak_leaves01",
+			"z": 270,
+			"y": 90,
+			"weight": 16
+		  },
+		  {
+			"model": "minecraft:block/dark_oak_leaves01",
+			"y": 180,
+			"weight": 16
+		  },
+		  {
+			"model": "minecraft:block/dark_oak_leaves01",
+			"z": 90,
+			"y": 180,
+			"weight": 16
+		  },
+		  {
+			"model": "minecraft:block/dark_oak_leaves01",
+			"z": 180,
+			"y": 180,
+			"weight": 16
+		  },
+		  {
+			"model": "minecraft:block/dark_oak_leaves01",
+			"z": 270,
+			"y": 180,
+			"weight": 16
+		  },
+		  {
+			"model": "minecraft:block/dark_oak_leaves01",
+			"y": 270,
+			"weight": 16
+		  },
+		  {
+			"model": "minecraft:block/dark_oak_leaves01",
+			"z": 90,
+			"y": 270,
+			"weight": 16
+		  },
+		  {
+			"model": "minecraft:block/dark_oak_leaves01",
+			"z": 180,
+			"y": 270,
+			"weight": 16
+		  },
+		  {
+			"model": "minecraft:block/dark_oak_leaves01",
+			"z": 270,
+			"y": 270,
+			"weight": 16
+		  },
+		  {
+			"model": "minecraft:block/dark_oak_leaves02",
+			"weight": 16
+		  },
+		  {
+			"model": "minecraft:block/dark_oak_leaves02",
+			"z": 90,
+			"weight": 16
+		  },
+		  {
+			"model": "minecraft:block/dark_oak_leaves02",
+			"z": 180,
+			"weight": 16
+		  },
+		  {
+			"model": "minecraft:block/dark_oak_leaves02",
+			"z": 270,
+			"weight": 16
+		  },
+		  {
+			"model": "minecraft:block/dark_oak_leaves02",
+			"y": 90,
+			"weight": 16
+		  },
+		  {
+			"model": "minecraft:block/dark_oak_leaves02",
+			"z": 90,
+			"y": 90,
+			"weight": 16
+		  },
+		  {
+			"model": "minecraft:block/dark_oak_leaves02",
+			"z": 180,
+			"y": 90,
+			"weight": 16
+		  },
+		  {
+			"model": "minecraft:block/dark_oak_leaves02",
+			"z": 270,
+			"y": 90,
+			"weight": 16
+		  },
+		  {
+			"model": "minecraft:block/dark_oak_leaves02",
+			"y": 180,
+			"weight": 16
+		  },
+		  {
+			"model": "minecraft:block/dark_oak_leaves02",
+			"z": 90,
+			"y": 180,
+			"weight": 16
+		  },
+		  {
+			"model": "minecraft:block/dark_oak_leaves02",
+			"z": 180,
+			"y": 180,
+			"weight": 16
+		  },
+		  {
+			"model": "minecraft:block/dark_oak_leaves02",
+			"z": 270,
+			"y": 180,
+			"weight": 16
+		  },
+		  {
+			"model": "minecraft:block/dark_oak_leaves02",
+			"y": 270,
+			"weight": 16
+		  },
+		  {
+			"model": "minecraft:block/dark_oak_leaves02",
+			"z": 90,
+			"y": 270,
+			"weight": 16
+		  },
+		  {
+			"model": "minecraft:block/dark_oak_leaves02",
+			"z": 180,
+			"y": 270,
+			"weight": 16
+		  },
+		  {
+			"model": "minecraft:block/dark_oak_leaves02",
+			"z": 270,
+			"y": 270,
+			"weight": 16
+		  },
+
+		  {
+			"model": "minecraft:block/dark_oak_leaves_firefly00"
+		  },
+		  {
+			"model": "minecraft:block/dark_oak_leaves_firefly01"
+		  },
+		  {
+			"model": "minecraft:block/dark_oak_leaves_firefly02"
+		  },
+
+		  {
+			"model": "minecraft:block/dark_oak_leaves_firefly00",
+			"y": 90
+		  },
+		  {
+			"model": "minecraft:block/dark_oak_leaves_firefly01",
+			"y": 90
+		  },
+		  {
+			"model": "minecraft:block/dark_oak_leaves_firefly02",
+			"y": 90
+		  },
+
+		  {
+			"model": "minecraft:block/dark_oak_leaves_firefly00",
+			"y": 180
+		  },
+		  {
+			"model": "minecraft:block/dark_oak_leaves_firefly01",
+			"y": 180
+		  },
+		  {
+			"model": "minecraft:block/dark_oak_leaves_firefly02",
+			"y": 180
+		  },
+
+		  {
+			"model": "minecraft:block/dark_oak_leaves_firefly00",
+			"y": 270
+		  },
+		  {
+			"model": "minecraft:block/dark_oak_leaves_firefly01",
+			"y": 270
+		  },
+		  {
+			"model": "minecraft:block/dark_oak_leaves_firefly02",
+			"y": 270
+		  }
+	  ]
+	}
+  }

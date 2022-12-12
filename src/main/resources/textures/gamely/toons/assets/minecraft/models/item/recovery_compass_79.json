@@ -1,0 +1,9 @@
+{
+  "parent": "minecraft:item/template_compass",
+  "textures": {
+	"1": "item/recovery_compass_parts",
+	"2": "item/recovery_compass_parts1",
+	"3": "item/recovery_compass_parts2",
+    "layer0": "minecraft:item/recovery_compass_79"
+  }
+}

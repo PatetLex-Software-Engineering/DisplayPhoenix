@@ -16,7 +16,7 @@ public class GamePanel extends JPanel implements MouseListener, MouseMotionListe
 
     private GameEngine engine;
 
-    private Dimension resolution;
+    protected Dimension resolution;
 
     private Line2D.Float moveLine = new Line2D.Float(0, 0, 0, 0);
     private Map<Integer, Boolean> downKeys = new HashMap<>();
