@@ -642,6 +642,24 @@ public class GameEngine3D extends GameEngine {
         public void drawLine(javax.vecmath.Vector3f vector3f, javax.vecmath.Vector3f vector3f1, javax.vecmath.Vector3f vector3f2) {
             float t = this.lineThickness / 2F;
             float[] vertices = new float[18];
+            vertices[0] = vector3f.x;
+            vertices[1] = vector3f.y - t;
+            vertices[2] = vector3f.z;
+            vertices[3] = vector3f.x;
+            vertices[4] = vector3f.y + t;
+            vertices[5] = vector3f.z;
+            vertices[6] = vector3f1.x;
+            vertices[7] = vector3f1.y - t;
+            vertices[8] = vector3f1.z;
+            vertices[9] = vector3f1.x;
+            vertices[10] = vector3f1.y - t;
+            vertices[11] = vector3f1.z;
+            vertices[12] = vector3f1.x;
+            vertices[13] = vector3f1.y + t;
+            vertices[14] = vector3f1.z;
+            vertices[15] = vector3f.y + t;
+            vertices[16] = vector3f.z;
+            vertices[17] = vector3f1.x;
             for (int i = 0; i < 5; i++) {
                 javax.vecmath.Vector3f v = i > 2 ? vector3f1 : vector3f;
                 vertices[i * 3] = v.x;

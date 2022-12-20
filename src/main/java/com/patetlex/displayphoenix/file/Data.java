@@ -8,6 +8,7 @@ import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
 import com.patetlex.displayphoenix.Application;
+import com.patetlex.displayphoenix.file.indexly.Indexly;
 import com.patetlex.displayphoenix.interfaces.FileIteration;
 import com.patetlex.displayphoenix.lang.Local;
 import com.patetlex.displayphoenix.ui.ColorTheme;
@@ -268,7 +269,7 @@ public class Data {
             Application.setLocal(local != null ? local : Local.EN_US);
             String prevDir = (String) get("prev_dir");
             if (prevDir != null) {
-                FileDialog.PREVIOUS_DIRECTORY = new File(prevDir);
+                Indexly.PREVIOUS_DIRECTORY = new File(prevDir);
             }
             ColorTheme theme = (ColorTheme) get("color_theme");
             if (theme != null) {
@@ -284,7 +285,7 @@ public class Data {
     public static void save() {
         try {
             store("local", Application.getSelectedLocal());
-            store("prev_dir", FileDialog.PREVIOUS_DIRECTORY.getPath());
+            store("prev_dir", Indexly.PREVIOUS_DIRECTORY.getPath());
             store("color_theme", Application.getTheme().getColorTheme());
             store("session", Application.getSession() + 1);
             store("app_version", Application.getVersion());

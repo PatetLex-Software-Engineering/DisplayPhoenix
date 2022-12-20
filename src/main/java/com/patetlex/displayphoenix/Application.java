@@ -19,6 +19,7 @@ import com.patetlex.displayphoenix.interfaces.FileIteration;
 import com.patetlex.displayphoenix.lang.Local;
 import com.patetlex.displayphoenix.lang.Localizer;
 import com.patetlex.displayphoenix.system.exe.SystemProcessor;
+import com.patetlex.displayphoenix.system.web.DeviceConnection;
 import com.patetlex.displayphoenix.ui.ApplicationFrame;
 import com.patetlex.displayphoenix.ui.ColorTheme;
 import com.patetlex.displayphoenix.ui.Theme;
@@ -27,6 +28,7 @@ import com.patetlex.displayphoenix.ui.widget.OverlayOnHoverWidget;
 import com.patetlex.displayphoenix.ui.widget.RoundedButton;
 import com.patetlex.displayphoenix.util.*;
 import org.cef.CefApp;
+import org.eclipse.jgit.revplot.AbstractPlotRenderer;
 import org.jnativehook.GlobalScreen;
 import org.jnativehook.NativeHookException;
 ;
@@ -179,8 +181,16 @@ public class Application {
                     openFrames.remove(newFrame);
                 }
             });
-            frame.dispose();
+            ApplicationFrame.CAN_EXIT = false;
             ApplicationFrame.open(newFrame);
+            frame.addWindowListener(new WindowAdapter() {
+                @Override
+                public void windowClosed(WindowEvent e) {
+                    super.windowClosed(e);
+                    ApplicationFrame.CAN_EXIT = true;
+                }
+            });
+            frame.dispose();
             openFrames.add(newFrame);
         }
     }
@@ -192,7 +202,10 @@ public class Application {
         File exe = getExecutable();
         if (!exe.isDirectory()) {
             session--;
-            getSystemProcessor().executeFile(exe);
+            try {
+                getSystemProcessor().executeFile(exe);
+            } catch (IOException e) {
+            }
         }
         exit(0);
     }
@@ -204,6 +217,7 @@ public class Application {
         } catch (NativeHookException var1) {
             var1.printStackTrace();
         }
+        getSystemProcessor().clear();
         Data.save();
         String tmp = System.getProperty("java.io.tmpdir");
         if (tmp != null) {
@@ -217,6 +231,7 @@ public class Application {
                 }
             });
         }
+        DeviceConnection.dispose();
         System.out.println(getTitle() + " safely exited.");
     }
 

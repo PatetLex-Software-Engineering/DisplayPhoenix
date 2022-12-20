@@ -12,7 +12,7 @@ import com.patetlex.displayphoenix.blockly.event.BlocklyEvent;
 import com.patetlex.displayphoenix.blockly.event.IBlocklyListener;
 import com.patetlex.displayphoenix.blockly.event.events.*;
 import com.patetlex.displayphoenix.file.DetailedFile;
-import com.patetlex.displayphoenix.file.FileDialog;
+import com.patetlex.displayphoenix.file.indexly.Indexly;
 import com.patetlex.displayphoenix.util.ColorHelper;
 import org.cef.browser.CefBrowser;
 import org.cef.browser.CefFrame;
@@ -146,7 +146,7 @@ public class BlocklyPanel extends WebPanel implements BlocklyHtmlGenerator, Bloc
      * Prompts and imports xml file to workspace
      */
     public void importXmlFileToWorkspace() {
-        FileDialog.openFile(new Consumer<DetailedFile>() {
+        Indexly.openFile(new Consumer<DetailedFile>() {
             @Override
             public void accept(DetailedFile detailedFile) {
                 addBlocks(detailedFile.read());

@@ -15,6 +15,8 @@ import java.util.function.Consumer;
 
 public class ApplicationFrame extends JFrame implements ComponentListener, Cloneable {
 
+    public static boolean CAN_EXIT = true;
+
     private List<JWindow> topLayers = new ArrayList<>();
     private int topLayerOffX;
     private int topLayerOffY;
@@ -66,7 +68,7 @@ public class ApplicationFrame extends JFrame implements ComponentListener, Clone
             @Override
             public void windowClosed(WindowEvent e) {
                 super.windowClosed(e);
-                if (frame.closeActionCache == JFrame.EXIT_ON_CLOSE) {
+                if (CAN_EXIT && frame.closeActionCache == JFrame.EXIT_ON_CLOSE) {
                     Application.exit(0);
                 }
             }

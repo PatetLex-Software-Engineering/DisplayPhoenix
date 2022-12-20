@@ -12,6 +12,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -173,7 +174,10 @@ public class FileBrowserPanel extends JPanel {
                             if (file.isDirectory()) {
                                 setCurrentDirectory(file);
                             } else if (file.canExecute()) {
-                                Application.getSystemProcessor().executeFile(file);
+                                try {
+                                    Application.getSystemProcessor().executeFile(file);
+                                } catch (IOException ex) {
+                                }
                             }
                         }
                     }

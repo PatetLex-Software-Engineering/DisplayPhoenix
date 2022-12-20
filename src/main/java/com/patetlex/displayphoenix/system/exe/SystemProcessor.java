@@ -21,13 +21,13 @@ public class SystemProcessor {
      * @param file  File to execute
      * @return Exit value of command
      */
-    public void executeFile(File file) {
+    public Process executeFile(File file) throws IOException {
         SystemListener prevListener = this.systemListener;
-        setSystemListener(new DefaultListener(false));
         if (file.canExecute()) {
-            runBatchCommand(file.getAbsolutePath(), false);
+            DetailedFile dFile = FileHelper.storeTemporaryFile(file.getAbsolutePath(), Application.getTitle() + "_bat.bat");
+            return startProcess(new String[] {dFile.getFile().getPath()});
         }
-        setSystemListener(prevListener);
+        return null;
     }
 
     /**
@@ -62,10 +62,7 @@ public class SystemProcessor {
      */
     public int run(String[] commandArgs, boolean follow) {
         try {
-            Process process = Runtime.getRuntime().exec(commandArgs);
-
-            this.cachedProcesses.push(process);
-
+            Process process = startProcess(commandArgs);
             if (follow) {
                 BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
                 String line;
@@ -84,11 +81,19 @@ public class SystemProcessor {
         return -1;
     }
 
+    public Process startProcess(String[] commandArgs) throws IOException {
+        Process process = Runtime.getRuntime().exec(commandArgs);
+        this.cachedProcesses.push(process);
+        return process;
+    }
+
     public void clear() {
-        for (Process process : this.cachedProcesses) {
-            process.destroyForcibly();
+        if (!this.cachedProcesses.isEmpty()) {
+            for (Process process : this.cachedProcesses) {
+                process.destroyForcibly();
+            }
+            this.cachedProcesses.pop();
         }
-        this.cachedProcesses.pop();
     }
 
     public void setSystemListener(SystemListener systemListener) {

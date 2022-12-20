@@ -23,7 +23,7 @@ import com.patetlex.displayphoenix.canvasly.elements.impl.ImageElement;
 import com.patetlex.displayphoenix.canvasly.tools.Tool;
 import com.patetlex.displayphoenix.file.Data;
 import com.patetlex.displayphoenix.file.DetailedFile;
-import com.patetlex.displayphoenix.file.FileDialog;
+import com.patetlex.displayphoenix.file.indexly.Indexly;
 import com.patetlex.displayphoenix.generation.Module;
 import com.patetlex.displayphoenix.lang.Localizer;
 import com.patetlex.displayphoenix.ui.widget.*;
@@ -318,7 +318,7 @@ public abstract class BitWidgetStyle {
             resourceWidget.addMouseListener(new MouseAdapter() {
                 @Override
                 public void mouseClicked(MouseEvent e) {
-                    FileDialog.openFile(new Consumer<DetailedFile>() {
+                    Indexly.openFile(new Consumer<DetailedFile>() {
                         @Override
                         public void accept(DetailedFile detailedFile) {
                             if (widget.width != 0 && widget.height != 0) {

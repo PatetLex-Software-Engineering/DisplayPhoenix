@@ -7,7 +7,7 @@ import com.patetlex.displayphoenix.canvasly.interfaces.ISettingComponent;
 import com.patetlex.displayphoenix.canvasly.tools.Setting;
 import com.patetlex.displayphoenix.canvasly.tools.Tool;
 import com.patetlex.displayphoenix.file.DetailedFile;
-import com.patetlex.displayphoenix.file.FileDialog;
+import com.patetlex.displayphoenix.file.indexly.Indexly;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -38,7 +38,7 @@ public class ImageTool extends Tool {
         } catch (IOException e) {
             e.printStackTrace();
         }*/
-        FileDialog.openFile(new Consumer<DetailedFile>() {
+        Indexly.openFile(new Consumer<DetailedFile>() {
             @Override
             public void accept(DetailedFile file) {
                 try {

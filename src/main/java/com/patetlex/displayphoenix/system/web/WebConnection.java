@@ -1,7 +1,5 @@
 package com.patetlex.displayphoenix.system.web;
 
-import com.patetlex.displayphoenix.maps.Maps;
-
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
